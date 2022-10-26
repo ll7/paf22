@@ -4,4 +4,4 @@ Praktikum Autonomes Fahren 2022
 
 ## Installation
 
-[[doc/install.md]]
+[Installation](doc/install.md)

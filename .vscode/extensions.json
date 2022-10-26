@@ -3,6 +3,6 @@
         "davidanson.vscode-markdownlint",
         "github.vscode-pull-request-github",
         "ms-iot.vscode-ros",
-        "pkief.material-icon-theme"
+        "vscode-icons-team.vscode-icons"
     ]
 }

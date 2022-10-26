@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "davidanson.vscode-markdownlint",
+        "github.vscode-pull-request-github",
+        "ms-iot.vscode-ros",
+        "vscode-icons-team.vscode-icons"
+    ]
+}

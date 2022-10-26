@@ -10,7 +10,7 @@ This manual will guide you through the process of setting up everything that is 
 
 First you need to create an environment that specifies the Python version that corresponds to the CARLA API
 
-```
+```bash
 conda init &&
 conda create -y -n paf python=3.7 &&
 conda activate paf
@@ -24,7 +24,7 @@ You should see ```(paf)``` at the beginning of a new terminal.
 
 Next you need to download ROS Noetic and additional dependencies.
 
-```
+```bash
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' &&
 sudo apt install -y curl &&
 curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add - &&
@@ -103,12 +103,19 @@ source ~/.bashrc
 conda activate paf
 ```
 
-## Optional: Installing Visual Studio Code
+## Optional
+
+### Installing Visual Studio Code
 
 We recommend working with Visual Studio Code since it offers a ROS extension for a better workflow.
 
 ```bash
 sudo snap install --classic code &&
+```
+
+### Installing Anydesk for remote access
+
+```bash
 sudo -s
 sudo wget -qO - https://keys.anydesk.com/repos/DEB-GPG-KEY | sudo apt-key add - &&
 sudo echo "deb http://deb.anydesk.com/ all main" > /etc/apt/sources.list.d/anydesk-stable.list &&

@@ -50,7 +50,7 @@ After that download all components of the CARLA Leaderboard:
 and configure the corresponding environment variables.
 
 ```bash
-sudo apt install -y libomp5 &&
+sudo apt install -y libomp5 ros-noetic-rosbridge-server &&
 wget https://carla-releases.s3.eu-west-3.amazonaws.com/Linux/Leaderboard/CARLA_Leaderboard_20.tar.gz &&
 mkdir -p -m o+w ~/PAF/carla &&
 tar -C ~/PAF/carla -zxvf CARLA_Leaderboard_20.tar.gz &&

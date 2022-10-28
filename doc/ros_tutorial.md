@@ -261,7 +261,7 @@ Als letzte Aufgabe soll das von euch erstellte Fahrzeug an das ***Carla Leaderbo
         ```
     
 4. In der Datei ```paf_tutorial.py``` müssen ein paar Änderungen vorgenommen werden:
-    - Ändert die Geschwindigkeit eures Fahrzeugs auf 0 bei normaler Fahrt ohne U-Turn, um eine anfängliche Kollision zu vermeiden.
+    - Ändert die Geschwindigkeit eures Fahrzeugs auf einen einen sehr kleinen Wert, aber größer als ```0.00001``` (z.B. ```0.000011```) bei normaler Fahrt ohne U-Turn, um eine anfängliche Kollision zu vermeiden.
     - Fügt einen neuen Publisher am Ende der Funktion ```__init__``` hinzu. Er signalisiert dem ***Carla Leaderboard*** dass der Software Stack initialisiert wurde.
         ```python
         from ros_compatibility.qos import QoSProfile, DurabilityPolicy

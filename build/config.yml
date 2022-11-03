@@ -1,4 +1,2 @@
 modules:
-  comlipy:
-    config_path: ./config-comlipy.yml
   docker:

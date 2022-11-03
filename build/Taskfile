@@ -27,21 +27,16 @@ task:shell() {
 # Project setup / maintenance
 ##########################################
 task:install() {
-    install:requirements
     task:install:git_hooks
-    comlipy:install
+    docker:install
 }
 
 task:update() {
-    comlipy:update
+    docker:update
 }
 
 task:comlipy() {
-    comlipy:run "$@" || exit 1
-}
-
-install:requirements() {
-  pip3 install comlipy
+    docker:container_run -T comlipy -c /apps/build/config-comlipy.yml "$@"
 }
 
 ##########################################
@@ -54,5 +49,6 @@ task:lint() {
 
 task:install:git_hooks() {
     test -L ../.git/hooks/pre-commit || ln -s ../../build/hooks/pre-commit ../.git/hooks/
+    test -L ../.git/hooks/commit-msg || ln -s ../../build/hooks/commit-msg ../.git/hooks/
     chmod +x ./hooks/*
 }

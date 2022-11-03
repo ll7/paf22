@@ -5,3 +5,8 @@ services:
     image: alpine/flake8
     volumes:
       - ../:/apps
+
+  comlipy:
+    build: docker/comlipy
+    volumes:
+      - ../:/apps

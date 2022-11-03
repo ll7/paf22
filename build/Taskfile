@@ -44,7 +44,7 @@ task:comlipy() {
 ##########################################
 
 task:lint() {
-  task:shell flake8 components
+  docker:container_run -T flake8 components
 }
 
 task:install:git_hooks() {

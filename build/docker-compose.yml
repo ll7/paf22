@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  flake8:
+    image: alpine/flake8
+    volumes:
+      - ../:/apps

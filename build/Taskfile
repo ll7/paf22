@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# b5 Taskfile, see https://git.team23.de/build/b5 for details
+
+##########################################
+# General commands
+##########################################
+task:compose() {
+    docker:compose "$@"
+}
+
+task:run() {
+    docker:compose up "$@"
+}
+
+task:halt() {
+    docker:compose down "$@"
+}
+
+task:shell() {
+    container="$1"
+    command="$2"
+    additionalArguments="${@:3}"
+    docker:container_run "${container:-flake8}" "${command:-/bin/bash}" ${additionalArguments:-}
+}
+
+##########################################
+# Project setup / maintenance
+##########################################
+task:install() {
+    install:requirements
+    task:install:git_hooks
+    comlipy:install
+}
+
+task:update() {
+    comlipy:update
+}
+
+task:comlipy() {
+    comlipy:run "$@" || exit 1
+}
+
+install:requirements() {
+  pip3 install comlipy
+}
+
+##########################################
+# Project linting
+##########################################
+
+task:lint() {
+  task:shell flake8 components
+}
+
+task:install:git_hooks() {
+    test -L ../.git/hooks/pre-commit || ln -s ../../build/hooks/pre-commit ../.git/hooks/
+    chmod +x ./hooks/*
+}

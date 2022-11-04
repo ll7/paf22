@@ -4,9 +4,6 @@
 ##########################################
 # General commands
 ##########################################
-task:compose() {
-    docker:compose "$@"
-}
 
 task:run() {
     docker:compose up "$@"
@@ -35,16 +32,16 @@ task:update() {
     docker:update
 }
 
-task:comlipy() {
-    docker:container_run -T comlipy -c /apps/build/config-comlipy.yml "$@"
-}
-
 ##########################################
 # Project linting
 ##########################################
 
 task:lint() {
   docker:container_run -T flake8 components
+}
+
+task:comlipy() {
+    docker:container_run -T comlipy -c /apps/build/config-comlipy.yml "$@"
 }
 
 task:install:git_hooks() {

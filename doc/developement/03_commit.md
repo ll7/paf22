@@ -29,3 +29,6 @@ Some resulting commit message would be:
 feat(#18): Added front left camera to vehicle
 doc(#18): Added documentation about front left camera
 ```
+
+---
+➡️ Proceed to [Coding style](./04_coding_style.md)

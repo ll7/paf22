@@ -6,6 +6,8 @@
 ##########################################
 
 task:run() {
+    # assure that docker can connect to the local X11-server
+    xhost +local:docker
     docker:compose up "$@"
 }
 

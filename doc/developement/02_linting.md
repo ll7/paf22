@@ -4,6 +4,3 @@ To enforce unified standards in the whole project, we use [Flake8](https://pypi.
 * PyFlakes
 * pycodestyle
 * Ned Batchelder’s McCabe script
-
----
-➡️ Proceed to [Commit](./03_commit.md)

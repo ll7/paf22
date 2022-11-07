@@ -25,7 +25,7 @@ sudo apt-get install git-flow
 
 ## Git flow
 
-<img src="04 Hotfix branches.svg" alt="Git Feature" width="500" style="margin-left:30%"/>
+<img src="../assets/04 Hotfix branches.svg" alt="Git Feature" width="500" style="margin-left:30%"/>
 
 ### Branch strategy
 
@@ -66,7 +66,7 @@ Branches include:
 
 
 ## Git Feature Branch (GitHub Flow)
-<img src="git-flow.svg" alt="Git Feature" width="500" style="margin-left:30%"/>
+<img src="../assets/git-flow.svg" alt="Git Feature" width="500" style="margin-left:30%"/>
 
 ### Branch strategy
 

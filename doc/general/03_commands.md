@@ -1,4 +1,4 @@
-# Available commands
+# ⌨️ Available commands
 
 ## General commands
 

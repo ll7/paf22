@@ -1,6 +1,6 @@
 # Coding style guidelines
 
-**Summary:** This page contains the coding rules we want to follow as a team to improve readability and reviewing of our code.This document is for reference only and should be consolidated in case of uncertainty of following the style guidelines. Based on PEP 8
+**Summary:** This page contains the coding rules we want to follow as a team to improve readability and reviewing of our code.This document is for reference only and should be consolidated in case of uncertainty of following the style guidelines. Based on PEP 8 (https://pep8.org/)
 
 
 ---

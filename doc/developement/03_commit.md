@@ -29,3 +29,6 @@ Some resulting commit message would be:
 feat(#18): Added front left camera to vehicle
 doc(#18): Added documentation about front left camera
 ```
+## 🚨 Common Problems
+`Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock:...`
+* Make sure your docker client is running

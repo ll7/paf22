@@ -66,6 +66,30 @@ services:
       - carla
       - ros
 
+  agent:
+    build:
+      dockerfile: build/docker/agent/Dockerfile
+      context: ../
+    init: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+    environment:
+      - DISPLAY
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - ROS_MASTER_URI=http://roscore:11311
+      - ROS_HOSTNAME=agent
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ../code:/code/src
+    networks:
+      - carla
+      - ros
+
 networks:
   carla:
   ros:

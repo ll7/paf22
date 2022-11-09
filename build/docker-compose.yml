@@ -1,0 +1,95 @@
+version: "3"
+
+services:
+  flake8:
+    image: alpine/flake8
+    volumes:
+      - ../:/apps
+
+  comlipy:
+    build: docker/comlipy
+    volumes:
+      - ../:/apps
+
+  # based on https://github.com/ll7/paf21-1/blob/master/scenarios/docker-carla-sim-compose.yml
+  carla-simulator:
+    command: /bin/bash CarlaUE4.sh -carla-server
+    image: kstein/carla:leaderboard
+    init: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+    environment:
+      - DISPLAY
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    expose:
+      - 2000
+      - 2001
+      - 2002
+    networks:
+      - carla
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+
+  roscore:
+    image: ros:noetic
+    command: roscore
+    expose:
+      - 11311
+    networks:
+      - ros
+
+  carla-ros-bridge:
+    build: docker/carla_ros_bridge
+    restart: always
+    init: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+    environment:
+      - DISPLAY
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - ROS_MASTER_URI=http://roscore:11311
+      - ROS_HOSTNAME=carla-ros-bridge
+      - CARLA_SIM_HOST=carla-simulator
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    networks:
+      - carla
+      - ros
+
+  agent:
+    build:
+      dockerfile: build/docker/agent/Dockerfile
+      context: ../
+    init: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+    environment:
+      - DISPLAY
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - ROS_MASTER_URI=http://roscore:11311
+      - ROS_HOSTNAME=agent
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ../code:/code/src
+    networks:
+      - carla
+      - ros
+
+networks:
+  carla:
+  ros:

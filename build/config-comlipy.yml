@@ -1,0 +1,21 @@
+global:
+  help: 'Help: https://github.com/ll7/paf22/blob/main/doc/developement/commit.md'
+
+rules:
+  scope-min-length:
+    applicable: 'always'
+    value: 2
+  type-enum:
+    applicable: 'always'
+    value:
+      - 'docs'
+      - 'feat'
+      - 'fix'
+      - 'other'
+    level: 2
+  subject-case:
+    applicable: 'never'
+    value:
+      - 'upper-case'
+    level: 2
+

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# b5 Taskfile, see https://git.team23.de/build/b5 for details
+
+##########################################
+# General commands
+##########################################
+
+task:run() {
+    # assure that docker can connect to the local X11-server
+    xhost +local:docker
+    docker:compose up "$@"
+}
+
+task:halt() {
+    docker:compose down "$@"
+}
+
+task:shell() {
+    container="$1"
+    command="$2"
+    additionalArguments="${@:3}"
+    docker:container_run "${container:-agent}" "${command:-/bin/bash}" ${additionalArguments:-}
+}
+
+##########################################
+# Project setup / maintenance
+##########################################
+task:install() {
+    task:install:git_hooks
+    docker:install
+}
+
+task:update() {
+    docker:update
+}
+
+##########################################
+# Project linting
+##########################################
+
+task:lint() {
+  docker:container_run -T flake8 components
+}
+
+task:comlipy() {
+    docker:container_run -T comlipy -c /apps/build/config-comlipy.yml "$@"
+}
+
+task:install:git_hooks() {
+    test -L ../.git/hooks/pre-commit || ln -s ../../build/hooks/pre-commit ../.git/hooks/
+    test -L ../.git/hooks/commit-msg || ln -s ../../build/hooks/commit-msg ../.git/hooks/
+    chmod +x ./hooks/*
+}

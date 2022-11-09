@@ -19,7 +19,7 @@ task:shell() {
     container="$1"
     command="$2"
     additionalArguments="${@:3}"
-    docker:container_run "${container:-flake8}" "${command:-/bin/bash}" ${additionalArguments:-}
+    docker:container_run "${container:-agent}" "${command:-/bin/bash}" ${additionalArguments:-}
 }
 
 ##########################################

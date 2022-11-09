@@ -42,7 +42,7 @@ sudo groupadd docker
 sudo usermod -aG docker $USER
 ```
 
-After this, log out and back into your system to propagate the group changes.
+After this, _restart_ your system to propagate the group changes.
 
 ### NVIDIA Container toolkit
 

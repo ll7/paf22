@@ -72,7 +72,3 @@ sudo systemctl restart docker
 ## 🚨 Common Problems
 
 Currently we are not aware about any Problems.
-
-```
-
-```

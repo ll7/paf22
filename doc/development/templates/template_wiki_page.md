@@ -4,15 +4,15 @@
 
 ---
 
-### Author
+## Author
 
 Josef Kircher
 
-### Date
+## Date
 
 04.11.2022
 
-### Prerequisite
+## Prerequisite
 
 VSCode Extensions:
 
@@ -38,44 +38,37 @@ Pycharm:
 2. Select Table of Contents
 3. To update Table of Contents follow Step 1. and select Update Table of Contents
 
+<!-- TOC -->
 - [Title of wiki page](#title-of-wiki-page)
   - [Author](#author)
   - [Date](#date)
   - [Prerequisite](#prerequisite)
-- [Cheat Sheet](#cheat-sheet)
-  - [Basics](#basics)
-- [H1](#h1)
-  - [H2](#h2)
-  - [### H3](#-h3)
-  - [> blockquote](#-blockquote)
-  - [Extended](#extended)
-    - [My Great Heading {#custom-id}](#my-great-heading-custom-id)
-- [more Content](#more-content)
-  - [Sources](#sources)
+  - [Cheat Sheet](#cheat-sheet)
+    - [Basics](#basics)
+    - [Extended](#extended)
+  - [more Content](#more-content)
+    - [Sources](#sources)
+<!-- TOC -->
 
-# Cheat Sheet
+## Cheat Sheet
 
-## Basics
+### Basics
 
 ---
 
 Headings:
 
-# H1
+(# H1)
 
-## H2
+(## H2)
 
-### H3
-
----
-Bold
-
-**bold text**
+(### H3)
 
 ---
-Italic
+Bold **bold text**
 
-*italicized text*
+---
+Italic *italicized text*
 
 ---
 Blockquote
@@ -113,7 +106,7 @@ Link
 Image
 ![alt text](image.jpg)
 
-## Extended
+### Extended
 
 ---
 Table
@@ -125,7 +118,7 @@ Table
 ---
 Fenced Code Block
 
-```
+```python
 {
   "firstName": "John",
   "lastName": "Smith",
@@ -143,7 +136,7 @@ Here's a sentence with a footnote. [^1]
 ---
 Heading ID  
 
-### My Great Heading {#custom-id}
+#### My Great Heading {#custom-id}
 
 ---
 Definition List
@@ -177,7 +170,8 @@ X^2^
 
 ---
 
-# more Content
+## more Content
 
 ### Sources
+
 <https://www.markdownguide.org/cheat-sheet/>

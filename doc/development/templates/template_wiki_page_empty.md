@@ -4,15 +4,15 @@
 
 ---
 
-### Author
+## Author
 
 Josef Kircher
 
-### Date
+## Date
 
 04.11.2022
 
-### Prerequisite
+## Prerequisite
 
 VSCode Extensions:
 
@@ -28,9 +28,10 @@ VSCode Extensions:
 - [more Content](#more-content)
   - [Sources](#sources)
 <!-- TOC -->
-# Some Content
+## Some Content
 
-# more Content
+## more Content
 
 ### Sources
+
 <https://www.markdownguide.org/cheat-sheet/>

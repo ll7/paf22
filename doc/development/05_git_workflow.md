@@ -16,20 +16,20 @@ Josef Kircher
 
 ---
 <!-- TOC -->
-- [Git Style](#git-style)
-  - [Author](#author)
-  - [Date](#date)
-  - [Prerequisite](#prerequisite)
-  - [Git workflow](#git-workflow)
-    - [Git Feature Branch](#git-feature-branch)
-      - [Branch strategy](#branch-strategy)
-      - [Pros](#pros)
-      - [Cons](#cons)
-  - [Git style](#git-style)
-    - [Branch naming](#branch-naming)
-    - [Commit messages](#commit-messages)
-    - [Git commands cheat sheet](#git-commands-cheat-sheet)
-  - [Sources](#sources)
+* [Git Style](#git-style)
+  * [Author](#author)
+  * [Date](#date)
+  * [Prerequisite](#prerequisite)
+  * [Git workflow](#git-workflow)
+    * [Git Feature Branch](#git-feature-branch)
+      * [Branch strategy](#branch-strategy)
+      * [Pros](#pros)
+      * [Cons](#cons)
+  * [Git style](#git-style-1)
+    * [Branch naming](#branch-naming)
+    * [Commit messages](#commit-messages)
+    * [Git commands cheat sheet](#git-commands-cheat-sheet)
+  * [Sources](#sources)
 <!-- TOC -->
 
 ## Git workflow
@@ -44,8 +44,8 @@ Josef Kircher
 
 Two types of branches:
 
-- Main: contains production ready code
-- Feature: new branches based on main for each feature
+* Main: contains production ready code
+* Feature: new branches based on main for each feature
 
 #### Pros
 
@@ -73,7 +73,7 @@ Feature branch: issue number-description-of-issue      (separator: '-') generate
 
 ---
 
-- proceed to [Commit Messages](./03_commit.md)
+* proceed to [Commit Messages](./03_commit.md)
 
 ### Git commands cheat sheet
 

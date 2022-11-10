@@ -16,7 +16,7 @@ Josef Kircher
 
 VSCode Extensions:
 
-- Markdown All in One by Yu Zhang (for TOC)
+* Markdown All in One by Yu Zhang (for TOC)
 
 ---
 
@@ -39,15 +39,15 @@ Pycharm:
 3. To update Table of Contents follow Step 1. and select Update Table of Contents
 
 <!-- TOC -->
-- [Title of wiki page](#title-of-wiki-page)
-  - [Author](#author)
-  - [Date](#date)
-  - [Prerequisite](#prerequisite)
-  - [Cheat Sheet](#cheat-sheet)
-    - [Basics](#basics)
-    - [Extended](#extended)
-  - [more Content](#more-content)
-    - [Sources](#sources)
+* [Title of wiki page](#title-of-wiki-page)
+  * [Author](#author)
+  * [Date](#date)
+  * [Prerequisite](#prerequisite)
+  * [Cheat Sheet](#cheat-sheet)
+    * [Basics](#basics)
+    * [Extended](#extended)
+  * [more Content](#more-content)
+    * [Sources](#sources)
 <!-- TOC -->
 
 ## Cheat Sheet
@@ -84,9 +84,9 @@ Ordered List
 ---
 Unordered List
 
-- First item
-- Second item
-- Third item
+* First item
+* Second item
+* Third item
 
 ---
 Code  
@@ -152,9 +152,10 @@ Strikethrough
 
 Task List
 
-- [x] Write the press release
-- [ ] Update the website
-- [ ] Contact the media
+* [x] Write the press release
+* [ ] Update the website
+
+* [ ] Contact the media
 
 ---
 

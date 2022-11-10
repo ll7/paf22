@@ -1,18 +1,19 @@
 # Coding style guidelines
 
-**Summary:** This page contains the coding rules we want to follow as a team to improve readability and reviewing of our code.This document is for reference only and should be consolidated in case of uncertainty of following the style guidelines. Based on PEP 8 (https://pep8.org/)
-
+**Summary:** This page contains the coding rules we want to follow as a team to improve readability and reviewing of our code.This document is for reference only and should be consolidated in case of uncertainty of following the style guidelines. Based on PEP 8 (<https://pep8.org/>)
 
 ---
-### Author
+
+## Author
 
 Josef Kircher
 
-### Date
+## Date
 
 04.11.2022
 
-### Prerequisite
+## Prerequisite
+
 VSCode Extensions:
 
 - autoDostring - Python Docstring Generator by Nils Werner
@@ -20,52 +21,52 @@ VSCode Extensions:
 To get the ReST format like in Pycharm:
 
 - Go to Extension setting and change it under `Auto Doctring:Docstring Format` to `sphinx-notypes`
-       
----
-* [Coding style guidelines](#coding-style-guidelines)
-    * [Author](#author)
-    * [Date](#date)
-    * [Prerequisite](#prerequisite)
-* [Code lay-out](#code-lay-out)
-  * [Indentation](#indentation)
-  * [Tabs or Spaces?](#tabs-or-spaces)
-  * [Should a line break before or after a binary operator?](#should-a-line-break-before-or-after-a-binary-operator)
-  * [Blank Lines](#blank-lines)
-  * [Source File Encoding](#source-file-encoding)
-  * [Imports](#imports)
-  * [Module level dunder names](#module-level-dunder-names)
-* [String Quotes](#string-quotes)
-* [Whitespace in Expressions and Statements](#whitespace-in-expressions-and-statements)
-  * [Pet Peeves](#pet-peeves)
-  * [Other Recommendations](#other-recommendations)
-* [When to use trailing commas](#when-to-use-trailing-commas)
-* [Comments](#comments)
-  * [Block Comments](#block-comments)
-  * [Inline Comments](#inline-comments)
-  * [Documentation Strings](#documentation-strings)
-* [Naming Conventions](#naming-conventions)
-  * [Overriding Principle](#overriding-principle)
-  * [Descriptive: Naming Styles](#descriptive-naming-styles)
-  * [Prescriptive: Naming Conventions](#prescriptive-naming-conventions)
-    * [Names to Avoid](#names-to-avoid)
-    * [ASCII Compatibility](#ascii-compatibility)
-    * [Package and Module Names](#package-and-module-names)
-    * [Class Names](#class-names)
-    * [Type variable names](#type-variable-names)
-    * [Exception Names](#exception-names)
-    * [Global Variable Names](#global-variable-names)
-    * [Function Names](#function-names)
-    * [Function and method arguments](#function-and-method-arguments)
-    * [Method Names and Instance Variables](#method-names-and-instance-variables)
-    * [Constants](#constants)
-    * [Designing for inheritance](#designing-for-inheritance)
-  * [Public and internal interfaces](#public-and-internal-interfaces)
-* [Programming Recommendations](#programming-recommendations)
-  * [Function Annotations](#function-annotations)
-* [Footnotes](#footnotes)
-* [Copyright](#copyright)
-    * [Source](#source)
 
+---
+
+- [Coding style guidelines](#coding-style-guidelines)
+  - [Author](#author)
+  - [Date](#date)
+  - [Prerequisite](#prerequisite)
+- [Code lay-out](#code-lay-out)
+  - [Indentation](#indentation)
+  - [Tabs or Spaces?](#tabs-or-spaces)
+  - [Should a line break before or after a binary operator?](#should-a-line-break-before-or-after-a-binary-operator)
+  - [Blank Lines](#blank-lines)
+  - [Source File Encoding](#source-file-encoding)
+  - [Imports](#imports)
+  - [Module level dunder names](#module-level-dunder-names)
+- [String Quotes](#string-quotes)
+- [Whitespace in Expressions and Statements](#whitespace-in-expressions-and-statements)
+  - [Pet Peeves](#pet-peeves)
+  - [Other Recommendations](#other-recommendations)
+- [When to use trailing commas](#when-to-use-trailing-commas)
+- [Comments](#comments)
+  - [Block Comments](#block-comments)
+  - [Inline Comments](#inline-comments)
+  - [Documentation Strings](#documentation-strings)
+- [Naming Conventions](#naming-conventions)
+  - [Overriding Principle](#overriding-principle)
+  - [Descriptive: Naming Styles](#descriptive-naming-styles)
+  - [Prescriptive: Naming Conventions](#prescriptive-naming-conventions)
+    - [Names to Avoid](#names-to-avoid)
+    - [ASCII Compatibility](#ascii-compatibility)
+    - [Package and Module Names](#package-and-module-names)
+    - [Class Names](#class-names)
+    - [Type variable names](#type-variable-names)
+    - [Exception Names](#exception-names)
+    - [Global Variable Names](#global-variable-names)
+    - [Function Names](#function-names)
+    - [Function and method arguments](#function-and-method-arguments)
+    - [Method Names and Instance Variables](#method-names-and-instance-variables)
+    - [Constants](#constants)
+    - [Designing for inheritance](#designing-for-inheritance)
+  - [Public and internal interfaces](#public-and-internal-interfaces)
+- [Programming Recommendations](#programming-recommendations)
+  - [Function Annotations](#function-annotations)
+- [Footnotes](#footnotes)
+- [Copyright](#copyright)
+  - [Source](#source)
 
 # Code lay-out
 
@@ -76,6 +77,7 @@ Use 4 spaces per indentation level.
 Continuation lines should align wrapped elements either vertically using Python’s implicit line joining inside parentheses, brackets and braces, or using a hanging indent 3. When using a hanging indent the following should be considered; there should be no arguments on the first line and further indentation should be used to clearly distinguish itself as a continuation line.
 
 Yes:
+
 ```
 # Aligned with opening delimiter.
 foo = long_function_name(var_one, var_two,
@@ -94,6 +96,7 @@ foo = long_function_name(
 ```
 
 No:
+
 ```
 # Arguments on first line forbidden when not using vertical alignment.
 foo = long_function_name(var_one, var_two,
@@ -127,7 +130,9 @@ result = some_function_that_takes_arguments(
     'd', 'e', 'f',
     )
 ```
+
 or it may be lined up under the first character of the line that starts the multi-line construct, as in:
+
 ```
 my_list = [
     1, 2, 3,
@@ -138,6 +143,7 @@ result = some_function_that_takes_arguments(
     'd', 'e', 'f',
 )
 ```
+
 ## Tabs or Spaces?
 
 Spaces are the preferred indentation method.
@@ -155,6 +161,7 @@ Limiting the required editor window width makes it possible to have several file
 The preferred way of wrapping long lines is by using Python’s implied line continuation inside parentheses, brackets and braces. Long lines can be broken over multiple lines by wrapping expressions in parentheses. These should be used in preference to using a backslash for line continuation.
 
 Backslashes may still be appropriate at times. For example, long, multiple with-statements cannot use implicit continuation, so backslashes are acceptable:
+
 ```
 with open('/path/to/some/file/you/want/to/read') as file_1, \
      open('/path/to/some/file/being/written', 'w') as file_2:
@@ -164,6 +171,7 @@ with open('/path/to/some/file/you/want/to/read') as file_1, \
 ## Should a line break before or after a binary operator?
 
 For decades the recommended style was to break after binary operators. But this can hurt readability in two ways: the operators tend to get scattered across different columns on the screen, and each operator is moved away from its operand and onto the previous line. Here, the eye has to do extra work to tell which items are added and which are subtracted:
+
 ```
 # No: operators sit far away from their operands
 income = (gross_wages +
@@ -172,11 +180,13 @@ income = (gross_wages +
           ira_deduction -
           student_loan_interest)
 ```
+
 To solve this readability problem, mathematicians and their publishers follow the opposite convention. Donald Knuth explains the traditional rule in his Computers and Typesetting series:
 
     “Although formulas within a paragraph always break after binary operations and relations, displayed formulas always break before binary operations” 4.
 
 Following the tradition from mathematics usually results in more readable code:
+
 ```
 # Yes: easy to match operators with operands
 income = (gross_wages
@@ -185,6 +195,7 @@ income = (gross_wages
           - ira_deduction
           - student_loan_interest)
 ```
+
 In Python code, it is permissible to break before or after a binary operator, as long as the convention is consistent locally. For new code Knuth's style is suggested.
 
 ## Blank Lines
@@ -208,6 +219,7 @@ Open source projects with a global audience are encouraged to adopt a similar po
 ## Imports
 
 Imports should usually be on separate lines, e.g.:
+
 ```
 Yes:
 
@@ -218,13 +230,17 @@ No:
 
 import os, sys
 ```
+
 It’s okay to say this though:
+
 ```
 from subprocess import Popen, PIPE
 ```
+
 Imports are always put at the top of the file, just after any module comments and docstrings, and before module globals and constants.
 
 Imports should be grouped in the following order:
+
 1. standard library imports
 2. related third party imports
 3. local application/library specific imports
@@ -232,30 +248,38 @@ Imports should be grouped in the following order:
 You should put a blank line between each group of imports.
 
 Absolute imports are recommended, as they are usually more readable and tend to be better behaved (or at least give better error messages) if the import system is incorrectly configured (such as when a directory inside a package ends up on sys.path):
+
 ```
 import mypkg.sibling
 from mypkg import sibling
 from mypkg.sibling import example
 ```
+
 However, explicit relative imports are an acceptable alternative to absolute imports, especially when dealing with complex package layouts where using absolute imports would be unnecessarily verbose:
+
 ```
 from . import sibling
 from .sibling import example
 ```
+
 Standard library code should avoid complex package layouts and always use absolute imports.
 
 Implicit relative imports should never be used and have been removed in Python 3.
 
 When importing a class from a class-containing module, it’s usually okay to spell this:
+
 ```
 from myclass import MyClass
 from foo.bar.yourclass import YourClass
 ```
+
 If this spelling causes local name clashes, then spell them :
+
 ```
 import myclass
 import foo.bar.yourclass
 ```
+
 and use ``myclass.MyClass`` and ``foo.bar.yourclass.YourClass``.
 
 Wildcard imports (from ``<module> import *``) should be avoided, as they make it unclear which names are present in the namespace, confusing both readers and many automated tools. There is one defensible use case for a wildcard import, which is to republish an internal interface as part of a public API (for example, overwriting a pure Python implementation of an interface with the definitions from an optional accelerator module and exactly which definitions will be overwritten isn’t known in advance).
@@ -267,6 +291,7 @@ When republishing names this way, the guidelines below regarding public and inte
 Module level "dunders" (i.e. names with two leading and two trailing underscores) such as ```__all__```, ```__author__```, ```__version__```, etc. should be placed after the module docstring but before any import statements except from ```__future__``` imports. Python mandates that future-imports must appear in the module before any other code except docstrings.
 
 For example:
+
 ```
 """This is the example module.
 
@@ -282,6 +307,7 @@ __author__ = 'Cardinal Biggles'
 import os
 import sys
 ```
+
 # String Quotes
 
 In Python, single-quoted strings and double-quoted strings are the same. This PEP does not make a recommendation for this. Pick a rule and stick to it. When a string contains single or double quote characters, however, use the other one to avoid backslashes in the string. It improves readability.
@@ -295,6 +321,7 @@ For triple-quoted strings, always use double quote characters to be consistent w
 Avoid extraneous whitespace in the following situations:
 
 Immediately inside parentheses, brackets or braces:
+
 ```
 Yes:
 
@@ -304,7 +331,9 @@ No:
 
 spam( ham[ 1 ], { eggs: 2 } )
 ```
+
 Between a trailing comma and a following close parenthesis:
+
 ```
 Yes:
 
@@ -314,7 +343,9 @@ No:
 
 bar = (0, )
 ```
+
 Immediately before a comma, semicolon, or colon:
+
 ```
 Yes:
 
@@ -324,7 +355,9 @@ No:
 
 if x == 4 : print x , y ; x , y = y , x
 ```
+
 However, in a slice the colon acts like a binary operator, and should have equal amounts on either side (treating it as the operator with the lowest priority). In an extended slice, both colons must have the same amount of spacing applied. Exception: when a slice parameter is omitted, the space is omitted.
+
 ```
 Yes:
 
@@ -341,7 +374,9 @@ ham[1: 9], ham[1 :9], ham[1:9 :3]
 ham[lower : : upper]
 ham[ : upper]
 ```
+
 Immediately before the open parenthesis that starts the argument list of a function call:
+
 ```
 Yes:
 
@@ -351,7 +386,9 @@ No:
 
 spam (1)
 ```
+
 Immediately before the open parenthesis that starts an indexing or slicing:
+
 ```
 Yes:
 
@@ -361,7 +398,9 @@ No:
 
 dct ['key'] = lst [index]
 ```
+
 More than one space around an assignment (or other) operator to align it with another.
+
 ```
 Yes:
 
@@ -375,6 +414,7 @@ x             = 1
 y             = 2
 long_variable = 3
 ```
+
 ## Other Recommendations
 
 Avoid trailing whitespace anywhere. Because it’s usually invisible, it can be confusing: e.g. a backslash followed by a space and a newline does not count as a line continuation marker. Some editors don’t preserve it and many projects (like CPython itself) have pre-commit hooks that reject it.
@@ -382,6 +422,7 @@ Avoid trailing whitespace anywhere. Because it’s usually invisible, it can be 
 Always surround these binary operators with a single space on either side: assignment (=), augmented assignment (+=, -= etc.), comparisons (==, <, >, !=, <>, <=, >=, in, not in, is, is not), Booleans (and, or, not).
 
 If operators with different priorities are used, consider adding whitespace around the operators with the lowest priority(ies). Use your own judgment; however, never use more than one space, and always have the same amount of whitespace on both sides of a binary operator.
+
 ```
 Yes:
 
@@ -399,7 +440,9 @@ x = x * 2 - 1
 hypot2 = x * x + y * y
 c = (a + b) * (a - b)
 ```
+
 Don’t use spaces around the = sign when used to indicate a keyword argument or a default parameter value.
+
 ```
 Yes:
 
@@ -411,7 +454,9 @@ No:
 def complex(real, imag = 0.0):
     return magic(r = real, i = imag)
 ```
+
 Function annotations should use the normal rules for colons and always have spaces around the -> arrow if present. (See Function Annotations below for more about function annotations.)
+
 ```
 Yes:
 
@@ -423,7 +468,9 @@ No:
 def munge(input:AnyStr): ...
 def munge()->PosInt: ...
 ```
+
 When combining an argument annotation with a default value, use spaces around the = sign (but only for those arguments that have both an annotation and a default).
+
 ```
 Yes:
 
@@ -435,7 +482,9 @@ No:
 def munge(input: AnyStr=None): ...
 def munge(input: AnyStr, limit = 1000): ...
 ```
+
 Compound statements (multiple statements on the same line) are generally discouraged.
+
 ```
 Yes:
 
@@ -450,7 +499,9 @@ Rather not:
 if foo == 'blah': do_blah_thing()
 do_one(); do_two(); do_three()
 ```
+
 While sometimes it’s okay to put an if/for/while with a small body on the same line, never do this for multi-clause statements. Also avoid folding such long lines!
+
 ```
 Rather not:
 
@@ -475,6 +526,7 @@ if foo == 'blah': one(); two(); three()
 # When to use trailing commas
 
 Trailing commas are usually optional, except they are mandatory when making a tuple of one element (and in Python 2 they have semantics for the print statement). For clarity, it is recommended to surround the latter in (technically redundant) parentheses.
+
 ```
 Yes:
 
@@ -484,7 +536,9 @@ OK, but confusing:
 
 FILES = 'setup.cfg',
 ```
+
 When trailing commas are redundant, they are often helpful when a version control system is used, when a list of values, arguments or imported items is expected to be extended over time. The pattern is to put each value (etc.) on a line by itself, always adding a trailing comma, and add the close parenthesis/bracket/brace on the next line. However it does not make sense to have a trailing comma on the same line as the closing delimiter (except in the above case of singleton tuples).
+
 ```
 Yes:
 
@@ -501,6 +555,7 @@ No:
 FILES = ['setup.cfg', 'tox.ini',]
 initialize(FILES, error=True,)
 ```
+
 # Comments
 
 Comments that contradict the code are worse than no comments. Always make a priority of keeping the comments up-to-date when the code changes!
@@ -514,11 +569,13 @@ You should use two spaces after a sentence-ending period.
 When writing English, follow Strunk and White.
 
 Python coders from non-English speaking countries: please write your comments in English, unless you are 120% sure that the code will never be read by people who don’t speak your language.
+
 ## Block Comments
 
 Block comments generally apply to some (or all) code that follows them, and are indented to the same level as that code. Each line of a block comment starts with a # and a single space (unless it is indented text inside the comment).
 
 Paragraphs inside a block comment are separated by a line containing a single #.
+
 ## Inline Comments
 
 Use inline comments sparingly.
@@ -526,6 +583,7 @@ Use inline comments sparingly.
 An inline comment is a comment on the same line as a statement. Inline comments should be separated by at least two spaces from the statement. They should start with a # and a single space.
 
 Inline comments are unnecessary and in fact distracting if they state the obvious.
+
 ```
 Don’t do this:
 
@@ -535,6 +593,7 @@ But sometimes, this is useful:
 
 x = x + 1                 # Compensate for border
 ```
+
 ## Documentation Strings
 
 Conventions for writing good documentation strings (a.k.a. “docstrings”) are immortalized in PEP 257.
@@ -553,9 +612,11 @@ PEP 257 describes good docstring conventions. Note that most importantly, the ""
 # Naming Conventions
 
 The naming conventions of Python’s library are a bit of a mess, so we’ll never get this completely consistent – nevertheless, here are the currently recommended naming standards. New modules and packages (including third party frameworks) should be written to these standards, but where an existing library has a different style, internal consistency is preferred.
+
 ## Overriding Principle
 
 Names that are visible to the user as public parts of the API should follow conventions that reflect usage rather than implementation.
+
 ## Descriptive: Naming Styles
 
 There are a lot of different naming styles. It helps to be able to recognize what naming style is being used, independently from what they are used for.
@@ -581,6 +642,7 @@ There’s also the style of using a short unique prefix to group related names t
 The X11 library uses a leading X for all its public functions. In Python, this style is generally deemed unnecessary because attribute and method names are prefixed with an object, and function names are prefixed with a module name.
 
 In addition, the following special forms using leading or trailing underscores are recognized (these can generally be combined with any case convention):
+
 ```
 _single_leading_underscore: weak “internal use” indicator. E.g. from M import * does not import objects whose name starts with an underscore.
 
@@ -592,20 +654,25 @@ __double_leading_underscore: when naming a class attribute, invokes name manglin
 
 __double_leading_and_trailing_underscore__: “magic” objects or attributes that live in user-controlled namespaces. E.g. __init__, __import__ or __file__. Never invent such names; only use them as documented.
 ```
+
 ## Prescriptive: Naming Conventions
+
 ### Names to Avoid
 
 Never use the characters ‘l’ (lowercase letter el), ‘O’ (uppercase letter oh), or ‘I’ (uppercase letter eye) as single character variable names.
 
 In some fonts, these characters are indistinguishable from the numerals one and zero. When tempted to use ‘l’, use ‘L’ instead.
+
 ### ASCII Compatibility
 
 Identifiers used in the standard library must be ASCII compatible as described in the policy section of PEP 3131.
+
 ### Package and Module Names
 
 Modules should have short, all-lowercase names. Underscores can be used in the module name if it improves readability. Python packages should also have short, all-lowercase names, although the use of underscores is discouraged.
 
 When an extension module written in C or C++ has an accompanying Python module that provides a higher level (e.g. more object oriented) interface, the C/C++ module has a leading underscore (e.g. _socket).
+
 ### Class Names
 
 Class names should normally use the CapWords convention.
@@ -613,28 +680,34 @@ Class names should normally use the CapWords convention.
 The naming convention for functions may be used instead in cases where the interface is documented and used primarily as a callable.
 
 Note that there is a separate convention for builtin names: most builtin names are single words (or two words run together), with the CapWords convention used only for exception names and builtin constants.
+
 ### Type variable names
 
-Names of type variables introduced in PEP 484 should normally use CapWords preferring short names: T, AnyStr, Num. It is recommended to add suffixes _co or _contra to the variables used to declare covariant or contravariant behavior correspondingly. Examples
+Names of type variables introduced in PEP 484 should normally use CapWords preferring short names: T, AnyStr, Num. It is recommended to add suffixes _co or_contra to the variables used to declare covariant or contravariant behavior correspondingly. Examples
+
 ```
 from typing import TypeVar
 
   VT_co = TypeVar('VT_co', covariant=True)
   KT_contra = TypeVar('KT_contra', contravariant=True)
 ```
+
 ### Exception Names
 
 Because exceptions should be classes, the class naming convention applies here. However, you should use the suffix “Error” on your exception names (if the exception actually is an error).
+
 ### Global Variable Names
 
 (Let’s hope that these variables are meant for use inside one module only.) The conventions are about the same as those for functions.
 
-Modules that are designed for use via from M import * should use the __all__ mechanism to prevent exporting globals, or use the older convention of prefixing such globals with an underscore (which you might want to do to indicate these globals are “module non-public”).
+Modules that are designed for use via from M import * should use the **all** mechanism to prevent exporting globals, or use the older convention of prefixing such globals with an underscore (which you might want to do to indicate these globals are “module non-public”).
+
 ### Function Names
 
 Function names should be lowercase, with words separated by underscores as necessary to improve readability.
 
 mixedCase is allowed only in contexts where that’s already the prevailing style (e.g. threading.py), to retain backwards compatibility.
+
 ### Function and method arguments
 
 Always use self for the first argument to instance methods.
@@ -642,6 +715,7 @@ Always use self for the first argument to instance methods.
 Always use cls for the first argument to class methods.
 
 If a function argument’s name clashes with a reserved keyword, it is generally better to append a single trailing underscore rather than use an abbreviation or spelling corruption. Thus class_ is better than clss. (Perhaps better is to avoid such clashes by using a synonym.)
+
 ### Method Names and Instance Variables
 
 Use the function naming rules: lowercase with words separated by underscores as necessary to improve readability.
@@ -653,9 +727,11 @@ To avoid name clashes with subclasses, use two leading underscores to invoke Pyt
 Python mangles these names with the class name: if class Foo has an attribute named __a, it cannot be accessed by Foo.__a. (An insistent user could still gain access by calling Foo._Foo__a.) Generally, double leading underscores should be used only to avoid name conflicts with attributes in classes designed to be subclassed.
 
 Note: there is some controversy about the use of __names (see below).
+
 ### Constants
 
 Constants are usually defined on a module level and written in all capital letters with underscores separating words. Examples include MAX_OVERFLOW and TOTAL.
+
 ### Designing for inheritance
 
 Always decide whether a class’s methods and instance variables (collectively: “attributes”) should be public or non-public. If in doubt, choose non-public; it’s easier to make it public later than to make a public attribute non-public.
@@ -703,6 +779,7 @@ Even with ```__all__``` set appropriately, internal interfaces (packages, module
 An interface is also considered internal if any containing namespace (package, module or class) is considered internal.
 
 Imported names should always be considered an implementation detail. Other modules must not rely on indirect access to such imported names unless they are an explicitly documented part of the containing module’s API, such as os.path or a package’s ```__init__``` module that exposes functionality from submodules.
+
 # Programming Recommendations
 
 Code should be written in a way that does not disadvantage other implementations of Python (PyPy, Jython, IronPython, Cython, Psyco, and such).
@@ -714,6 +791,7 @@ Comparisons to singletons like ```None``` should always be done with ```is``` or
 Also, beware of writing ```if x``` when you really mean ```if x is not None``` – e.g. when testing whether a variable or argument that defaults to None was set to some other value. The other value might have a type (such as a container) that could be false in a boolean context!
 
 Use ```is not``` operator rather than ```not ... is```. While both expressions are functionally identical, the former is more readable and preferred.
+
 ```
 Yes:
 
@@ -723,6 +801,7 @@ No:
 
 if not foo is None:
 ```
+
 When implementing ordering operations with rich comparisons, it is best to implement all six operations (```__eq__```, ```__ne__```, ```__lt__```, ```__le__```, ```__gt__```, ```__ge__```) rather than relying on other code to only exercise a particular comparison.
 
 To minimize the effort involved, the ```functools.total_ordering()``` decorator provides a tool to generate missing comparison methods.
@@ -730,6 +809,7 @@ To minimize the effort involved, the ```functools.total_ordering()``` decorator 
 PEP 207 indicates that reflexivity rules are assumed by Python. Thus, the interpreter may swap ```y > x``` with ```x < y```, ```y >= x``` with ```x <= y```, and may swap the arguments of ```x == y``` and ```x != y.``` The ```sort()``` and ```min()``` operations are guaranteed to use the ```<``` operator and the ```max()``` function uses the ```>``` operator. However, it is best to implement all six operations so that confusion doesn’t arise in other contexts.
 
 Always use a def statement instead of an assignment statement that binds a lambda expression directly to an identifier.
+
 ```
 Yes:
 
@@ -739,6 +819,7 @@ No:
 
 f = lambda x: 2*x
 ```
+
 The first form means that the name of the resulting function object is specifically ```‘f’``` instead of the generic ```‘<lambda>’```. This is more useful for tracebacks and string representations in general. The use of the assignment statement eliminates the sole benefit a lambda expression can offer over an explicit def statement (i.e. that it can be embedded inside a larger expression)
 
 Derive exceptions from Exception rather than BaseException. Direct inheritance from BaseException is reserved for exceptions where catching them is almost always the wrong thing to do.
@@ -756,12 +837,14 @@ The paren-using form also means that when the exception arguments are long or in
 When catching exceptions, mention specific exceptions whenever possible instead of using a bare except: clause.
 
 For example, use:
+
 ```
 try:
     import platform_specific_module
 except ImportError:
     platform_specific_module = None
 ```
+
 A bare except: clause will catch SystemExit and KeyboardInterrupt exceptions, making it harder to interrupt a program with Control-C, and can disguise other problems. If you want to catch all exceptions that signal program errors, use except Exception: (bare except is equivalent to except BaseException:).
 
 A good rule of thumb is to limit use of bare ‘except’ clauses to two cases:
@@ -769,16 +852,19 @@ If the exception handler will be printing out or logging the traceback; at least
 If the code needs to do some cleanup work, but then lets the exception propagate upwards with raise. try...finally can be a better way to handle this case.
 
 When binding caught exceptions to a name, prefer the explicit name binding syntax added in Python 2.6:
+
 ```
 try:
     process_data()
 except Exception as exc:
     raise DataProcessingFailedError(str(exc))
 ```
+
 This is the only syntax supported in Python 3, and avoids the ambiguity problems associated with the older comma-based syntax.
 When catching operating system errors, prefer the explicit exception hierarchy introduced in Python 3.3 over introspection of errno values.
 
 Additionally, for all try/except clauses, limit the try clause to the absolute minimum amount of code necessary. Again, this avoids masking bugs.
+
 ```
 Yes:
 
@@ -798,9 +884,11 @@ except KeyError:
     # Will also catch KeyError raised by handle_value()
     return key_not_found(key)
 ```
+
 When a resource is local to a particular section of code, use a with statement to ensure it is cleaned up promptly and reliably after use. A try/finally statement is also acceptable.
 
 Context managers should be invoked through separate functions or methods whenever they do something other than acquire and release resources. For example:
+
 ```
 Yes:
 
@@ -812,9 +900,11 @@ No:
 with conn:
     do_stuff_in_transaction(conn)
 ```
+
 The latter example doesn’t provide any information to indicate that the ```__enter__``` and ```__exit__``` methods are doing something other than closing the connection after a transaction. Being explicit is important in this case.
 
 Be consistent in return statements. Either all return statements in a function should return an expression, or none of them should. If any return statement returns an expression, any return statements where no value is returned should explicitly state this as return None, and an explicit return statement should be present at the end of the function (if reachable).
+
 ```
 Yes:
 
@@ -840,6 +930,7 @@ def bar(x):
         return
     return math.sqrt(x)
 ```
+
 Use string methods instead of the string module.
 
 String methods are always much faster and share the same API with unicode strings. Override this rule if backward compatibility with Pythons older than 2.0 is required.
@@ -847,6 +938,7 @@ String methods are always much faster and share the same API with unicode string
 Use ```''.startswith()``` and ```''.endswith()``` instead of string slicing to check for prefixes or suffixes.
 
 ```startswith()``` and ```endswith()``` are cleaner and less error prone. For example:
+
 ```
 Yes:
 
@@ -856,7 +948,9 @@ No:
 
 if foo[:3] == 'bar':
 ```
+
 Object type comparisons should always use isinstance() instead of comparing types directly:
+
 ```
 Yes:
 
@@ -866,13 +960,17 @@ No:
 
 if type(obj) is type(1):
 ```
+
 When checking if an object is a string, keep in mind that it might be a unicode string too! In Python 2, str and unicode have a common base class, basestring, so you can do:
+
 ```
 if isinstance(obj, basestring):
 ```
+
 Note that in Python 3, unicode and basestring no longer exist (there is only str) and a bytes object is no longer a kind of string (it is a sequence of integers instead)
 
 For sequences, (strings, lists, tuples), use the fact that empty sequences are false:
+
 ```
 Yes:
 
@@ -884,9 +982,11 @@ No:
 if len(seq):
 if not len(seq):
 ```
+
 Don’t write string literals that rely on significant trailing whitespace. Such trailing whitespace is visually indistinguishable and some editors (or more recently, reindent.py) will trim them.
 
 Don’t compare boolean values to True or False using ==:
+
 ```
 Yes:
 
@@ -900,6 +1000,7 @@ Worse:
 
 if greeting is True:
 ```
+
 ## Function Annotations
 
 With the acceptance of PEP 484, the style rules for function annotations are changing.
@@ -912,9 +1013,11 @@ However, outside the stdlib, experiments within the rules of PEP 484 are now enc
 The Python standard library should be conservative in adopting such annotations, but their use is allowed for new code and for big refactorings.
 
 For code that wants to make a different use of function annotations it is recommended to put a comment of the form:
+
 ```
 # type: ignore
 ```
+
 near the top of the file; this tells type checker to ignore all annotations. (More fine-grained ways of disabling complaints from type checkers can be found in PEP 484.)
 Like linters, type checkers are optional, separate tools. Python interpreters by default should not issue any messages due to type checking and should not alter their behavior based on annotations.
 
@@ -926,23 +1029,22 @@ For code that needs to be backwards compatible, type annotations can be added in
 
 PEP 7, Style Guide for C Code, van Rossum↩
 
-Barry’s GNU Mailman style guide http://barry.warsaw.us/software/STYLEGUIDE.txt↩
+Barry’s GNU Mailman style guide <http://barry.warsaw.us/software/STYLEGUIDE.txt>↩
 
 Hanging indentation is a type-setting style where all the lines in a paragraph are indented except the first line. In the context of Python, the term is used to describe a style where the opening parenthesis of a parenthesized statement is the last non-whitespace character of the line, with subsequent lines being indented until the closing parenthesis.↩
 
 Donald Knuth's The TeXBook, pages 195 and 196.↩
 
-http://www.wikipedia.com/wiki/CamelCase↩
+<http://www.wikipedia.com/wiki/CamelCase>↩
 
-Typeshed repo https://github.com/python/typeshed↩
+Typeshed repo <https://github.com/python/typeshed>↩
 
-Suggested syntax for Python 2.7 and straddling code https://www.python.org/dev/peps/pep-0484/#suggested-syntax-for-python-2-7-and-straddling-code↩
+Suggested syntax for Python 2.7 and straddling code <https://www.python.org/dev/peps/pep-0484/#suggested-syntax-for-python-2-7-and-straddling-code>↩
 
-
 # Copyright
 
 This document has been placed in the public domain.
 
 ### Source
 
-based on PEP8: https://pep8.org/
+based on PEP8: <https://pep8.org/>

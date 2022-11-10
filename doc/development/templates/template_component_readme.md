@@ -8,7 +8,6 @@ Description of module
 
 Listing of all components used in this module
 
-
 ## ROS Data Interface
 
 ### Published topics

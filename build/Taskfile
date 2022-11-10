@@ -44,7 +44,7 @@ task:lint() {
 }
 
 task:python:lint() {
-  docker:container_run -T flake8 components
+  docker:container_run -T flake8 code
 }
 
 task:markdown:lint() {

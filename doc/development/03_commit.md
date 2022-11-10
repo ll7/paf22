@@ -38,4 +38,4 @@ doc(#18): Added documentation about front left camera
 
 `Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock:...`
 
-* Make sure your docker client is running
+- Make sure your docker client is running

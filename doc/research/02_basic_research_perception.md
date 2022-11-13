@@ -1,8 +1,64 @@
 # Basic research perception
 
-## Description
+The perception is responsible for the efficient conversion of raw sensor and map data
+into a useful environment representation that can be used by the planing for further processing.
+
+This includes the classification and localization of relevant entities in traffic and also the preparation
+of this data to enable a fast processing of this data in the planing layer.
 
 ## Interfaces
+
+### Input
+
+Output of the various implemented sensors plus additional HD map.
+
+- **GNSS**: GPS sensor returning geo location data.
+  - Output: [carla.GNSSMeasurement](https://carla.readthedocs.io/en/0.9.13/python_api/#carlagnssmeasurement)
+    - altitude (float, meters): Height regarding ground level
+    - latitude (float, degrees): North/South value of a point on the map
+    - longitude (float degrees): West/East value of a point on the map
+- **IMU**: 6-axis Inertial Measurement Unit
+  - Output: [carla.IMUMeasurement](https://carla.readthedocs.io/en/0.9.13/python_api#carlaimumeasurement)
+    - accelerometer (carla.Vector3D, m/s<sup>2</sup>): Linear acceleration
+    - compass (float, radians): Orientation with regard to the North ([0.0, -1.0, 0.0] in Unreal Engine).
+    - gyroscope (carla.Vector3D, rad/s): Angular velocity
+- **LIDAR**: Velodyne 64 LIDAR
+  - Output: [carla.LidarMeasurement](https://carla.readthedocs.io/en/0.9.13/python_api#carlalidarmeasurement)
+    - channels (int): Number of lasers shot
+    - horizontal_angle (float, radians): Horizontal angle the LIDAR is rotated at the time of measurement
+    - raw_data (bytes): Received list of 4D points. Each point consists of [x,y,z] coordiantes plus the intensity computed for that point
+- **RADAR**: Long-range RADAR (up to 100 meters)
+  - Output: [carla.RadarMeasurement](https://carla.readthedocs.io/en/0.9.13/python_api#carlaradarmeasurement)
+    - raw_data (bytes): [carla.RadarDetection](https://carla.readthedocs.io/en/0.9.13/python_api/#carla.RadarDetection) Array
+      - altitude (float, radians): Altitude angle of the detection
+      - azimuth (float, radians): Horizontal angle of the detection
+      - depth (float, meters): Distance from the sensor to the detection position
+      - velocity (float, m/s): The velocity of the detected object towards the sensor
+- **RGB Camera**: Regular camera that captures images
+  - Output: [carla.Image](https://carla.readthedocs.io/en/0.9.13/python_api/#carlaimage)
+    - fov (float, degrees): Horizontal field of view of the camera
+    - height (int): Image height in pixels
+    - width (int): Image width in pixels
+    - raw_data (bytes)
+- **Speedometer**: Pseudosensor that provides an approximation of the linear velocity
+  - Output: ???
+- (**OpenDRIVE map**: Pseudosensor that exposes the HD map in OpenDrive format parsed as a string)
+
+### Output
+
+Output of various sensors combined with detected objects (and predictions)
+
+- GNSS
+- IMU
+- Speedometer
+- (OpenDRIVE map)
+- Traffic Lights (distance, state, direction)
+- Vehicles (distance, speed, direction, lane)
+- Pedestrians (distance, speed, crossing street?)
+- Crosswalks (distance, Pedestrians waiting?)
+- Obstacles (doors, poles)
+- Lanes (direction, number, blocked)
+- Intersection (lanes, directions)
 
 ## Environment
 

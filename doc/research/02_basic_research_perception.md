@@ -62,13 +62,39 @@ Output of various sensors combined with detected objects (and predictions)
 
 ## Environment
 
+### What objects have to be detected?
+
+- Traffic Lights
+- Signs e.g. stop-sign
+- Vehicles (cars, trucks, bicycles)
+- Lanes + e.g. curbside, vegetation
+- Intersections
+- Crosswalks
+- Pedestrians
+- Poles, Fences, other obstacles
+
+### Special case traffic light
+
+- Traffic lights have yellow casings in some maps, which could cause the detection network to classify its 
+state always as orange
+- On maps with european layout: It may happen that the traffic light cannot be detected, because it is too near 
+so the cameras won't "see" them
+
 ## Algorithms for classification/localization
+
+
 
 ## Prediction
 
+For route planing it is necessary to predict further behaviour of some entities to avoid collisions.
+
+- Prediction of lane switching vehicles on basis of indicator
+- Prediction of crossing pedestrians when walking in the direction of a crosswalk or on the street
+between parking vehicles
+
 ## Map data
 
-## Limitations of the sensors and percetion
+## Limitations of the sensors and perception
 
 ## Training data
 

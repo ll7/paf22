@@ -98,7 +98,7 @@ The Stanley controller, named after an autonomous offroad race car, takes the fr
 ![Stanley error with heading and cross track error](../assets/stanleyerror.png)
 *source: [2]*
 
-The first part of our steering angle tries to correct for this error $arctan(\frac{k_e*e_e}{k_v*v})$ while the second part just corrects for our heading error $\psi$.
+The first part of our steering angle tries to correct for this error $arctan(\frac{k_e * e_e}{k_v*v})$ while the second part just corrects for our heading error $\psi$.
 
 This leads to the following equation for our steering angle.
 
@@ -106,7 +106,7 @@ $$
 \delta(t) = \psi(t) + arctan(\frac{k_e*e_e(t)}{k_v*v(t)})
 $$
 
-With $k_e$ and $k_v$ being tunable parameters for cross tracking error and speed respectively.
+With $k_e$ and $k_v$ being tuenable parameters for cross tracking error and speed respectively.
 
 ### [MPC](https://en.wikipedia.org/wiki/Model_predictive_control) (Model Predictive Control) / receding horizon control
 

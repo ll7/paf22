@@ -108,15 +108,22 @@ $$
 
 With $k_e$ and $k_v$ being tunable parameters for cross tracking error and speed respectively.
 
-### [MPC](https://en.wikipedia.org/wiki/Model_predictive_control) (Model Predictive Control)
+### [MPC](https://en.wikipedia.org/wiki/Model_predictive_control) (Model Predictive Control) / receding horizon control
+
+The basic idea of MPC is to model the future behavior of the vehicle and compute an optimal control input that, minimizes an a priori defined cost functional.
 
 ![MPC Controller](../assets/mpc.webp)
+*source: [5]*
 
 - cost function can be designed to account for driving comfort
 
 ### [SMC](https://en.wikipedia.org/wiki/Sliding_mode_control) (sliding mode control)
 
+SMC systems are designed to drive the system states onto a particular surface in the state space, named sliding surface. Once the sliding surface is reached, sliding mode control keeps the states on the close neighborhood of the sliding surface.
+Real implementations of sliding mode control approximate theoretical behavior with a high-frequency and generally non-deterministic switching control signal that causes the system to chatter.
+
 ![chattering](../assets/chattering.gif)
+*source: [9]*
 
 - simple
 - robust
@@ -129,13 +136,15 @@ Sources:
 2. [Understanding geometric path tracking](https://medium.com/roboquest/understanding-geometric-path-tracking-algorithms-stanley-controller-25da17bcc219)
 3. G. M. Hoffmann, C. J. Tomlin, M. Montemerlo and S. Thrun, "Autonomous Automobile Trajectory Tracking for Off-Road Driving: Controller Design, Experimental Validation and Racing," 2007 American Control Conference, 2007, pp. 2296-2301, doi: 10.1109/ACC.2007.4282788.
 4. [Bosch: sense, think, act](https://www.bosch-mobility-solutions.com/en/mobility-topics/automated-driving-sense-think-act/)
-5. <https://dingyan89.medium.com/three-methods-of-vehicle-lateral-control-pure-pursuit-stanley-and-mpc-db8cc1d32081>
-6. <https://hal.archives-ouvertes.fr/hal-02459398/document>
+5. [Three Methods of Vehicle Lateral Control: Pure Pursuit, Stanley and MPC](<https://dingyan89.medium.com/three-methods-of-vehicle-lateral-control-pure-pursuit-stanley-and-mpc-db8cc1d32081>)
+6. [Comparison of lateral controllers for autonomous vehicle: experimental results](<https://hal.archives-ouvertes.fr/hal-02459398/document>)
 7. <https://de.mathworks.com/help/nav/ug/pure-pursuit-controller.html>
 8. <https://thomasfermi.github.io/Algorithms-for-Automated-Driving/Control/PurePursuit.html>
-9. <https://ieeexplore.ieee.org/document/1644542>
-10. <https://arxiv.org/pdf/1803.03758.pdf>
-11. <https://www.researchgate.net/publication/347286170_A_path-tracking_algorithm_using_predictive_Stanley_lateral_controller>
+9. [Chattering Problem in Sliding Mode Control Systems](<https://ieeexplore.ieee.org/document/1644542>)
+10. [A Tutorial On Autonomous Vehicle Steering Controller Design, Simulation and Implementation](<https://arxiv.org/pdf/1803.03758.pdf>)
+11. [A path-tracking algorithm using predictive Stanley lateral controller](<https://www.researchgate.net/publication/347286170_A_path-tracking_algorithm_using_predictive_Stanley_lateral_controller>)
+12. [Model Predictive Control](https://www.ist.uni-stuttgart.de/research/group-of-frank-allgoewer/model-predictive-control/)
+13. Decarlo, R.A., & Żak, S.H. (2008). A Quick Introduction to Sliding Mode Control and Its Applications 1.
 
 ## Velocity control
 

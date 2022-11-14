@@ -40,9 +40,9 @@ Output of the various implemented sensors plus additional HD map.
     - height (int): Image height in pixels
     - width (int): Image width in pixels
     - raw_data (bytes)
-- **Speedometer**: Pseudosensor that provides an approximation of the linear velocity
+- **Speedometer**: Pseudo-sensor that provides an approximation of the linear velocity
   - Output: ???
-- (**OpenDRIVE map**: Pseudosensor that exposes the HD map in OpenDrive format parsed as a string)
+- (**OpenDRIVE map**: Pseudo-sensor that exposes the HD map in OpenDrive format parsed as a string)
 
 ### Output
 
@@ -73,7 +73,7 @@ Output of various sensors combined with detected objects (and predictions)
 - Pedestrians
 - Poles, Fences, other obstacles
 
-### Special case traffic light
+### Special case traffic light (PAF21-1)
 
 - Traffic lights have yellow casings in some maps, which could cause the detection network to classify its 
 state always as orange
@@ -96,9 +96,54 @@ between parking vehicles
 
 ## Limitations of the sensors and perception
 
+### LIDAR
+
+- No range limits found in documentation
+- Hidden objects cant be detected
+- Colors can't be detected
+- Objects can't be classified
+
+### RADAR
+
+- No range limits found in documentation (default range is 100m, so probably several hundreds of meters)
+- Hidden objects can't be detected
+- Colors can't be detected
+- Objects can't be classified
+
+### Camera
+
+- No direct range limitations. But for long range detection, a high resolution is required, 
+ which results in a small FOV to reduce computation time
+- Hidden objects can be partially detected (e.g. a pedestrian's head protruding over a car)
+- Colors can be detected (e.g. traffic lights)
+- Image segmentation possible
+
+## Algorithms
+
+- Object localization/classification:
+  - CNN (HRNet, ResNet18 (PAF21-1), ...) + classifier (e.g. Support-Vector-Machines)
+  - [YOLOv5](https://docs.ultralytics.com) (fastest, accurate, finished model for object detection, nice documentation)
+  - [SSD](https://arxiv.org/pdf/1512.02325.pdf) (also finished model for object detection)
+  
+- Bildsegmentierung
+  - Pixel-oriented (not useful)
+  - [Edge-oriented](https://www.tu-chemnitz.de/informatik/KI/edu/biver/ss2013/bild12_4_2.pdf)
+  - [Region-oriented](https://www.tu-chemnitz.de/informatik/KI/edu/biver/ss2013/bild12_4_1.pdf)
+  - Cluster-based (not useful)
+  - Model-based (computationally expensive -> not useful)
+
 ## Training data
 
+
+
 ## classification of situations
+
+Should be part of the planing layer in my opinion. Perception should contain only 
+evaluation of sensor data and detection of objects.
+
+## Combination of 2D camera data and 3D RADAR/LIDAR data
+
+
 
 ## Sources
 

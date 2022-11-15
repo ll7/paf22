@@ -82,7 +82,18 @@ so the cameras won't "see" them
 
 ## Algorithms for classification/localization
 
-
+- Object localization/classification:
+  - CNN (HRNet, ResNet18 (PAF21-1), ...) + classifier (e.g. Support-Vector-Machines)
+  - [YOLOv5](https://docs.ultralytics.com) (fastest, accurate, finished model for object detection, nice documentation)
+  - [SSD](https://arxiv.org/pdf/1512.02325.pdf) (also finished model for object detection)
+  - [AlexNet](https://en.wikipedia.org/wiki/AlexNet) (could be used for intersection-detection)
+- Image segmentation
+  - Pixel-oriented (not useful)
+  - [Edge-oriented](https://www.tu-chemnitz.de/informatik/KI/edu/biver/ss2013/bild12_4_2.pdf)
+  - [Region-oriented](https://www.tu-chemnitz.de/informatik/KI/edu/biver/ss2013/bild12_4_1.pdf)
+  - Cluster-based (not useful)
+  - Model-based (computationally expensive -> not useful)
+  - [RefineNet](https://arxiv.org/pdf/1611.06612.pdf) (finished CNN for image segmentation, also used [here](https://proceedings.mlr.press/v78/dosovitskiy17a/dosovitskiy17a.pdf))
 
 ## Prediction
 
@@ -93,6 +104,8 @@ For route planing it is necessary to predict further behaviour of some entities 
 between parking vehicles
 
 ## Map data
+
+Todo: Find information about map data
 
 ## Limitations of the sensors and perception
 
@@ -118,23 +131,10 @@ between parking vehicles
 - Colors can be detected (e.g. traffic lights)
 - Image segmentation possible
 
-## Algorithms
-
-- Object localization/classification:
-  - CNN (HRNet, ResNet18 (PAF21-1), ...) + classifier (e.g. Support-Vector-Machines)
-  - [YOLOv5](https://docs.ultralytics.com) (fastest, accurate, finished model for object detection, nice documentation)
-  - [SSD](https://arxiv.org/pdf/1512.02325.pdf) (also finished model for object detection)
-  
-- Bildsegmentierung
-  - Pixel-oriented (not useful)
-  - [Edge-oriented](https://www.tu-chemnitz.de/informatik/KI/edu/biver/ss2013/bild12_4_2.pdf)
-  - [Region-oriented](https://www.tu-chemnitz.de/informatik/KI/edu/biver/ss2013/bild12_4_1.pdf)
-  - Cluster-based (not useful)
-  - Model-based (computationally expensive -> not useful)
-
 ## Training data
 
-
+The best would be to generate training data in carla simulator. 
+Using pre-build real-world datasets would be less effort, but the nets accuracy would be lower.
 
 ## classification of situations
 
@@ -143,7 +143,9 @@ evaluation of sensor data and detection of objects.
 
 ## Combination of 2D camera data and 3D RADAR/LIDAR data
 
+Useful and necessary to combine information about the kind of detected object (e.g. other vehicle) and its position (distance, relative speed etc.).
 
+The output should be an image containing the classified objects plus their related RADAR/LIDAR data
 
-## Sources
+Todo: Find algorithms for fusion
 

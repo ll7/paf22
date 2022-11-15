@@ -1,5 +1,11 @@
 # Grundrecherche im Planing
 
+## Authors
+Simon Erlbacher, Niklas Vogel
+
+## Datum
+15.01.2022
+
 ## PAF 2021-1
 
 ### Vehicle Controller
@@ -113,6 +119,8 @@ Mögliche Anordnung und Anzahl von Sensoren. (6 Kameras, 1 LIDAR, 2 GPS)
 ## Planning Unterteilung
 ![](Bilder/2022-11-14-17-38-15.png)
 
+Planning Übersicht
+
 ## Probleme
 - Kollision mit statischen Objekten (Gehsteig)
 - Kollision mit Fußgängern die unerwartetes Verhalten zeigen
@@ -124,21 +132,35 @@ Die Position des Fahrzeuges kann durch die zwei GPS Tracker bestimmt werden und 
 
 ![](Bilder/2022-11-11-19-03-52.png) ![](Bilder/2022-11-11-19-05-00.png)
 
+Positionsvektor und Berechnung des Fahrzeugwinkels zur Zielposition
+
 Die Position kann somit in Ab hängigkeit von dem GPS Signal erstellt werden. Wenn das GPS Signal allerdings fehlerhaft ist bzw. Störungen ausgesetzt ist, gibt es Probleme mit der Positionsbestimmung. In diesem Fall wird ein Kalman Filter impolementiert. Er kommt mit Störungen zurecht und gibt auf Basis der aktuellen Position eine gute Vorhersage für zukünftige Zustände des Fahrzeuges.
 
 ![](Bilder/2022-11-11-19-13-35.png)
+
+Berechnung der aktuellen und zukünftigen Fahrzeugposition
 
 ## Hindernisse erkennen
 Mit dem LIDAR Sensor werden Punktewolken in der Umgebung erzeugt. Diese werden mit dem DBSCAN Algorithmus geclustert. Er kommt gut mit outlinern klar und kann diese entsprechend ignorieren. Mit Calipers Algorithmus aus der OpenCV Bibliothek wird für jedes Cluster das kleinst mögliche Rechteck, welches das Cluster fitted, erzeugt.
 
 ![](Bilder/2022-11-11-19-40-25.png)
 
+Erkennen von Hindernissen mit dem LIDAR Sensor
+
 Mit dem LIDAR Sensor gibt es jetzt die Möglichkeit das Hinderniss (Punktewolke) zu erkennen. Es werden feste Punkte ABCDEF bestimmt in unterschiedlichen Abständen. Das Skalarprodukt zwischen AB und BC ist in dem Bild nahe 1. Der Winkel ist somit nahe an 0. Der Winkel zwischen BC und CD hingegen geht Richtung 90 Grad. Das Skalarprodukt ist hiermit nahe 0. Es wurde also ein Hinderniss erkannt. Der Winkel zwischen DE und DF ist auch nahe 0. Dies soll einen Outliner darstellen. Druch das Einführen eines Thresholds können diese Detektionen ausgeschlossen werden.
 
 Hindernisse mit dem Occupacy Grid erkennen. Somit einfach Abstand der Punkte in einer Gridzelle mit dem Mittelpunkt eines Kreises berechnen und prüfen ob die Distanz kleiner als der Radius ist.
 ![](Bilder/2022-11-14-18-15-58.png)
+
+360 Grad Occupacy Grid
+
 ![](Bilder/2022-11-14-18-18-44.png)
+
+Approximation eines Fahrzeuges mit drei Kreisen
+
 ![](Bilder/2022-11-14-18-19-09.png)
+
+Einfache Berechnung einer Kollision
 
 ## Sicherheitseigenschaften
 Wichtig ist die Sicherheitseigenschaft von Autonomen Fahrzeugen. Risiken können in drei KLassen unterteilt werden:
@@ -156,7 +178,12 @@ Annahme: Alle Verkehrsteilnehmer haben konstante Geschwindigkeit (sonst Berechnu
 
 ## Decision Making (Behaviour Planner)
 ![](Bilder/2022-11-14-17-45-55.png)
+Verkehrsszenario einer Kreuzung mit verschiedenen Zonen.
+- Roter Bereich: Fahrzeug verlangsamt seine Geschwindigkeit
+- Grüner Bereich: Fahrzeug kommt zum stehen
+- Oranger Bereich (Intersection): Fahrzeug betritt diesen Bereich nur, wenn kein anderer Verkehrsteilnehmer in diesem erkannt wird
 ![](Bilder/2022-11-14-17-47-12.png)
+Aufteilung in mehrere state machines
 
 Eine state machine oder Aufteileung in mehrere state machines
 Vorteile von mehreren state machines: 
@@ -167,15 +194,28 @@ Nachteile von mehreren state machines:
 - Sehr viele Regeln
 - Regeln zwischen state machines können sich wiederholen
 
-Reinforcement Leraning, Rule based System, Markov Decision Process
+Reinforcement Learning, Rule based System, Markov Decision Process
 
 
 ## Trajektorie
 Die Trajekotrie wird durch Wegpunkte bestimmt, welche zwischen dem Start- und Endpunkte berechnet werden. Dieser Weg wird durch eine Cubic Spline interpoliert. Probleme ist hierbei das Umplanen der Trajekotrie durch unerwartete Hindernisse (Gegenverkehr, Fußgänger,...). Das Fahrzeug muss seine zukünftigen Aktionen, eigene Zustandsübergange, Zustandsübergänge anderer Agenten einbeziehen (zB. Umschalten einer Ampel). Es wird ein Input Vektor aus dem Bycicle Modell benötigt.
 
 ![](Bilder/2022-11-14-18-22-55.png)
+
+Modell für die Berechnung der aktuellen und zukünftigen Fahrzeugposition
+
 ![](Bilder/2022-11-14-18-01-13.png)
-![](Bilder/2022-11-14-18-02-24.png)  ![](Bilder/2022-11-14-18-03-25.png)
+
+Berechnung einer Trajektorie
+
+![](Bilder/2022-11-14-18-02-24.png) 
+
+Visualisierung des Optimierungsprozesses bei der Trajektorienbildung
+
+![](Bilder/2022-11-14-18-03-25.png)
+
+Fehlerminimierung bei der Trajektorienberechnung
+
 
 ## Trajektorie Tracking
 - Stanley Controller

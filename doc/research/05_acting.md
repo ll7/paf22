@@ -27,9 +27,9 @@ The job of this domain is to translate a preplanned trajectory into actual steer
 
 ## Solutions from old PAF projects
 
-### [Paf 20/1](https://github.com/ll7/psaf2/wiki/Path-Tracking-Algorithmen)
+### [Paf 20/1](https://github.com/ll7/psaf1/tree/master/psaf_ros/psaf_steering)
 
-- tuned [carla_ackermann_control](https://carla.readthedocs.io/projects/ros-bridge/en/latest/carla_ackermann_control/)
+- [carla_ackermann_control](https://carla.readthedocs.io/projects/ros-bridge/en/latest/carla_ackermann_control/) modified for [twist-msgs](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Twist.html)
 - input: [twist-msgs](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Twist.html) (for velocity)
 - velocity control: PID
 - lateral control: PD (heading error)

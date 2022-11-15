@@ -29,7 +29,7 @@ The job of this domain is to translate a preplanned trajectory into actual steer
 
 ### [Paf 20/1](https://github.com/ll7/psaf2/wiki/Path-Tracking-Algorithmen)
 
-- modified [carla_ackermann_control](https://carla.readthedocs.io/projects/ros-bridge/en/latest/carla_ackermann_control/)
+- tuned [carla_ackermann_control](https://carla.readthedocs.io/projects/ros-bridge/en/latest/carla_ackermann_control/)
 - input: [twist-msgs](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Twist.html) (for velocity)
 - velocity control: PID
 - lateral control: PD (heading error)
@@ -38,17 +38,17 @@ The job of this domain is to translate a preplanned trajectory into actual steer
 
 - input: waypoints
 - curve detection: returns distance to next curve
-- calculation of max curve speed as sqrt(friction_coefficient  *gravity_accel* radius)
-- in Curve: naive Controller
-- on straights: stanley controller
+- calculation of max curve speed as sqrt(friction_coefficient x gravity_accel x radius)
+- in Curve: [naive Controller](#Pure-Pursuit)
+- on straights: [Stanley Controller](#Stanley)
 - interface to rosbridge
 
 ### [Paf 20/2](https://github.com/ll7/psaf2) and [Paf 21/2](https://github.com/ll7/paf21-2/tree/main/paf_ros/paf_actor#readme)
 
 - input: odometry(position and velocity with uncertainty), local path
-- lateral: Stanley Controller
+- lateral: [Stanley Controller](#Stanley)
 - speed controller: pid
-- ACC: (speed, distance) -> PID
+- ACC (Adaptive Cruise Control): (speed, distance) -> PID
 - Unstuck-Routine (drive backwards)
 - Emergency Modus: fastest possible braking ([Tests](https://github.com/ll7/paf21-2/blob/main/docs/paf_actor/backwards/braking.md) -> handbrake with throttle, 30° steering and reverse)
 
@@ -66,12 +66,12 @@ This is the simplest way to steer a vehicle, however this doesn't mean that it c
 The steering angle $\delta$ is defined as the angle of the front wheel to a line drawn between the center of both axles. This angle $\delta$ can also be defined as $tan(\delta) = L/R$ with $L$ as the wheelbase and $R$ the radius from the reference point (rear axle) to the Instantaneous Center of Rotation (ICR). Due to the bicycle model we can calculate $R = \frac{L}{tan(\delta)}$.
 
 ![Bicycle Model with ICR](../assets/bicyclegeometry.png)
-*source: [2]*
+*source: [[2]](https://medium.com/roboquest/understanding-geometric-path-tracking-algorithms-stanley-controller-25da17bcc219)*
 
 We now try to aim the circular arc to intersect with a point on our trajectory. This target point is always a defined distance (look ahead distance $l_d$) away from our reference point (dangling carrot). This leads to the following relation:
 
 ![Dangling carrot geometry](../assets/danglingcarrotgeometry.png)
-*source: [2]*
+*source: [[2]](https://medium.com/roboquest/understanding-geometric-path-tracking-algorithms-stanley-controller-25da17bcc219)*
 
 $\frac{l_d}{sin(\alpha)}= 2R$, where $\alpha$ is the current heading error. Combining the two equations leads to our desired steering angle.
 
@@ -96,7 +96,7 @@ $$
 The Stanley controller, named after an autonomous offroad race car, takes the front axle as a reference, while still using the bicycle model. In addition to looking at the heading error $\psi$, close to what pure pursuit does, stanley also looks at the cross track error $e_e$. The cross track error $e_e$ is defined as the distance between the reference point and the closest point on our trajectory.
 
 ![Stanley error with heading and cross track error](../assets/stanleyerror.png)
-*source: [2]*
+*source: [[2]](https://medium.com/roboquest/understanding-geometric-path-tracking-algorithms-stanley-controller-25da17bcc219)*
 
 The first part of our steering angle tries to correct for this error $arctan(\frac{k_e * e_e}{k_v*v})$ while the second part just corrects for our heading error $\psi$.
 
@@ -106,14 +106,14 @@ $$
 \delta(t) = \psi(t) + arctan(\frac{k_e*e_e(t)}{k_v*v(t)})
 $$
 
-With $k_e$ and $k_v$ being tuenable parameters for cross tracking error and speed respectively.
+With $k_e$ and $k_v$ being tuneable parameters for cross tracking error and speed respectively.
 
 ### [MPC](https://en.wikipedia.org/wiki/Model_predictive_control) (Model Predictive Control) / receding horizon control
 
 The basic idea of MPC is to model the future behavior of the vehicle and compute an optimal control input that, minimizes an a priori defined cost functional.
 
 ![MPC Controller](../assets/mpc.webp)
-*source: [5]*
+*source: [[5]](https://dingyan89.medium.com/three-methods-of-vehicle-lateral-control-pure-pursuit-stanley-and-mpc-db8cc1d32081)*
 
 - cost function can be designed to account for driving comfort
 
@@ -123,7 +123,7 @@ SMC systems are designed to drive the system states onto a particular surface in
 Real implementations of sliding mode control approximate theoretical behavior with a high-frequency and generally non-deterministic switching control signal that causes the system to chatter.
 
 ![chattering](../assets/chattering.gif)
-*source: [9]*
+*source: [[9]](https://ieeexplore.ieee.org/document/1644542)*
 
 - simple
 - robust
@@ -136,13 +136,13 @@ Sources:
 2. [Understanding geometric path tracking](https://medium.com/roboquest/understanding-geometric-path-tracking-algorithms-stanley-controller-25da17bcc219)
 3. G. M. Hoffmann, C. J. Tomlin, M. Montemerlo and S. Thrun, "Autonomous Automobile Trajectory Tracking for Off-Road Driving: Controller Design, Experimental Validation and Racing," 2007 American Control Conference, 2007, pp. 2296-2301, doi: 10.1109/ACC.2007.4282788.
 4. [Bosch: sense, think, act](https://www.bosch-mobility-solutions.com/en/mobility-topics/automated-driving-sense-think-act/)
-5. [Three Methods of Vehicle Lateral Control: Pure Pursuit, Stanley and MPC](<https://dingyan89.medium.com/three-methods-of-vehicle-lateral-control-pure-pursuit-stanley-and-mpc-db8cc1d32081>)
-6. [Comparison of lateral controllers for autonomous vehicle: experimental results](<https://hal.archives-ouvertes.fr/hal-02459398/document>)
+5. [Three Methods of Vehicle Lateral Control: Pure Pursuit, Stanley and MPC](https://dingyan89.medium.com/three-methods-of-vehicle-lateral-control-pure-pursuit-stanley-and-mpc-db8cc1d32081)
+6. [Comparison of lateral controllers for autonomous vehicle: experimental results](https://hal.archives-ouvertes.fr/hal-02459398/document)
 7. <https://de.mathworks.com/help/nav/ug/pure-pursuit-controller.html>
 8. <https://thomasfermi.github.io/Algorithms-for-Automated-Driving/Control/PurePursuit.html>
-9. [Chattering Problem in Sliding Mode Control Systems](<https://ieeexplore.ieee.org/document/1644542>)
-10. [A Tutorial On Autonomous Vehicle Steering Controller Design, Simulation and Implementation](<https://arxiv.org/pdf/1803.03758.pdf>)
-11. [A path-tracking algorithm using predictive Stanley lateral controller](<https://www.researchgate.net/publication/347286170_A_path-tracking_algorithm_using_predictive_Stanley_lateral_controller>)
+9. [Chattering Problem in Sliding Mode Control Systems](https://ieeexplore.ieee.org/document/1644542)
+10. [A Tutorial On Autonomous Vehicle Steering Controller Design, Simulation and Implementation](https://arxiv.org/pdf/1803.03758.pdf)
+11. [A path-tracking algorithm using predictive Stanley lateral controller](https://www.researchgate.net/publication/347286170_A_path-tracking_algorithm_using_predictive_Stanley_lateral_controller)
 12. [Model Predictive Control](https://www.ist.uni-stuttgart.de/research/group-of-frank-allgoewer/model-predictive-control/)
 13. Decarlo, R.A., & Żak, S.H. (2008). A Quick Introduction to Sliding Mode Control and Its Applications 1.
 

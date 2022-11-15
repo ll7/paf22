@@ -2,6 +2,8 @@
 
 To run the project you have to install [b5](https://github.com/team23/b5) and [docker](https://docs.docker.com/engine/install/) with NVIDIA GPU support, [nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker).
 
+For development, we further recommend PyCharm Professional. More information about its installation can be found in [PyCharm Setup](../02_development/06_pycharm_setup.md)
+
 ## B5 installation
 
 ```shell

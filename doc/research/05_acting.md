@@ -128,7 +128,7 @@ Real implementations of sliding mode control approximate theoretical behavior wi
 - simple
 - robust
 - stabile
-- disadvantage: chattering
+- disadvantage: chattering -> controller is ill-suited for this application
 
 Sources:
 
@@ -148,10 +148,9 @@ Sources:
 
 ## Velocity control
 
-PID: already implemented in [ROS](http://wiki.ros.org/pid)
-(and [CARLA](https://carla.readthedocs.io/projects/ros-bridge/en/latest/carla_manual_control/)) with autotune feature
+PID: already implemented in [ROS](http://wiki.ros.org/pid) (and [CARLA](https://carla.readthedocs.io/projects/ros-bridge/en/latest/carla_manual_control/)) with autotune feature
 
-Sources:
+Further information:
 
 - <https://www.ri.cmu.edu/pub_files/pub3/coulter_r_craig_1996_1/coulter_r_craig_1996_1.pdf>
 

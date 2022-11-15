@@ -89,7 +89,7 @@ $$
 - ignores dynamic forces
 - assumes no-slip condition
 - possible improvement: vary the look-ahead distance based on vehicle velocity
-- not really suited for straights
+- not really suited for straights, because ICR moves towards infinity this case
 
 ### Stanley
 

@@ -19,6 +19,10 @@ class TestClass:
         pass
 
     def test_function2(cls):
+        """
+        
+        :return:
+        """
         pass
 
     def test_function3(self):       # inline comment
@@ -40,11 +44,17 @@ class TestClass:
     def test_function5(self, param1, param2):
         """_summary_
 
-        Args:
-            param1 (_type_): _description_
-            param2 (_type_): _description_
-
-        Returns:
-            _type_: _description_
+        :param param1: _description_
+        :param param2: _description_
+        :return: _description_
         """
         return param1
+
+    def main(self):
+        """_summary_
+        """
+        print("Hello World")
+
+if __name__ == "__main__":
+    runner = TestClass()
+    runner.main()

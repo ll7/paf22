@@ -39,7 +39,20 @@ task:update() {
 ##########################################
 
 task:lint() {
-  docker:container_run -T flake8 components
+  b5 python:lint
+  b5 markdown:lint
+}
+
+task:python:lint() {
+  docker:container_run -T flake8 code
+}
+
+task:markdown:lint() {
+  docker:container_run -T mdlint markdownlint .
+}
+
+task:markdown:fix() {
+  docker:container_run -T mdlint markdownlint --fix .
 }
 
 task:comlipy() {

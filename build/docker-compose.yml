@@ -11,7 +11,13 @@ services:
     volumes:
       - ../:/apps
 
-  # based on https://github.com/ll7/paf21-1/blob/master/scenarios/docker-carla-sim-compose.yml
+  mdlint:
+    image: peterdavehello/markdownlint
+    volumes:
+      - ../:/md
+      - ../build/docker/mdlint/.markdownlint.yaml/:/md/.markdownlint.yaml
+
+      # based on https://github.com/ll7/paf21-1/blob/master/scenarios/docker-carla-sim-compose.yml
   carla-simulator:
     command: /bin/bash CarlaUE4.sh -carla-server
     image: kstein/carla:leaderboard

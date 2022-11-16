@@ -6,7 +6,7 @@ Simon Erlbacher, Niklas Vogel
 ## Datum
 15.11.2022
 
-## PAF 2021-1
+## [PAF 2021-1](https://github.com/ll7/paf21-1)
 
 ### Vehicle Controller
 
@@ -58,7 +58,7 @@ Globaler Planer Überblick:
 ![Alt text](https://github.com/ll7/paf21-1/raw/master/imgs/Global%20Planer.png)
 
 
-## PAF 2021-2
+## [PAF 2021-2](https://github.com/ll7/paf21-2)
 
 verantwortlich für die Routenplanung und Pfadplanung für das Ego-Vehicle sowie die erkannten Verkehrsteilnehmer.
 
@@ -78,7 +78,7 @@ verantwortlich für die Routenplanung und Pfadplanung für das Ego-Vehicle sowie
 - Geschwindigkeitsplanung/Kontrolle wie 2021-1 + Bremswegplanung [Details](https://github.com/ll7/paf21-2/tree/main/paf_ros/paf_planning#bremsweg)
 - Map Manager für die Verwaltung aller statischen Kartendaten
 
-## PAF 2020
+## PAF 2020 ([1](https://github.com/ll7/psaf1) & [2](https://github.com/ll7/psaf2))
 PAF 2021 basiert auf 2020 daher wurde brauchbares größtenteils bereits übernommen.
 So hat 2020-1 starke Analogien zu 2021-1 mit u.a. State Machine zur Entscheidungsfindung, Geschwindigkeits und Lenkwinkelplanung.
 
@@ -223,7 +223,7 @@ Fehlerminimierung bei der Trajektorienberechnung
 - Stanley Controller
 - Pure Pursuit Controller
 
-# Offene Fragen aus dem Issue
+# Offene Fragen aus dem [Issue](https://github.com/ll7/paf22/issues/26)
 
 ## Was ist zu tun?
 

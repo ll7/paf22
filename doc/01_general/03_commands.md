@@ -47,12 +47,12 @@ Update the project.
 
 ### `b5 lint`
 
-Runs the project linters. More documentation about linting can be found [here](./linting.md).
+Runs the project linters. More documentation about linting can be found [here](../02_development/02_linting.md).
 
 ### `b5 python:lint`
 
-Runs the python linter. More documentation about linting can be found [here](./linting.md).
+Runs the python linter. More documentation about linting can be found [here](../02_development/02_linting.md).
 
 ### `b5 markdown:lint`
 
-Runs the markdown linter. More documentation about linting can be found [here](./linting.md).
+Runs the markdown linter. More documentation about linting can be found [here](../02_development/02_linting.md).

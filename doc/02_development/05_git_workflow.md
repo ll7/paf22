@@ -36,7 +36,7 @@ Josef Kircher
 
 ### Git Feature Branch
 
-![Git Feature](../assets/git-flow.svg)
+![Git Feature](../00_assets/git-flow.svg)
 
 #### Branch strategy
 

@@ -4,7 +4,7 @@
 Simon Erlbacher, Niklas Vogel
 
 ## Datum
-15.01.2022
+15.11.2022
 
 ## PAF 2021-1
 
@@ -108,16 +108,16 @@ Quellen:
 - https://www.shuffleai.blog/blog/Simple_Understanding_of_Kinematic_Bicycle_Model.html
 
 
-    ![](Bilder/2022-11-11-18-54-45.png)
+    ![](../assets/gewinnerteam19-architektur.png)
 
 Übersicht zu einer möglichen Architektur (Gewinnerteam des ersten Wettbewerbes)
 
-![](2022-11-11-18-59-33.png)
+![](../assets/sensoranordnung.png)
 
 Mögliche Anordnung und Anzahl von Sensoren. (6 Kameras, 1 LIDAR, 2 GPS)
 
 ## Planning Unterteilung
-![](Bilder/2022-11-14-17-38-15.png)
+![](../assets/planningübersicht.png)
 
 Planning Übersicht
 
@@ -130,35 +130,35 @@ Es wird vorgeschlagen ein festes Notfallmanöver für das Fahrzeug zu erstellen,
 ## Lokalisierung
 Die Position des Fahrzeuges kann durch die zwei GPS Tracker bestimmt werden und wird in einem Vektor abgelegt. Alt steht hierbei für altitude und beschreibt die gemessene Höhe durch die GPS Tracker. Der Winkel gibt hierbei die Orientierung des Fahrzeuges an. Der x und y Wert beinhaltet die Koordinaten des hinteren GPS Trackers.
 
-![](Bilder/2022-11-11-19-03-52.png) ![](Bilder/2022-11-11-19-05-00.png)
+![](../assets/positionsvektor.png) ![](../assets/fahrzeugwinkelberechnung.png)
 
 Positionsvektor und Berechnung des Fahrzeugwinkels zur Zielposition
 
 Die Position kann somit in Ab hängigkeit von dem GPS Signal erstellt werden. Wenn das GPS Signal allerdings fehlerhaft ist bzw. Störungen ausgesetzt ist, gibt es Probleme mit der Positionsbestimmung. In diesem Fall wird ein Kalman Filter impolementiert. Er kommt mit Störungen zurecht und gibt auf Basis der aktuellen Position eine gute Vorhersage für zukünftige Zustände des Fahrzeuges.
 
-![](Bilder/2022-11-11-19-13-35.png)
+![](../assets/fahrzeugpositionsberechnung.png)
 
 Berechnung der aktuellen und zukünftigen Fahrzeugposition
 
 ## Hindernisse erkennen
 Mit dem LIDAR Sensor werden Punktewolken in der Umgebung erzeugt. Diese werden mit dem DBSCAN Algorithmus geclustert. Er kommt gut mit outlinern klar und kann diese entsprechend ignorieren. Mit Calipers Algorithmus aus der OpenCV Bibliothek wird für jedes Cluster das kleinst mögliche Rechteck, welches das Cluster fitted, erzeugt.
 
-![](Bilder/2022-11-11-19-40-25.png)
+![](../assets/lidarhinderniserkennung.png)
 
 Erkennen von Hindernissen mit dem LIDAR Sensor
 
 Mit dem LIDAR Sensor gibt es jetzt die Möglichkeit das Hinderniss (Punktewolke) zu erkennen. Es werden feste Punkte ABCDEF bestimmt in unterschiedlichen Abständen. Das Skalarprodukt zwischen AB und BC ist in dem Bild nahe 1. Der Winkel ist somit nahe an 0. Der Winkel zwischen BC und CD hingegen geht Richtung 90 Grad. Das Skalarprodukt ist hiermit nahe 0. Es wurde also ein Hinderniss erkannt. Der Winkel zwischen DE und DF ist auch nahe 0. Dies soll einen Outliner darstellen. Druch das Einführen eines Thresholds können diese Detektionen ausgeschlossen werden.
 
 Hindernisse mit dem Occupacy Grid erkennen. Somit einfach Abstand der Punkte in einer Gridzelle mit dem Mittelpunkt eines Kreises berechnen und prüfen ob die Distanz kleiner als der Radius ist.
-![](Bilder/2022-11-14-18-15-58.png)
+![](../assets/occupancygrid.png)
 
 360 Grad Occupacy Grid
 
-![](Bilder/2022-11-14-18-18-44.png)
+![](../assets/fahrzeugapproximation.png)
 
 Approximation eines Fahrzeuges mit drei Kreisen
 
-![](Bilder/2022-11-14-18-19-09.png)
+![](../assets/kollisionsberechnung.png)
 
 Einfache Berechnung einer Kollision
 
@@ -177,12 +177,14 @@ Die Kollision benötigt die Position eines möglichen Kollisionsgegenstandes und
 Annahme: Alle Verkehrsteilnehmer haben konstante Geschwindigkeit (sonst Berechnungsaufwand zu hoch)
 
 ## Decision Making (Behaviour Planner)
-![](Bilder/2022-11-14-17-45-55.png)
+![](../assets/kreuzungszonen.png)
+
 Verkehrsszenario einer Kreuzung mit verschiedenen Zonen.
 - Roter Bereich: Fahrzeug verlangsamt seine Geschwindigkeit
 - Grüner Bereich: Fahrzeug kommt zum stehen
 - Oranger Bereich (Intersection): Fahrzeug betritt diesen Bereich nur, wenn kein anderer Verkehrsteilnehmer in diesem erkannt wird
-![](Bilder/2022-11-14-17-47-12.png)
+![](../assets/statemachines.png)
+
 Aufteilung in mehrere state machines
 
 Eine state machine oder Aufteileung in mehrere state machines
@@ -200,19 +202,19 @@ Reinforcement Learning, Rule based System, Markov Decision Process
 ## Trajektorie
 Die Trajekotrie wird durch Wegpunkte bestimmt, welche zwischen dem Start- und Endpunkte berechnet werden. Dieser Weg wird durch eine Cubic Spline interpoliert. Probleme ist hierbei das Umplanen der Trajekotrie durch unerwartete Hindernisse (Gegenverkehr, Fußgänger,...). Das Fahrzeug muss seine zukünftigen Aktionen, eigene Zustandsübergange, Zustandsübergänge anderer Agenten einbeziehen (zB. Umschalten einer Ampel). Es wird ein Input Vektor aus dem Bycicle Modell benötigt.
 
-![](Bilder/2022-11-14-18-22-55.png)
+![](../assets/berechnungsmodell.png)
 
 Modell für die Berechnung der aktuellen und zukünftigen Fahrzeugposition
 
-![](Bilder/2022-11-14-18-01-13.png)
+![](../assets/trajektorienberechnung.png)
 
 Berechnung einer Trajektorie
 
-![](Bilder/2022-11-14-18-02-24.png) 
+![](../assets/optimierungsvisualisierung.png) 
 
 Visualisierung des Optimierungsprozesses bei der Trajektorienbildung
 
-![](Bilder/2022-11-14-18-03-25.png)
+![](../assets/trajektorienfehlermin.png)
 
 Fehlerminimierung bei der Trajektorienberechnung
 

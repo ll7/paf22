@@ -117,7 +117,7 @@ Quellen:
 Mögliche Anordnung und Anzahl von Sensoren. (6 Kameras, 1 LIDAR, 2 GPS)
 
 ## Planning Unterteilung
-![](../assets/planningübersicht.png)
+![](../assets/planning%20%C3%BCbersicht.png)
 
 Planning Übersicht
 
@@ -214,7 +214,7 @@ Berechnung einer Trajektorie
 
 Visualisierung des Optimierungsprozesses bei der Trajektorienbildung
 
-![](../assets/trajektorienfehlermin.png)
+![](../assets/trajekorienfehlermin.png)
 
 Fehlerminimierung bei der Trajektorienberechnung
 

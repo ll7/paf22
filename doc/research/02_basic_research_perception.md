@@ -136,7 +136,7 @@ Todo: Find information about map data
 The best would be to generate training data in carla simulator. 
 Using pre-build real-world datasets would be less effort, but the nets accuracy would be lower.
 
-## classification of situations
+## Classification of situations
 
 Should be part of the planning layer in my opinion. Perception should contain only 
 evaluation of sensor data and detection of objects.

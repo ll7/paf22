@@ -1,10 +1,10 @@
 # Basic research perception
 
 The perception is responsible for the efficient conversion of raw sensor and map data
-into a useful environment representation that can be used by the planing for further processing.
+into a useful environment representation that can be used by the planning for further processing.
 
 This includes the classification and localization of relevant entities in traffic and also the preparation
-of this data to enable a fast processing of this data in the planing layer.
+of this data to enable a fast processing of this data in the planning layer.
 
 ## Interfaces
 
@@ -41,7 +41,7 @@ Output of the various implemented sensors plus additional HD map.
     - width (int): Image width in pixels
     - raw_data (bytes)
 - **Speedometer**: Pseudo-sensor that provides an approximation of the linear velocity
-  - Output: ???
+  - Output: (float, m/s)?
 - (**OpenDRIVE map**: Pseudo-sensor that exposes the HD map in OpenDrive format parsed as a string)
 
 ### Output
@@ -112,7 +112,7 @@ Todo: Find information about map data
 ### LIDAR
 
 - No range limits found in documentation
-- Hidden objects cant be detected
+- Hidden objects can't be detected
 - Colors can't be detected
 - Objects can't be classified
 
@@ -138,7 +138,7 @@ Using pre-build real-world datasets would be less effort, but the nets accuracy 
 
 ## classification of situations
 
-Should be part of the planing layer in my opinion. Perception should contain only 
+Should be part of the planning layer in my opinion. Perception should contain only 
 evaluation of sensor data and detection of objects.
 
 ## Combination of 2D camera data and 3D RADAR/LIDAR data

@@ -6,6 +6,7 @@ If you contribute to this project please read the following guidelines first:
 2. [Commit](./03_commit.md)
 3. [Coding style](./04_coding_style.md)
 4. [Git Style](./05_git_workflow.md)
+5. [Reviewing](./07_review_guideline.md)
 
 ## Templates
 

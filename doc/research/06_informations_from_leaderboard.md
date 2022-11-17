@@ -1,6 +1,6 @@
 # Requirements of Carla Leaderboard
 
-**Summary:** This page contains the requirements from the CARLA leaderboard. More specific summary after page is finished.
+**Summary:** This page contains the project informations from the CARLA leaderboard. More specific summary after page is finished.
 
 ---
 
@@ -26,10 +26,17 @@ none
   * [Task](#task)
   * [Participation modalities](#participation-modalities)
     * [Route format](#route-format)
+    * [Sensors](#sensors)
+  * [Evaluation](#evaluation)
+    * [Main score](#main-score)
+    * [Driving Score for route i](#driving-score-for-route-i)
+    * [Infraction penalty](#infraction-penalty)
+    * [Shutdown criteria](#shutdown-criteria)
+  * [Submission](#submission)
     * [Sources](#sources)
 <!-- TOC -->
 
---- 
+---
 
 ## Task
 
@@ -62,6 +69,7 @@ Routes consist of tuples of a position and a high level command which should be 
 There are two different ways to express a route:
 
 First, GPS coordinates, a z component and a route option
+
 ```yaml
 [({'z': 0.0, 'lat': 48.99822669411668, 'lon': 8.002271601998707}, RoadOption.LEFT),
  ({'z': 0.0, 'lat': 48.99822669411668, 'lon': 8.002709765148996}, RoadOption.RIGHT),
@@ -83,6 +91,7 @@ Second, world coordinates and a route option
 **Important:** Distance between route points can be up to hundreds of meters.
 
 High-level commands (rood options) are:
+
 * RoadOption.**CHANGELANELEFT**: Move one lane to the left.
 * RoadOption.**CHANGELANERIGHT**: Move one lane to the right.
 * RoadOption.**LANEFOLLOW**: Continue in the current lane.
@@ -121,6 +130,7 @@ Product of route completion of route i and Infraction penalty of route i
 ### Infraction penalty
 
 Not complying with traffic rules will result in a penalty. Multiple penalties can be applied per route. Infractions ordered by severity are:
+
 * Collisions with pedestrians
 * Collisions with other vehicles
 * Collisions with static elements
@@ -128,15 +138,19 @@ Not complying with traffic rules will result in a penalty. Multiple penalties ca
 * Running a stop sign
 
 It is possible that the vehicle is stuck in some scenario. After a timeout of **4 minutes** the vehicle will be released, however a penalty is applied
+
 * Scenario timeout
 
 Agent should keep a minimum speed compared to the nearby traffic. The penalty is increases with the difference in speed.
+
 * Failure to maintain minimum speed
 
 Agent should let emergency vehicles from behind pass.
+
 * Failure to yield to emergency vehicle
 
 If the agent drives off-road that percentage does not count towards the road completion
+
 * Off-road driving
 
 ### Shutdown criteria
@@ -156,4 +170,4 @@ Some events will interrupt the simulation of that resulting in an incomplete rou
 
 ### Sources
 
-https://leaderboard.carla.org/
+<https://leaderboard.carla.org/>

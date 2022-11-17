@@ -1,6 +1,6 @@
-# Title of wiki page
+# Requirements
 
-**Summary:** This page functions a template for who to build knowledge articles for everyone to understand. The basic structure should be kept for all articles. This template further contains a cheat sheet with the most useful markdown syntax.
+**Summary:** This page contains the requirements obtained from the Carla Leaderboard website as well as former projects in the `Praktikum Autonomes Fahren`
 
 ---
 
@@ -10,25 +10,27 @@ Josef Kircher
 
 ## Date
 
-04.11.2022
+17.11.2022
 
 ## Prerequisite
 
-VSCode Extensions:
-
-* Markdown All in One by Yu Zhang (for TOC)
-
 ---
 <!-- TOC -->
-* [Title of wiki page](#title-of-wiki-page)
+* [Requirements](#requirements)
   * [Author](#author)
   * [Date](#date)
   * [Prerequisite](#prerequisite)
-  * [Some Content](#some-content)
+  * [Requirements from Leaderboard tasks](#requirements-from-leaderboard-tasks)
   * [more Content](#more-content)
     * [Sources](#sources)
 <!-- TOC -->
-## Some Content
+
+## Requirements from Leaderboard tasks
+
+* follow waypoints on a route
+* don't deviate from route by more than 30 meters
+* act in accordance with traffic rules
+* don't get blocked
 
 ## more Content
 

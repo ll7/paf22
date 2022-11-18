@@ -3,18 +3,18 @@ title: "[Feature]: "
 description: Something we should implement.
 labels: ["feature"]
 body:
-  - type: markdown
+  - type: textarea
     id: desc
     attributes:
       label: Description
       description: Short description about what to do.
       placeholder: The vehicle should detect traffic lights and it's states.
 
-  - type: markdown
+  - type: textarea
     id: dod
     attributes:
       label: Definition of Done
       description: What is required to mark the issue as done?
       placeholder: |
-        * 90% of the traffic lights are detected
-        * 90% of the traffic light states are detected correctly"
+        - 90% of the traffic lights are detected
+        - 90% of the traffic light states are detected correctly"

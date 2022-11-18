@@ -3,19 +3,19 @@ title: "[Bug]: "
 description: Something doesn't behave as it should.
 labels: ["bug"]
 body:
-  - type: markdown
+  - type: textarea
     id: desc
     attributes:
       label: Current Behavior
       placeholder: The car doesnt see a traffic light on Map1.
 
-  - type: markdown
+  - type: textarea
     id: desc
     attributes:
       label: Expected Behavior
       placeholder: The car does see the traffic light on Map1.
 
-  - type: markdown
+  - type: textarea
     id: rep
     attributes:
       label: How to reproduce the issue

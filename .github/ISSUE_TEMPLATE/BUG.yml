@@ -4,19 +4,19 @@ description: Something doesn't behave as it should.
 labels: ["bug"]
 body:
   - type: textarea
-    id: desc
+    id: current
     attributes:
       label: Current Behavior
       placeholder: The car doesnt see a traffic light on Map1.
 
   - type: textarea
-    id: desc
+    id: expected
     attributes:
       label: Expected Behavior
       placeholder: The car does see the traffic light on Map1.
 
   - type: textarea
-    id: rep
+    id: reproduce
     attributes:
       label: How to reproduce the issue
       placeholder: |

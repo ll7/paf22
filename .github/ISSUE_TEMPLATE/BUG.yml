@@ -1,0 +1,24 @@
+name: 🐞 Bug
+title: "[Bug]: "
+description: Something doesn't behave as it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    id: desc
+    attributes:
+      label: Current Behavior
+      placeholder: The car doesnt see a traffic light on Map1.
+
+  - type: markdown
+    id: desc
+    attributes:
+      label: Expected Behavior
+      placeholder: The car does see the traffic light on Map1.
+
+  - type: markdown
+    id: rep
+    attributes:
+      label: How to reproduce the issue
+      placeholder: |
+        * Start the simulation with Map1 
+        * after 600m the car won't stop at the traffic light.

@@ -1,0 +1,39 @@
+# Project management
+We use a [Github Project](https://github.com/users/ll7/projects/2) for project management.
+Any bugs or features requests are managed in Github.
+
+## Create bug or feature requests
+Bugs or features can be added [here](https://github.com/ll7/paf22/issues/new/choose) or via the the [issue overview](https://github.com/ll7/paf22/issues).
+
+![](../00_assets/create_issue.png)
+
+By clicking "New issue" in the overview or using the direct link above a wizard guides you to the creation of a issue:
+
+![](../00_assets/issue_wizard.png)
+
+The possibilities are described in the following sections.
+
+### 🐞 Bug
+Use this issue type if you encounter a problem which should already work.
+If something is not expected to work, but you want to have it, please refer to the Feature section.
+
+#### Example for "Bug"
+The documentation says that the vehicle should detect about 90% of the traffic lights.
+However, for you it ignores almost all trafic lights.
+
+![](../00_assets/bug_template.png)
+
+### 💡 Feature
+Use this template if you want a new Feature which is not implemented yet.
+
+#### Example for "Feature"
+Currently, the vehicle can't make u-turns.
+Implementing the ability to perform u-turns would be a new feature.
+
+![](../00_assets/feature_template.png)
+
+### 🚗 Bug in CARLA Simulator
+This is a shortcut to directly report an issue in CARLA Simulator which is not an error in this project.
+
+#### Example for "Bug in CARLA Simulator"
+CARLA simulator crashes on startup on your machine.

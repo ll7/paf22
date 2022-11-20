@@ -44,6 +44,8 @@ services:
   roscore:
     image: ros:noetic
     command: roscore
+    ports:
+      - 11311:11311
     expose:
       - 11311
     networks:
@@ -73,6 +75,7 @@ services:
       - ros
 
   agent:
+    user: carla
     build:
       dockerfile: build/docker/agent/Dockerfile
       context: ../
@@ -91,7 +94,7 @@ services:
       - ROS_HOSTNAME=agent
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ../code:/code/src
+      - ../code:/workspace/code
     networks:
       - carla
       - ros

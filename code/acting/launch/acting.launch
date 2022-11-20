@@ -1,4 +1,5 @@
 <!-- TODO: Insert components of acting component-->
 <launch>
-    
+    <node pkg="acting" type="acting.py" name="acting" output="screen">
+    </node>
 </launch>

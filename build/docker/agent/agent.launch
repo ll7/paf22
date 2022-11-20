@@ -1,8 +1,14 @@
 <!-- TODO: Insert all components of our agent -->
 <launch>
+    <!-- perception -->
+    <include file="$(find perception)/launch/perception.launch">
+    </include>
+
+    <!-- planning -->
+    <include file="$(find planning)/launch/planning.launch">
+    </include>
 
     <!-- acting -->
     <include file="$(find acting)/launch/acting.launch">
-    </include> 
-
+    </include>
 </launch>

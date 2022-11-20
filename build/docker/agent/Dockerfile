@@ -15,35 +15,20 @@ ARG USER_GID=$USER_UID
 RUN apt-get update \
   && apt-get install -y -qq --no-install-recommends \
     libxext6 libx11-6 libglvnd0 libgl1 \
-    libglx0 libegl1 freeglut3-dev \
-  && rm -rf /var/lib/apt/lists/*
+    libglx0 libegl1 freeglut3-dev
 
 # override python path, carla pip package path didn't exist and was using Python 3.7 instead of 2.7
-ENV PYTHONPATH=$PYTHONPATH:/opt/ros/noetic/lib/python3/dist-packages
+ENV PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages
 ENV PYTHONPATH=$PYTHONPATH:/opt/carla/PythonAPI/carla/dist/carla-0.9.13-py3.7-linux-x86_64.egg:/opt/carla/PythonAPI/carla
 
 # install mlocate, pip, wget, git and some ROS dependencies for building the CARLA ROS bridge
 RUN apt-get update && apt-get install -y \
         mlocate python3-pip wget git python-is-python3 \
-        ros-noetic-ackermann-msgs \ros-noetic-derived-object-msgs \
+        ros-noetic-ackermann-msgs ros-noetic-derived-object-msgs \
         ros-noetic-carla-msgs ros-noetic-pcl-conversions \
-        ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros && \
-    rm -rf /var/lib/apt/lists/*
+        ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros
 
 SHELL ["/bin/bash", "-c"]
-WORKDIR /opt/carla-ros-bridge
-ARG ROS_BRIDGE_GITHUB_URL=https://github.com/carla-simulator/ros-bridge
-RUN mkdir -p catkin_ws/src
-RUN git clone -b leaderboard-2.0 --recurse-submodules --single-branch $ROS_BRIDGE_GITHUB_URL catkin_ws/src/ros-bridge
-RUN cd catkin_ws/src/ros-bridge/carla_ackermann_control && \
-    sed -i '24 i \  <build_depend condition="$ROS_VERSION == 1">carla_msgs</build_depend>' package.xml
-RUN source /opt/ros/noetic/setup.bash && \
-    cd catkin_ws && rosdep update && rosdep install --from-paths src --ignore-src -r && \
-    catkin_make
-
-WORKDIR /
-ENV PYTHONPATH=$PYTHONPATH:/opt/carla-ros-bridge/install/lib/python3/dist-packages
-ENV PATH=$PATH:/home/$USERNAME/.local/bin
 
 # Create and apply the user
 RUN groupadd --gid $USER_GID $USERNAME \
@@ -52,9 +37,20 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && apt-get install -y sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
-USER $USERNAME
 
-RUN sudo rosdep fix-permissions && rosdep update
+USER $USERNAME
+WORKDIR /catkin_ws
+RUN sudo chown $USERNAME:$USERNAME /catkin_ws && mkdir src
+ARG ROS_BRIDGE_GITHUB_URL=https://github.com/carla-simulator/ros-bridge
+RUN git clone -b leaderboard-2.0 --recurse-submodules --single-branch $ROS_BRIDGE_GITHUB_URL src/ros-bridge
+RUN cd src/ros-bridge/carla_ackermann_control && \
+    sed -i '24 i \  <build_depend condition="$ROS_VERSION == 1">carla_msgs</build_depend>' package.xml
+RUN source /opt/ros/noetic/setup.bash && \
+    rosdep update && rosdep install --from-paths src --ignore-src -r && \
+    catkin_make install
+
+ENV CARLA_ROS_BRIDGE_ROOT=/catkin_ws/src/ros-bridge
+ENV PATH=$PATH:/home/$USERNAME/.local/bin
 
 # install simple_pid
 RUN python -m pip install pip --upgrade \
@@ -72,15 +68,18 @@ ENV CARLA_SIM_HOST=localhost
 ENV CARLA_SIM_WAIT_SECS=15
 ENV SCENARIO_RUNNER_PATH=/opt/scenario_runner
 
-WORKDIR /catkin_ws
-RUN sudo chown $USERNAME:$USERNAME /catkin_ws && mkdir src
-RUN source /opt/ros/noetic/setup.bash && catkin_init_workspace src
+RUN echo /catkin_ws/install/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
+    echo /catkin_ws/devel/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
+    echo /opt/ros/noetic/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
+    echo /opt/ros/noetic/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
+    echo /opt/carla/PythonAPI/carla/dist/carla-0.9.13-py3.7-linux-x86_64.egg >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth
+
 RUN sudo mkdir /workspace && sudo chown $USERNAME:$USERNAME /workspace
 
 # Add agent code
 COPY --chown=$USERNAME:$USERNAME ./code /workspace/code/
 
-RUN ln -s /workspace/code/* /catkin_ws/src
+RUN ln -s /workspace/code /catkin_ws/src
 
 RUN source /opt/ros/noetic/setup.bash && catkin_make
 
@@ -88,6 +87,7 @@ ADD ./build/docker/agent/entrypoint.sh /entrypoint.sh
 ADD ./build/docker/agent/agent.launch /agent.launch
 
 WORKDIR /workspace/code
+
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["roslaunch", "/agent.launch"]

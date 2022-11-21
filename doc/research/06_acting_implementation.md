@@ -1,10 +1,10 @@
-# Basic research acting
+# Requirements and challenges for an acting implementation
 
-**Summary:** On this page you can find the results of the basic research on acting.
+**Summary:** On this page you can find the results of the basic research on acting summed up into resulting requirements and function, that were already agreed upon.
 
 ---
 
-### Authors
+## Authors
 
 Gabriel Schwald
 
@@ -15,7 +15,7 @@ Gabriel Schwald
 ---
 [[TOC]]
 
-This document sums up all functions (regarding acting) already agreed upon, that could be implemented in the next sprint.
+This document sums up all functions (regarding acting) already agreed upon in [#24](https://github.com/ll7/paf22/issues/24), that could be implemented in the next sprint.
 
 ## Planned basic implementation of the Acting domain
 
@@ -57,5 +57,5 @@ A short list of challenges for the implementation of a basic acting domain and h
 
 ## Next steps
 
-Following this description of features and requirements, work on coding those features could immediately start for next weeks sprint (new Issue). This code could in most aspects closely ressemble the work done by last years group [paf21-1](https://github.com/ll7/paf21-1/tree/master/components/vehicle_control/node/src/vehicle_control/driving).
-After [#33](https://github.com/ll7/paf22/issues/33) is resolved, the need for resulting, additional features should be looked at (new Issue).
+Following this description of features and requirements, work on coding those features could immediately start for next weeks sprint (new Issue). This code could in most aspects closely ressemble the work done by last years group [paf21-1/../vehicle_control](https://github.com/ll7/paf21-1/tree/master/components/vehicle_control/node/src/vehicle_control/driving).
+After [#33](https://github.com/ll7/paf22/issues/33) is resolved, additional  resulting features should be looked at (new Issue).

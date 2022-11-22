@@ -28,7 +28,6 @@ class Acting(CompatibleNode):
             message.speed = 1
             self.ackermann_publisher.publish(message)
             self.loginfo('Acting message published')
-            print("test")
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()

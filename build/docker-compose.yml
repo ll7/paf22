@@ -51,28 +51,28 @@ services:
     networks:
       - ros
 
-  carla-ros-bridge:
-    build: docker/carla_ros_bridge
-    restart: always
-    init: true
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: [gpu]
-    environment:
-      - DISPLAY
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=all
-      - ROS_MASTER_URI=http://roscore:11311
-      - ROS_HOSTNAME=carla-ros-bridge
-      - CARLA_SIM_HOST=carla-simulator
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-    networks:
-      - carla
-      - ros
+#  carla-ros-bridge:
+#    build: docker/carla_ros_bridge
+#    restart: always
+#    init: true
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              capabilities: [gpu]
+#    environment:
+#      - DISPLAY
+#      - NVIDIA_VISIBLE_DEVICES=all
+#      - NVIDIA_DRIVER_CAPABILITIES=all
+#      - ROS_MASTER_URI=http://roscore:11311
+#      - ROS_HOSTNAME=carla-ros-bridge
+#      - CARLA_SIM_HOST=carla-simulator
+#    volumes:
+#      - /tmp/.X11-unix:/tmp/.X11-unix
+#    networks:
+#      - carla
+#      - ros
 
   agent:
     build:
@@ -81,7 +81,8 @@ services:
         - USER_UID=${DOCKER_HOST_UNIX_UID:-1000}
         - USER_GID=${DOCKER_HOST_UNIX_GID:-1000}
       context: ../
-    init: true
+    # init: true
+    command: bash -c "sleep 10 && python3 /opt/leaderboard/leaderboard/leaderboard_evaluator.py --routes /opt/leaderboard/data/routes_devtest.xml -a /opt/leaderboard/leaderboard/autoagents/human_agent.py --host carla-simulator"
     deploy:
       resources:
         reservations:

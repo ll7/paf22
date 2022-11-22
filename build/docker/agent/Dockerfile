@@ -64,6 +64,23 @@ RUN git clone -b leaderboard-2.0 --single-branch https://github.com/carla-simula
 RUN echo 'pexpect' >> $SCENARIO_RUNNER_ROOT/requirements.txt && \
     python -m pip install -r $SCENARIO_RUNNER_ROOT/requirements.txt
 
+# install the leaderboard from GitHub leaderboard-2.0 branch
+ENV LEADERBOARD_ROOT=/opt/leaderboard
+RUN sudo mkdir $LEADERBOARD_ROOT && sudo chown $USERNAME:$USERNAME $LEADERBOARD_ROOT
+RUN git clone -b leaderboard-2.0 --single-branch  https://github.com/carla-simulator/leaderboard.git $LEADERBOARD_ROOT
+RUN python -m pip install -r $LEADERBOARD_ROOT/requirements.txt
+RUN sudo mkdir /opt/leaderboard-py3 && sudo chown $USERNAME:$USERNAME /opt/leaderboard-py3 && \
+    ln -s $LEADERBOARD_ROOT/leaderboard /opt/leaderboard-py3/leaderboard && \
+    ln -s $SCENARIO_RUNNER_ROOT/srunner /opt/leaderboard-py3/srunner
+
+ENV ROUTES=$LEADERBOARD_ROOT/data/routes
+ENV REPETITIONS=1
+ENV DEBUG_CHALLENGE=1
+ENV TEAM_AGENT=$LEADERBOARD_ROOT/leaderboard/autoagents/human_agent.py
+#ENV TEAM_AGENT=/workspace/code/agent/src/agent/agent.py
+ENV CHECKPOINT_ENDPOINT=$LEADERBOARD_ROOT/results.json
+ENV CHALLENGE_TRACK=MAP
+
 ENV CARLA_SIM_HOST=localhost
 ENV CARLA_SIM_WAIT_SECS=15
 ENV SCENARIO_RUNNER_PATH=/opt/scenario_runner
@@ -72,6 +89,7 @@ RUN echo /catkin_ws/install/lib/python3/dist-packages >> /home/$USERNAME/.local/
     echo /catkin_ws/devel/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
     echo /opt/ros/noetic/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
     echo /opt/ros/noetic/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
+    echo /opt/leaderboard-py3 >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
     echo /opt/carla/PythonAPI/carla/dist/carla-0.9.13-py3.7-linux-x86_64.egg >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth
 
 RUN sudo mkdir /workspace && sudo chown $USERNAME:$USERNAME /workspace
@@ -90,4 +108,4 @@ WORKDIR /workspace/code
 
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["roslaunch", "/agent.launch"]
+CMD ["/bin/bash"]

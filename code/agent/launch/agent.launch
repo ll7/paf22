@@ -1,0 +1,24 @@
+<launch>
+    <arg name="role_name" default="ego_vehicle" />
+    <arg name="control_loop_rate" default="0.1" />
+
+    <!-- perception -->
+    <include file="$(find perception)/launch/perception.launch">
+    </include>
+
+    <!-- planning -->
+    <include file="$(find planning)/launch/planning.launch">
+    </include>
+
+    <!-- acting -->
+    <include file="$(find acting)/launch/acting.launch">
+        <arg name="control_loop_rate" value="$(arg control_loop_rate)"/>
+        <arg name="role_name" value="$(arg role_name)"/>
+    </include>
+
+    <!-- carla ackermann control -->
+    <include file="$(find carla_ackermann_control)/launch/carla_ackermann_control.launch">
+        <arg name="control_loop_rate" value="$(arg control_loop_rate)"/>
+        <arg name="role_name" value="$(arg role_name)"/>
+    </include>
+</launch>

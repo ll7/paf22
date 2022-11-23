@@ -4,6 +4,10 @@ Please include a summary of the change and which issue is fixed. Please also inc
 
 Fixes # (issue)
 
+## Time invested
+
+Time invested by every contributor to this PR
+
 ## Type of change
 
 Please delete options that are not relevant.

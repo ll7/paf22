@@ -54,6 +54,6 @@ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 After opening and activating PyCharm Professional with your education license, open the existing paf22 project-folder in PyCharm Professional.
 
 The last step is to set up the docker-compose integration.
-For this, please follow this [official guide](https://www.jetbrains.com/help/idea/configuring-remote-python-sdks.html#DockerCompose), while selecting `./build/docker-compose.yml` as configuration file and `agent` as service.
+For this, please follow this [official guide](https://www.jetbrains.com/help/pycharm/using-docker-compose-as-a-remote-interpreter.html#docker-compose-remote), while selecting `./build/docker-compose.yml` as configuration file and `agent` as service.
 
 After the initial indexing, PyCharm will provide intelligent code feedback and refactoring options in Python.

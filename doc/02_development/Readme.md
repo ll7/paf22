@@ -7,6 +7,7 @@ If you contribute to this project please read the following guidelines first:
 3. [Coding style](./04_coding_style.md)
 4. [Git Style](./05_git_workflow.md)
 5. [Reviewing](./07_review_guideline.md)
+6. [Project management](./08_project_management.md)
 
 ## Templates
 

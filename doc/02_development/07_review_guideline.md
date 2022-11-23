@@ -45,7 +45,7 @@ Josef Kircher
 6. You can also add a suggestion by using ``Ctrl+G`` or the small paper icon in the header line of the comment
 ![img.png](../00_assets/Suggestion.png)
 7. If you finished with the file you can check ``Viewed`` in the top right corner and the file collapses
-![img.png](../00_assets/Comment_PR.png)
+![img.png](../00_assets/Comment_viewed.png)
 8. To finish your review click ``Review Changes``
 ![img.png](../00_assets/Review_changes.png)
 9. Type a comment summarizing your review
@@ -92,7 +92,6 @@ If the reviewer not only left comments but also made specific suggestions on cod
 5. In the commit message field, type a short and meaningful commit message according to the [commit rules](./03_commit.md)
 6. Click ``Commit changes``
 
-
 ### Re-requesting a review
 
 If you made substantial changes to your pull request and want to a fresh review from a reviewer, contact him directly. It is appropriate to ask the same reviewer from the initial pull request as he/she is most familiar with the pull request.
@@ -101,6 +100,7 @@ If you made substantial changes to your pull request and want to a fresh review 
 
 If a comment of a review was resolved by either, a new commit or a discussion between the reviewer and the team that created the pull request, the conversation can be marked as resolved by clicking ``Resolve conversation`` in the ``Conversation`` or ``Files Changed`` tab of the pull request on GitHub.
 If a new commit took place it is encouraged to comment the commit SHA to have a connection between comment and resolving commit
+![img.png](../00_assets/Resolve_conversation.png)
 
 ---
 

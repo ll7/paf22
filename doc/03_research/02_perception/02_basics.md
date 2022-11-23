@@ -19,7 +19,7 @@ Output of the various implemented sensors plus additional HD map.
     - longitude (float degrees): West/East value of a point on the map
 - **IMU**: 6-axis Inertial Measurement Unit
   - Output: [carla.IMUMeasurement](https://carla.readthedocs.io/en/0.9.13/python_api#carlaimumeasurement)
-    - accelerometer (carla.Vector3D, m/s<sup>2</sup>): Linear acceleration
+    - accelerometer (carla.Vector3D, m/s^2): Linear acceleration
     - compass (float, radians): Orientation with regard to the North ([0.0, -1.0, 0.0] in Unreal Engine).
     - gyroscope (carla.Vector3D, rad/s): Angular velocity
 - **LIDAR**: Velodyne 64 LIDAR
@@ -75,9 +75,9 @@ Output of various sensors combined with detected objects (and predictions)
 
 ### Special case traffic light (PAF21-1)
 
-- Traffic lights have yellow casings in some maps, which could cause the detection network to classify its 
+- Traffic lights have yellow casings in some maps, which could cause the detection network to classify its
 state always as orange
-- On maps with european layout: It may happen that the traffic light cannot be detected, because it is too near 
+- On maps with european layout: It may happen that the traffic light cannot be detected, because it is too near
 so the cameras won't "see" them
 
 ## Algorithms for classification/localization
@@ -125,7 +125,7 @@ Todo: Find information about map data
 
 ### Camera
 
-- No direct range limitations. But for long range detection, a high resolution is required, 
+- No direct range limitations. But for long range detection, a high resolution is required,
  which results in a small FOV to reduce computation time
 - Hidden objects can be partially detected (e.g. a pedestrian's head protruding over a car)
 - Colors can be detected (e.g. traffic lights)
@@ -133,12 +133,12 @@ Todo: Find information about map data
 
 ## Training data
 
-The best would be to generate training data in carla simulator. 
+The best would be to generate training data in carla simulator.
 Using pre-build real-world datasets would be less effort, but the nets accuracy would be lower.
 
 ## Classification of situations
 
-Should be part of the planning layer in my opinion. Perception should contain only 
+Should be part of the planning layer in my opinion. Perception should contain only
 evaluation of sensor data and detection of objects.
 
 ## Combination of 2D camera data and 3D RADAR/LIDAR data
@@ -148,4 +148,3 @@ Useful and necessary to combine information about the kind of detected object (e
 The output should be an image containing the classified objects plus their related RADAR/LIDAR data
 
 Todo: Find algorithms for fusion
-

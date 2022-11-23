@@ -35,13 +35,19 @@ Josef Kircher
 ## How to review
 
 1. Select der PR you want to review on GitHub
+![img.png](../00_assets/PR_overview.png)
 2. Go to Files Changed
+![img.png](../00_assets/Files_Changed.png)
 3. Hover over the line where you want to add a comment and click on the blue `+` at the beginning of the line to add a comment
+![img.png](../00_assets/Comment_PR.png)
 4. If you want to comment on multiple lines click and drag over these lines
 5. In the comment field type your comment. How to write a good comment is handled in the next section.
 6. You can also add a suggestion by using ``Ctrl+G`` or the small paper icon in the header line of the comment
+![img.png](../00_assets/Suggestion.png)
 7. If you finished with the file you can check ``Viewed`` in the top right corner and the file collapses
+![img.png](../00_assets/Comment_PR.png)
 8. To finish your review click ``Review Changes``
+![img.png](../00_assets/Review_changes.png)
 9. Type a comment summarizing your review
 10. Select the type of review you like to leave:
     11. Comment - General feedback without approval
@@ -82,8 +88,10 @@ If the reviewer not only left comments but also made specific suggestions on cod
 2. Navigate to the first suggested change
 3. If you want to commit that change in a single commit, click ``Commit suggestion``
 4. If you want to put more changes together to a single commit, click ``Add suggestion to batch``
+![img.png](../00_assets/Commit_suggestion.png)
 5. In the commit message field, type a short and meaningful commit message according to the [commit rules](./03_commit.md)
 6. Click ``Commit changes``
+
 
 ### Re-requesting a review
 

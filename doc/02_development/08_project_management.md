@@ -37,3 +37,17 @@ This is a shortcut to directly report an issue in CARLA Simulator which is not a
 
 #### Example for "Bug in CARLA Simulator"
 CARLA simulator crashes on startup on your machine.
+
+###
+
+## Create a Pull Request
+
+To create a pull request, go to the [branches overview](https://github.com/ll7/paf22/branches) and select ``New Pull Request`` for the branch you want to create a PR for.
+
+Alternatively you can create a PR directly from PyCharm using the ``Pull Request`` tab on the sidebar.
+
+For completing the pull request fill out the template that opens up automatically.
+
+Merge the pull request after the review process is complete and all the feedback from the reviewer has been worked in.
+
+For more information about the review process, see [Review process](./07_review_guideline.md).

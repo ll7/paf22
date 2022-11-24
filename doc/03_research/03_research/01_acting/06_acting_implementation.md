@@ -13,9 +13,19 @@ Gabriel Schwald
 20.11.2022
 
 ---
-[[TOC]]
 
-This document sums up all functions (regarding acting) already agreed upon in [#24](https://github.com/ll7/paf22/issues/24), that could be implemented in the next sprint.
+<!-- TOC -->
+* [Requirements and challenges for an acting implementation](#requirements-and-challenges-for-an-acting-implementation)
+  * [Authors](#authors)
+    * [Date](#date)
+  * [Planned basic implementation of the Acting domain](#planned-basic-implementation-of-the-acting-domain)
+  * [List of basic functions](#list-of-basic-functions)
+  * [List of Inputs/Outputs](#list-of-inputsoutputs)
+  * [Challenges](#challenges)
+  * [Next steps](#next-steps)
+<!-- TOC -->
+
+This document sums up all functions already agreed upon in [#24](https://github.com/ll7/paf22/issues/24) regarding [acting](../01_acting/05_acting.md), that could be implemented in the next sprint.
 
 ## Planned basic implementation of the Acting domain
 
@@ -47,12 +57,12 @@ These goals lead to the following requirements:
 A short list of challenges for the implementation of a basic acting domain and how they these could be tackled based on the requirements mentioned above.
 
 - The vehicle needs to know its own position => [nav_msgs/Odometry Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Odometry.html) or [GNSS](https://carla.readthedocs.io/en/latest/ref_sensors/#gnss-sensor) sensor
-- The vehicle needs to know its own velocity => can be calculated from last/current position and time
+- The vehicle needs to know its own velocity => can be calculated from last/current position and time or the [speedometer](https://leaderboard.carla.org/#map-track) pseudosensor can be used
 - The vehicle needs to know its planned trajectory => [nav_msgs/Path Message](https://docs.ros.org/en/api/nav_msgs/html/msg/Path.html) this trajectory may need to be updated to accommodate obstacles
 - Longitudinal control => a simple PID controller should suffice
 - lateral control => Pure Pursuit as well as Stanley controller should be implemented, following tests can show, where to use each controller.
 - additional features:
-    - emergency breaking => this command is supposed to bypass longitudinal and lateral controllers (use paf21/1s bug)
+    - emergency breaking => this command is supposed to bypass longitudinal and lateral controllers (and should use the bug discoverd by [paf21-2](https://github.com/ll7/paf21-2/tree/main/paf_ros/paf_actor#bugabuses))
     - additional functionality mostly should be added here ...
 
 ## Next steps

@@ -21,164 +21,35 @@ Josef Kircher
   * [Date](#date)
   * [Prerequisite](#prerequisite)
   * [1. Control loss due to bad road condition](#1-control-loss-due-to-bad-road-condition)
-    * [Description](#description)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [2. Unprotected left turn at intersection with oncoming traffic](#2-unprotected-left-turn-at-intersection-with-oncoming-traffic)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [3. Right turn at an intersection with crossing traffic](#3-right-turn-at-an-intersection-with-crossing-traffic)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [4. Crossing negotiation at unsignalized intersection](#4-crossing-negotiation-at-unsignalized-intersection)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [5. Crossing traffic running a red light at intersection](#5-crossing-traffic-running-a-red-light-at-intersection)
-    * [Description](#description)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [6. Highway merge from on-ramp](#6-highway-merge-from-on-ramp)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [7. Highway cut-in from on-ramp](#7-highway-cut-in-from-on-ramp)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [8. Static cut-in](#8-static-cut-in)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [9. Highway exit](#9-highway-exit)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [10. Yield to emergency vehicle](#10-yield-to-emergency-vehicle)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [11. Obstacle in lane](#11-obstacle-in-lane)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [12. Door Obstacle](#12-door-obstacle)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [13. Slow moving hazard at lane edge](#13-slow-moving-hazard-at-lane-edge)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [14. Vehicle invading lane on bend](#14-vehicle-invading-lane-on-bend)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [15. Longitudinal control after leading vehicle brakes](#15-longitudinal-control-after-leading-vehicle-brakes)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [16. Obstacle avoidance without prior action](#16-obstacle-avoidance-without-prior-action)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [17. Pedestrian emerging from behind parked vehicle](#17-pedestrian-emerging-from-behind-parked-vehicle)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [18. Obstacle avoidance with prior action](#18-obstacle-avoidance-with-prior-action)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [19. Parking Cut-in](#19-parking-cut-in)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [20. Lane changing to evade slow leading vehicle](#20-lane-changing-to-evade-slow-leading-vehicle)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [21. Passing obstacle with oncoming traffic](#21-passing-obstacle-with-oncoming-traffic)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
   * [22. Parking Exit](#22-parking-exit)
-    * [Description](#description)
-    * [Basic flow](#basic-flow)
-    * [Pre-condition(Event)](#pre-condition--event-)
-    * [Driving functions](#driving-functions)
-    * [Outcome](#outcome)
-    * [Associated use cases](#associated-use-cases)
-    * [Sources](#sources)
+  * [Sources](#sources)
 <!-- TOC -->
 
 ---
 
 ## 1. Control loss due to bad road condition
 
+![img](../00_assets/TR01.png)
 ### Description
 
 The ego-vehicle loses control due to bad conditions on the road, and it must recover, coming back to its original lane.
@@ -204,7 +75,7 @@ None
 ---
 
 ## 2. Unprotected left turn at intersection with oncoming traffic
-
+![img](../00_assets/TR08.png)
 ### Description
 
 The ego-vehicle is performing an unprotected left turn at an intersection, yielding to oncoming traffic.
@@ -250,7 +121,7 @@ Turn left at the intersection without violating traffic rules
 ---
 
 ## 3. Right turn at an intersection with crossing traffic
-
+![img](../00_assets/TR09.png)
 ### Description
 
 The ego-vehicle is performing a right turn at an intersection, yielding to crossing traffic.
@@ -294,7 +165,7 @@ Turn right at the intersection without violating traffic rules
 ---
 
 ## 4. Crossing negotiation at unsignalized intersection
-
+![img](../00_assets/TR10.png)
 ### Description
 
 The ego-vehicle needs to negotiate with other vehicles to cross an unsignalized intersection. In this situation it is assumed that the first to enter the intersection has priority.
@@ -335,7 +206,7 @@ Cross the intersection without violating traffic rules
 ---
 
 ## 5. Crossing traffic running a red light at intersection
-
+![img](../00_assets/TR07.png)
 ### Description
 
 The ego-vehicle is going straight at an intersection but a crossing vehicle runs a red light, forcing the ego-vehicle to avoid the collision.
@@ -369,7 +240,7 @@ Emergency brake to avoid collision
 ---
 
 ## 6. Highway merge from on-ramp
-
+![img](../00_assets/TR18.png)
 ### Description
 
 The ego-vehicle merges into moving highway traffic from a highway on-ramp.
@@ -407,7 +278,7 @@ Join the highway traffic without any traffic violation
 ---
 
 ## 7. Highway cut-in from on-ramp
-
+![img](../00_assets/TR19.png)
 ### Description
 
 The ego-vehicle encounters a vehicle merging into its lane from a highway on-ramp. The ego-vehicle must decelerate, brake or change lane to avoid a collision.
@@ -447,7 +318,7 @@ Let vehicle join the highway traffic without any traffic violation
 ---
 
 ## 8. Static cut-in
-
+![img](../00_assets/TR20.png)
 ### Description
 
 The ego-vehicle encounters a vehicle cutting into its lane from a lane of static traffic. The ego-vehicle must decelerate, brake or change lane to avoid a collision.
@@ -487,7 +358,7 @@ Let vehicle join the lane without any traffic violation
 ---
 
 ## 9. Highway exit
-
+![img](../00_assets/TR21.png)
 ### Description
 
 The ego-vehicle must cross a lane of moving traffic to exit the highway at an off-ramp.
@@ -531,7 +402,7 @@ Vehicle exits the highway traffic without any traffic violation
 ---
 
 ## 10. Yield to emergency vehicle
-
+![img](../00_assets/TR23.png)
 ### Description
 
 The ego-vehicle is approached by an emergency vehicle coming from behind. The ego-vehicle must maneuver to allow the emergency vehicle to pass.
@@ -569,7 +440,7 @@ Let emergency vehicle pass without any traffic violation
 ---
 
 ## 11. Obstacle in lane
-
+![img](../00_assets/TR14.png)
 ### Description
 
 The ego-vehicle encounters an obstacle blocking the lane and must perform a lane change to avoid it. The obstacle may be a construction site, an accident or a parked vehicle.
@@ -622,7 +493,7 @@ Pass an obstacle without any traffic violation
 ---
 
 ## 12. Door Obstacle
-
+![img](../00_assets/TR15.png)
 ### Description
 
 The ego-vehicle encounters a parked vehicle opening a door into its lane and must maneuver to avoid it.
@@ -669,7 +540,7 @@ Pass the open door without any traffic violation
 ---
 
 ## 13. Slow moving hazard at lane edge
-
+![img](../00_assets/TR16.png)
 ### Description
 
 The ego-vehicle encounters a slow moving hazard blocking part of the lane. The ego-vehicle must brake or maneuver to avoid it
@@ -716,7 +587,7 @@ Pass the slow moving hazard without any traffic violation
 ---
 
 ## 14. Vehicle invading lane on bend
-
+![img](../00_assets/TR22.png)
 ### Description
 
 The ego-vehicle encounters an oncoming vehicles invading its lane on a bend due to an obstacle. It must brake or maneuver to the side of the road to navigate past the oncoming traffic.
@@ -750,7 +621,7 @@ None
 ---
 
 ## 15. Longitudinal control after leading vehicle brakes
-
+![img](../00_assets/TR02.png)
 ### Description
 
 The leading vehicle decelerates suddenly due to an obstacle and the ego-vehicle must perform an emergency brake or an avoidance maneuver.
@@ -791,7 +662,7 @@ Slow down without crashing in vehicle in front of us
 ---
 
 ## 16. Obstacle avoidance without prior action
-
+![img](../00_assets/TR03.png)
 ### Description
 
 The ego-vehicle encounters an obstacle / unexpected entity on the road and must perform an emergency brake or an avoidance maneuver.
@@ -840,7 +711,7 @@ Slow down without crashing in the obstacle in front of us
 ---
 
 ## 17. Pedestrian emerging from behind parked vehicle
-
+![img](../00_assets/TR17.png)
 ### Description
 
 The ego-vehicle encounters a pedestrian emerging from behind a parked vehicle and advancing into the lane. The ego-vehicle must brake or maneuver to avoid it.
@@ -881,7 +752,7 @@ Slow down without crashing into the pedestrian in front of us
 ---
 
 ## 18. Obstacle avoidance with prior action
-
+![img](../00_assets/TR04.png)
 ### Description
 
 While performing a maneuver, the ego-vehicle finds an obstacle on the road and must perform an emergency brake or an avoidance maneuver.
@@ -918,7 +789,7 @@ Slow down without crashing into the obstacle in our path
 ---
 
 ## 19. Parking Cut-in
-
+![img](../00_assets/TR12.png)
 ### Description
 
 The ego-vehicle must slow down or brake to allow a parked vehicle exiting a parallel parking bay to cut in front.
@@ -953,7 +824,7 @@ Slow down without crashing into the car joining our lane
 ---
 
 ## 20. Lane changing to evade slow leading vehicle
-
+![img](../00_assets/TR05.png)
 ### Description
 
 The ego-vehicle performs a lane changing to evade a leading vehicle that is moving too slowly.
@@ -998,7 +869,7 @@ Change lane without any traffic violations
 ---
 
 ## 21. Passing obstacle with oncoming traffic
-
+![img](../00_assets/TR06.png)
 ### Description
 
 The ego-vehicle must go around a blocking object using the opposite lane, yielding to oncoming traffic.
@@ -1049,7 +920,7 @@ Maneuver around obstacle without any traffic violations
 ---
 
 ## 22. Parking Exit
-
+![img](../00_assets/TR11.png)
 ### Description
 
 The ego-vehicle must exit a parallel parking bay into a flow of traffic.
@@ -1087,6 +958,6 @@ Join traffic without any traffic violations
 
 ---
 
-### Sources
+## Sources
 
 <https://leaderboard.carla.org/scenarios/>

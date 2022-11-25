@@ -39,11 +39,11 @@ Josef Kircher
 
 Bugs or features can be added [here](https://github.com/ll7/paf22/issues/new/choose) or via the [issue overview](https://github.com/ll7/paf22/issues).
 
-![](../00_assets/create_issue.png)
+![create issue](../00_assets/create_issue.png)
 
 By clicking "New issue" in the overview or using the direct link above a wizard guides you to the creation of an issue:
 
-![](../00_assets/issue_wizard.png)
+![issue wizard](../00_assets/issue_wizard.png)
 
 The possibilities are described in the following sections.
 
@@ -57,7 +57,7 @@ If something is not expected to work, but you want to have it, please refer to t
 The documentation says that the vehicle should detect about 90% of the traffic lights.
 However, for you it ignores almost all traffic lights.
 
-![](../00_assets/bug_template.png)
+![bug template](../00_assets/bug_template.png)
 
 ### 💡 Feature
 
@@ -68,7 +68,7 @@ Use this template if you want a new Feature which is not implemented yet.
 Currently, the vehicle can't make u-turns.
 Implementing the ability to perform u-turns would be a new feature.
 
-![](../00_assets/feature_template.png)
+![feature template](../00_assets/feature_template.png)
 
 ### 🚗 Bug in CARLA Simulator
 

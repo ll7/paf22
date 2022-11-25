@@ -1,41 +1,44 @@
 # Architecture of vehicle agent
 
 **Summary:** This page gives an overview over the general architecture of the vehicle agent.
+The document contains an overview over all [nodes](#overview) and [topics](#topics).
 
 ---
 
 ## Author
 
-Julian Graf
+Marco Riedenauer, Simon Erlbacher, Julian Graf
 
 ## Date
 
-24.11.2022
+25.11.2022
 
 
 ---
 <!-- TOC -->
+
 * [Architecture of vehicle agent](#architecture-of-vehicle-agent)
-  * [Author](#author)
-  * [Date](#date)
-  * [Overview](#overview)
-  * [Perception](#perception)
-    * [Obstacle Detection and Classification](#obstacle-detection-and-classification)
-    * [Lane detection](#lane-detection)
-    * [Traffic Light Detection](#traffic-light-detection)
-    * [Traffic Signs Detection](#traffic-signs-detection)
-    * [Prediction](#prediction)
-    * [Localization](#localization)
-  * [Planning](#planning)
-    * [Preplanning](#preplanning)
-    * [Decision Making](#decision-making)
-    * [Local path planning](#local-path-planning)
-  * [Acting](#acting)
-    * [Path following](#path-following)
-    * [Velocity control](#velocity-control)
-    * [Emergency](#emergency)
-  * [Visualization](#visualization)
-  * [Topics](#topics)
+    * [Author](#author)
+    * [Date](#date)
+    * [Overview](#overview)
+    * [Perception](#perception)
+        * [Obstacle Detection and Classification](#obstacle-detection-and-classification)
+        * [Lane detection](#lane-detection)
+        * [Traffic Light Detection](#traffic-light-detection)
+        * [Traffic Signs Detection](#traffic-signs-detection)
+        * [Prediction](#prediction)
+        * [Localization](#localization)
+    * [Planning](#planning)
+        * [Preplanning](#preplanning)
+        * [Decision Making](#decision-making)
+        * [Local path planning](#local-path-planning)
+    * [Acting](#acting)
+        * [Path following](#path-following)
+        * [Velocity control](#velocity-control)
+        * [Emergency](#emergency)
+    * [Visualization](#visualization)
+    * [Topics](#topics)
+
 <!-- TOC -->
 
 ## Overview
@@ -43,8 +46,10 @@ Julian Graf
 The vehicle agent is split into three major components: [Perception](#Perception), [Planning](#Planning)
 and [Acting](#Acting).
 A separate node is responsible for the [visualization](#Visualization).
-The topics published by the Carla bridge can be found [here](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/).
-The msgs necessary to control the vehicle via the Carla bridge can be found [here](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
+The topics published by the Carla bridge can be
+found [here](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/).
+The msgs necessary to control the vehicle via the Carla bridge can be
+found [here](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
 
 ![Architecture overview](../00_assets/Übersicht.jpg)
 
@@ -70,7 +75,9 @@ Subscriptions:
 
 Publishes:
 
-- ```obstacles``` ([vision_msgs/Detection3DArray Message](http://docs.ros.org/en/api/vision_msgs/html/msg/Detection3DArray.html))
+- ```obstacles``` (Custom msg:
+  obstacle ([vision_msgs/Detection3DArray Message](http://docs.ros.org/en/api/vision_msgs/html/msg/Detection3DArray.html))
+  and its classification ([std_msgs/String Message](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/String.html)))
 
 ### Lane detection
 
@@ -102,7 +109,10 @@ Subscriptions:
 
 Publishes:
 
-- ```traffic_lights``` (Custom msg: state ([std_msgs/UInt8 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt8.html])), position ([geometry_msgs/Pose Message](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Pose.html)), distance_to_stop_line ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html)))
+- ```traffic_lights``` (Custom msg:
+  state ([std_msgs/UInt8 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt8.html])),
+  position ([geometry_msgs/Pose Message](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Pose.html)),
+  distance_to_stop_line ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html)))
 
 ### Traffic Signs Detection
 
@@ -117,7 +127,11 @@ Subscriptions:
 
 Publishes:
 
-- ```traffic_signs``` (Custom msg: type ([std_msgs/UInt8 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt8.html])), position ([geometry_msgs/Pose Message](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Pose.html)), distance_to_stop_line distance_to_stop_line ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html)))
+- ```traffic_signs``` (Custom msg:
+  type ([std_msgs/UInt8 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt8.html])),
+  position ([geometry_msgs/Pose Message](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Pose.html)),
+  distance_to_stop_line
+  distance_to_stop_line ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html)))
 
 ### Prediction
 
@@ -131,7 +145,8 @@ Subscriptions:
 
 Publishes:
 
-- ```predictions``` (Custom msg: array of vehicle_id ([std_msgs/UInt16 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt16.html)) and
+- ```predictions``` (Custom msg: array of
+  vehicle_id ([std_msgs/UInt16 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt16.html)) and
   vehicle_path ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html)))
 
 ### Localization
@@ -175,7 +190,7 @@ Publishes:
 
 ### Decision Making
 
-checks whether the path from [Preplanning](#Preplanning) actually can be taken.
+Checks whether the path from [Preplanning](#Preplanning) actually can be taken.
 If the data from the [Perception](#Perception) indicates that the path needs to be adjusted,
 this node decides which actions to take.
 Based on this decision, the [Local path planning](#Local-path-planning) plans a new path accordingly.
@@ -195,7 +210,7 @@ Publishes:
 ### Local path planning
 
 Translates the decisions made by the [Decision Making](#Decision-Making) into a concrete path.
-Can publish the distance to the vehicle in front to use the [Path following](#Path-folloing)'s adaptive cruise control.
+Can publish the distance to the vehicle in front to use the [Path following](#path-following)'s adaptive cruise control.
 
 Subscriptions:
 
@@ -221,7 +236,7 @@ Further information can be found [here](../03_research/01_acting/Readme.md).
 ### Path following
 
 Calculates steering angles that keep the ego vehicle on the path given by
-the [Local path planning](#Local-lath-planning).
+the [Local path planning](#Local-path-planning).
 
 Subscriptions:
 
@@ -229,11 +244,16 @@ Subscriptions:
 
 Publishes:
 
-- ```steer``` for ```vehicle_control_cmd_manual``` [CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
+- ```steer```
+  for ```vehicle_control_cmd_manual``` ([CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg))
+
+Note: To avoid competing ```vehicle_control_cmd_manual``` msgs, [Path following](#path-following) should publish custom
+steering msgs that can then be published combined with velocity, etc. to single ```vehicle_control_cmd_manual``` 
+by [Velocity control](#velocity-control).
 
 ### Velocity control
 
-Calculates velocitiy inputs to drive the velocity given by the [Local path planning](#Local-lath-planning).
+Calculates velocity inputs to drive the velocity given by the [Local path planning](#Local-path-planning).
 If the node is given the distance to a car to follow, it reduces the velocity of the ego vehicle to hold a reasonable
 distance to the vehicle in front.
 
@@ -246,7 +266,8 @@ Subscriptions:
 
 Publishes:
 
-- ```throttle```,  ```brake```,  ```reverse``` for ```vehicle_control_cmd_manual``` [CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
+- ```throttle```,  ```brake```,  ```reverse```
+  for ```vehicle_control_cmd_manual``` ([CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg))
 
 ### Emergency
 
@@ -259,8 +280,8 @@ Subscriptions:
 
 Publishes:
 
-- ```vehicle_control_cmd_manual``` [CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
-- ```emergency``` ([http://docs.ros.org/en/api/std_msgs/html/msg/Bool.html](http://docs.ros.org/en/api/std_msgs/html/msg/Bool.html))
+- ```vehicle_control_cmd_manual``` ([CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg))
+- ```emergency``` ([std_msgs/Bool Message](http://docs.ros.org/en/api/std_msgs/html/msg/Bool.html))
 
 ## Visualization
 
@@ -270,10 +291,25 @@ Subscriptions:
 
 - all data that's needed
 
-
 ## Topics
-todo
 
-| Topic | Description | Unit | Msg type |
-|-------|-------------|------|----------|
-| todo  |             |      |          |
+The topics published by the Carla bridge can be
+found [here](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/).
+The msgs necessary to control the vehicle via the Carla bridge can be
+found [here](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
+
+Intern topics published by vehicle agent:
+
+| Topic                          | Description                                                                                                       | Published by                                                 | Msg type                                                                                                                                                                                                                                                                                                                            |
+|--------------------------------|-------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ```obstacles```                | Obstacles and their classifications                                                                               | [Obstacle Detection](#obstacle-detection-and-classification) | Custom msg: obstacle ([vision_msgs/Detection3DArray Message](http://docs.ros.org/en/api/vision_msgs/html/msg/Detection3DArray.html)) and its classification ([std_msgs/String Message](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/String.html))                                                                            |
+| ```lanes```                    | Lanes surrounding vehicle                                                                                         | [Lane detection](#lane-detection)                            | [derived_object_msgs/LaneModels Message](http://docs.ros.org/en/kinetic/api/derived_object_msgs/html/msg/LaneModels.html)                                                                                                                                                                                                           |
+| ```traffic_lights```           | Traffic lights and their status                                                                                   | [Traffic Light Detection](#traffic-light-detection)          | Custom msg: state ([std_msgs/UInt8 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt8.html])), position ([geometry_msgs/Pose Message](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Pose.html)), distance_to_stop_line ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html)) |
+| ```predictions```              | Expected future movement of dynamic obstacles                                                                     | [Prediction node](#prediction)                               | Custom msg: array of vehicle_id ([std_msgs/UInt16 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt16.html)) and vehicle_path ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))                                                                                                    |
+| ```ego_position```             | Corrected accurate position, direction and speed of the ego vehicle                                               | [Localization](#localization)                                | [nav_msgs/Odometry Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Odometry.html)                                                                                                                                                                                                                                      |
+| ```provisional_path```         | First concrete path to the next intermediate point                                                                | [Preplanning](#preplanning)                                  | [nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html)                                                                                                                                                                                                                                              |
+| ```decision```                 | Decision to alter   ```provisional_path```                                                                        | [Decision Making](#decision-making)                          | [std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html)                                                                                                                                                                                                                                                        |
+| ```path```                     | Improved ```provisional_path```  path for the ego vehicle to follow                                               | [Local path planning](#local-path-planning)                  | [nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html)                                                                                                                                                                                                                                              |
+| ```max_velocity```             | Maximal velocity the ego vehicle should drive  in m/s                                                             | [Local path planning](#local-path-planning)                  | [std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html])                                                                                                                                                                                                                                              |
+| ```distance_to_next_vehicle``` | Distance to   the vehicle the      [Velocity control](#velocity-control) should keep a certain distance to (in m) | [Local path planning](#local-path-planning)                  | [std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html])                                                                                                                                                                                                                                              |
+| ```emergency```                | True if emergency is triggered; false indicates that emergency is over                                            | [Emergency](#emergency)                                      | [std_msgs/Bool Message](http://docs.ros.org/en/api/std_msgs/html/msg/Bool.html)                                                                                                                                                                                                                                                     |

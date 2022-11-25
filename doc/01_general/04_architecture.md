@@ -5,7 +5,7 @@ The document contains an overview over all [nodes](#overview) and [topics](#topi
 
 ---
 
-## Author
+## Authors
 
 Marco Riedenauer, Simon Erlbacher, Julian Graf
 
@@ -18,7 +18,7 @@ Marco Riedenauer, Simon Erlbacher, Julian Graf
 <!-- TOC -->
 
 * [Architecture of vehicle agent](#architecture-of-vehicle-agent)
-    * [Author](#author)
+    * [Author](#authors)
     * [Date](#date)
     * [Overview](#overview)
     * [Perception](#perception)

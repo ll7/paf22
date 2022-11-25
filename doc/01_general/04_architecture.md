@@ -43,8 +43,10 @@ Julian Graf
 The vehicle agent is split into three major components: [Perception](#Perception), [Planning](#Planning)
 and [Acting](#Acting).
 A separate node is responsible for the [visualization](#Visualization).
+The topics published by the Carla bridge can be found [here](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/).
+The msgs necessary to control the vehicle via the Carla bridge can be found [here](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
 
-![Architecture overview](../00_assets/architecture.png) todo:better picture, maybe multiple picture
+![Architecture overview](../00_assets/Übersicht.jpg)
 
 ## Perception
 
@@ -62,13 +64,13 @@ In the case of dynamic objects, an attempt is made to recognize the direction an
 
 Subscriptions:
 
-- Radar (todo)
-- Lidar (todo)
-- Camera (todo)
+- ```radar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
+- ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
+- ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
 
 Publishes:
 
-- Obstacles ([vision_msgs/Detection3DArray Message](http://docs.ros.org/en/api/vision_msgs/html/msg/Detection3DArray.html))
+- ```obstacles``` ([vision_msgs/Detection3DArray Message](http://docs.ros.org/en/api/vision_msgs/html/msg/Detection3DArray.html))
 
 ### Lane detection
 
@@ -78,13 +80,13 @@ and to plan and execute lane changes.
 
 Subscriptions:
 
-- Map (todo)
-- Lidar (todo)
-- Camera (todo)
+- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+- ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
+- ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
 
 Publishes:
 
-- Lanes ([derived_object_msgs/LaneModels Message](http://docs.ros.org/en/kinetic/api/derived_object_msgs/html/msg/LaneModels.html))
+- ```lanes``` ([derived_object_msgs/LaneModels Message](http://docs.ros.org/en/kinetic/api/derived_object_msgs/html/msg/LaneModels.html))
 
 ### Traffic Light Detection
 
@@ -94,14 +96,13 @@ are recognized early and reliably.
 
 Subscriptions:
 
-- Map (todo)
-- Camera (todo)
+- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+- ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
+- ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
 
 Publishes:
 
-- Traffic
-  Lights ([CarlaTrafficLightStatusList.msg](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_msgs/))
-  -> todo: this msg type might not be working for traffic lights not recorded on map
+- ```traffic_lights``` (Custom msg: state ([std_msgs/UInt8 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt8.html])), position ([geometry_msgs/Pose Message](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Pose.html)), distance_to_stop_line ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html)))
 
 ### Traffic Signs Detection
 
@@ -111,26 +112,27 @@ are recognized early and reliably.
 
 Subscriptions:
 
-- Camera (todo)
+- ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
+- ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
 
 Publishes:
 
-- Traffic Lights (todo)
+- ```traffic_signs``` (Custom msg: type ([std_msgs/UInt8 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt8.html])), position ([geometry_msgs/Pose Message](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Pose.html)), distance_to_stop_line distance_to_stop_line ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html)))
 
 ### Prediction
 
 Tries to predict the movement of dynamic objects recognized in the
-[Obstacle Detection and Classification](#Obstacle-Detection-and-Classification.)
+[Obstacle Detection and Classification](#Obstacle-Detection-and-Classification).
 
 Subscriptions:
 
-- Obstacles (todo)
-- Lanes (todo)
+- ```obstacles``` ([vision_msgs/Detection3DArray Message](http://docs.ros.org/en/api/vision_msgs/html/msg/Detection3DArray.html))
+- ```lanes``` ([derived_object_msgs/LaneModels Message](http://docs.ros.org/en/kinetic/api/derived_object_msgs/html/msg/LaneModels.html))
 
 Publishes:
 
-- Predictions (Array of custom msgs with vehicle id (uint32_t) and
-  vehicle path ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html)))
+- ```predictions``` (Custom msg: array of vehicle_id ([std_msgs/UInt16 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt16.html)) and
+  vehicle_path ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html)))
 
 ### Localization
 
@@ -138,14 +140,14 @@ Provides corrected accurate position, direction and speed of the ego vehicle
 
 Subscriptions:
 
-- Map (todo)
-- IMU (todo)
-- Speedometer (todo)
-- GNSS (todo)
+- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+- ```imu``` ([sensor_msgs/Imu Message](https://docs.ros.org/en/api/sensor_msgs/html/msg/Imu.html))
+- ```speedometer``` ([std_msgs/Float32](https://docs.ros.org/en/api/std_msgs/html/msg/Float32.html))
+- ```gnss``` ([sensor_msgs/NavSatFix](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/))
 
 Publishes:
 
-- Position and Pose ([nav_msgs/Odometry Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Odometry.html))
+- ```ego_position``` ([nav_msgs/Odometry Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Odometry.html))
 
 ## Planning
 
@@ -158,17 +160,18 @@ Further information can be found [here](../03_research/03_planning/Readme.md).
 
 Uses information from the map and the path specified by CARLA to find a first concrete path to the next intermediate
 point.
-Information from Obstacle Detection, Prediction etc. is not yet taken into account.
+Information from [Obstacle Detection](#Obstacle-Detection-and-Classification), [Prediction](#Prediction) etc. is not
+yet taken into account.
 
 Subscriptions:
 
-- Map (todo)
-- Navigation (todo)
-- Odometrie (todo)
+- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+- ```navigation``` (waypoints and high-level route description)
+- ```odometry``` ([nav_msgs/Odometry](https://docs.ros.org/en/api/nav_msgs/html/msg/Odometry.html))
 
 Publishes:
 
-- Provisional Path ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+- ```provisional_path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
 
 ### Decision Making
 
@@ -179,15 +182,15 @@ Based on this decision, the [Local path planning](#Local-path-planning) plans a 
 
 Subscriptions:
 
-- Map (todo)
-- Navigation (todo)
-- Odometrie (todo)
-- Provisional Path (todo)
-- all Data from Perception (todo)
+- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+- ```navigation``` (waypoints and high-level route description)
+- ```odometry``` ([nav_msgs/Odometry](https://docs.ros.org/en/api/nav_msgs/html/msg/Odometry.html))
+- ```provisional_path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+- all data from [Perception](#Perception)
 
 Publishes:
 
-- Decision (string)
+- ```decision``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
 ### Local path planning
 
@@ -196,21 +199,22 @@ Can publish the distance to the vehicle in front to use the [Path following](#Pa
 
 Subscriptions:
 
-- Map (todo)
-- Odometrie (todo)
-- Provisional Path (todo)
-- all Data from Perception (todo)
+- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+- ```odometry``` ([nav_msgs/Odometry](https://docs.ros.org/en/api/nav_msgs/html/msg/Odometry.html))
+- ```provisional_path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+- all data from [Perception](#Perception)
 
 Publishes:
 
-- Path ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
-- velocity (uint8_t)
-- distance to vehicle to follow (uint8_t)
+- ```path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+- ```max_velocity``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
+- ```distance_to_next_vehicle``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
 
 ## Acting
 
 The job of this component is to translate the trajectory planned by the [Planning](#Planning) component into
 steering controls for the vehicle.
+This node only takes on tasks that have lower computing time, so that a fast response of the component is ensured.
 
 Further information can be found [here](../03_research/01_acting/Readme.md).
 
@@ -221,11 +225,11 @@ the [Local path planning](#Local-lath-planning).
 
 Subscriptions:
 
-- Path ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+- ```path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
 
 Publishes:
 
-- steering angle for rosbridge (todo)
+- ```steer``` for ```vehicle_control_cmd_manual``` [CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
 
 ### Velocity control
 
@@ -235,13 +239,14 @@ distance to the vehicle in front.
 
 Subscriptions:
 
-- velocity (uint8_t)
-- distance to vehicle to follow (uint8_t)
-- Path ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+- ```ego_position``` ([nav_msgs/Odometry Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Odometry.html))
+- ```max_velocity``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
+- ```distance_to_next_vehicle``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
+- ```path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
 
 Publishes:
 
-- velocity for rosbridge (todo)
+- ```throttle```,  ```brake```,  ```reverse``` for ```vehicle_control_cmd_manual``` [CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
 
 ### Emergency
 
@@ -250,21 +255,25 @@ Initiates emergency braking in the event of an emergency and notifies all notes 
 
 Subscriptions:
 
-- whatever it needs (todo)
+- all data that's needed
 
 Publishes:
 
-- velocity for rosbridge (todo)
-- steering angle for rosbridge (todo)
-- emergency msg (bool)
+- ```vehicle_control_cmd_manual``` [CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
+- ```emergency``` ([http://docs.ros.org/en/api/std_msgs/html/msg/Bool.html](http://docs.ros.org/en/api/std_msgs/html/msg/Bool.html))
 
 ## Visualization
 
 Visualizes outputs of certain nodes to provide a basis for debugging.
 
+Subscriptions:
+
+- all data that's needed
+
+
 ## Topics
 todo
 
-| Topic | Description | Msg type |
-|-------|-------------|----------|
-| todo  |             |          |
+| Topic | Description | Unit | Msg type |
+|-------|-------------|------|----------|
+| todo  |             |      |          |

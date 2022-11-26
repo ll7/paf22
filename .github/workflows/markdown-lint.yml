@@ -9,10 +9,17 @@ jobs:
         steps:
           - name: Check out the repo
             uses: actions/checkout@v2
-          - name: Run the linter with Docker
+          - name: Run the markdown linter
             uses: addnab/docker-run-action@v3
             with:
                 image: peterdavehello/markdownlint:0.32.2
                 options: -v ${{ github.workspace }}:/md
                 run: |
                     markdownlint .
+          - name: Run the python linter
+            uses: addnab/docker-run-action@v3
+            with:
+              image: alpine/flake8
+              options: -v ${{ github.workspace }}:/apps
+              run: |
+                flake8 code

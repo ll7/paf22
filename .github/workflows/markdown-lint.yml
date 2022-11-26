@@ -17,6 +17,7 @@ jobs:
                 run: |
                     markdownlint .
           - name: Run the python linter
+            if: always()
             uses: addnab/docker-run-action@v3
             with:
               image: alpine/flake8

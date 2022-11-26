@@ -25,7 +25,7 @@ Gabriel Schwald
   * [Next steps](#next-steps)
 <!-- TOC -->
 
-This document sums up all functions already agreed upon in [#24](https://github.com/ll7/paf22/issues/24) regarding [acting](../01_acting/05_acting.md), that could be implemented in the next sprint.
+This document sums up all functions already agreed upon in [#24](https://github.com/ll7/paf22/issues/24) regarding [acting](../01_acting/01_acting.md), that could be implemented in the next sprint.
 
 ## Planned basic implementation of the Acting domain
 

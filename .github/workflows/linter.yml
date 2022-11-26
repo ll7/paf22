@@ -1,10 +1,10 @@
-name: markdown-lint
+name: linter
 
-on: push
+on: pull_request
 
 jobs:
     markdownlint:
-        name: Lint markdown files
+        name: Lint project files
         runs-on: ubuntu-latest
         steps:
           - name: Check out the repo

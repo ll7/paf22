@@ -1,2 +1,0 @@
-func lala():
- wölef

@@ -1,3 +1,7 @@
+name: markdown-lint
+
+on: push
+
 jobs:
     markdownlint:
         name: Lint markdown files

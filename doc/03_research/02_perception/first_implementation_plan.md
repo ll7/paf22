@@ -102,7 +102,8 @@ This enables to calculate bounding boxes for each thing and to get a precise ove
 
 For lane detection, all occurring lines are classified (stop line, solid middle line, dashed middle line, etc.)
 Based on this information, the lanes are classified (own lane, driveable, oncoming lane etc.). Information given by the
-map are used either.
+map and GNSS are used either.
+No implementation plan yet.
 
 ---
 ## Traffic Light Detection 
@@ -134,11 +135,14 @@ the information about the state given by the camera images.
 
 For state classification, the part showing the traffic sign is snipped out of the camera image to get a better and 
 faster prediction due to a smaller image size and less information. 
+Maybe the classification net for traffic light classification can be reused.
 
 ---
 ## Prediction
 
-
+This module should output predictions about the future behaviour of other vehicles
+(vehicle switches lane, etc.) or pedestrians (crosswalk).
+No implementation plan yet.
 
 ---
 ## Possible Issues/Milestones

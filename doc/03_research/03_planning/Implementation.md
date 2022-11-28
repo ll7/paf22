@@ -1,13 +1,13 @@
 # Planning Implementation
 
 **Summary:** 
-The document gives a first impression of how the planning should work
+The document gives a first impression of how the planning could/should work
 and how the topics are edited
 ---
 
 ## Author
 
-Simon Erlbacher
+Simon Erlbacher, Niklas Vogel
 
 ## Date
 
@@ -33,31 +33,37 @@ Simon Erlbacher
 ---
 ## **Visualization** 
 
-![Implementation](../00_assets/Planning_Implementation.png)
+![Implementation](../../00_assets/Planning_Implementierung.png)
 
 ---
 ## **Preplanning**
   
-The Preplanning receives the next target point from the Carla Leaderboard. Also it reads the Open Street Format. The commonroad route planner from TUM can be used to calculate the preferred Lanelet model. The Open Street Format will be transformed in a Scenario object. The route planner uses the startposition and the current orientation of the vehicle to develop a so called planning problem. Orientation can be calculated on the Odometry and the GNUU data from the sensoring area. The Output will be the so called route planner with the needed lanelet model.
+The Preplanning receives the next [target point](basics.md#wie-sehen-die-daten-vom-leaderboard-fr-das-global-planning-aus) from the Carla Leaderboard. Also it reads the map data which is in [OpenDrive](https://www.asam.net/standards/detail/opendrive/) format. The [commonroad route planner (CRP)](https://gitlab.lrz.de/tum-cps/commonroad-route-planner/) from TUM can be used to calculate a Lanelet model (Note that almost all old PAF-Projects have adapted versions of the CRP). Internally the CRP converts the Map into a Scenario Object. When given a start and goal position and the current orientation of the vehicle a so called planning problem is created by the planer. The Orientation can be calculated on the Odometry and the GNUU data from the sensoring area. The Output (Solution of the planning problem) will be a route defined by a sequence of lanelets and a sequence of points (~ 10cm apart).
+
+Lanelet Model Example :
+![](../../00_assets/Lanelets.png)[[Source]](https://github.com/ll7/psaf2/tree/main/Planning/global_planner)
+
 
 Input: 
 * Odometry data (sensoring)
 * GNUU data (sensoring)
+* Map
+* Navigation Waypoints
 
 Output:
-* lanelet model (local path planning, decision making)
+* Route (Sequences of Lanelets and Points) (local path planning, decision making)
 
 ---
 
 ## **Local Path Planning**
 
-Local Planner updates the current route. If Decision Making detects an obstacle, the planner has to choose an alternative Lanelet to avoid the obstacle. Therefor the obstacle position on the lanelet plan will be detected. The vehicle chooses the next lanelet, where no obstacle collision occurs.
+Local Planner updates the current route, if Decision Making detects an obstacle. The planner then has to choose an alternative next Lanelet to avoid the obstacle. Therefore the obstacle position on the lanelet plan will be needed. 
 
 ### <u>_Velocity profile_</u>
 
-The Local Path Planer receives the lanelet points and the path to drive. The local planner creates a velocity profile on the calculated trajectorie. Curvature, crossings and traffic lights influence the profile. This will be calculated directly after the preplanning created a trajectorie. The current speed and the braking distance is held and calculated by the Acting side. The velocity value is published to the acting side. If the velocity is to high or to low, the Acting will realize and sends changes to adapt the speed of the vehicle.
+The Local Path Planer receives the lanelets, points and the path to drive. The local planner creates a velocity profile on the calculated trajectory based on curvature, crossings and traffic lights. This will be calculated directly after the preplanning created a trajectory. The velocity value is published to the acting side, where the current speed and the braking distance is held and calculated. If the velocity is too high or too low, the Acting will realize and sends changes to adapt the speed of the vehicle.
 
-Inpout:
+Input:
 
 * Trajectory points (preplanning)
 
@@ -68,7 +74,7 @@ Output:
 
 ### <u>_Update path_</u>
 
-The update path module receives a command from the decision maker, that the actual path is not possible to drive. It uses the lanelet modell and chooses the next possible lanelet and updates the trajectory. It also tells the velocity profile to update the new trajectory.
+The update path module receives a command from the decision maker, that the current path is not possible to drive without collision. It uses the lanelet modell from the preplanner and chooses the next possible lanelet and accordingly updates the trajectory. It also tells the velocity profile to update because of the new trajectory.
 
 Input:
 
@@ -82,7 +88,7 @@ Output:
 
 ### <u>_Measure distance_</u>
 
-This module measures the distance to obstacles, especially cars, with the Lidar Sensor. The current distance value is published to the acting side. Keeping a safe distance is calculated by the acting.
+This module measures the distance to obstacles, especially cars, with the Lidar Sensor. The current distance value is published to the acting side for keeping a safe distance (Adaptive Cruise Control).
 
 Input:
 
@@ -95,10 +101,10 @@ Output:
 ---
 ## **Decision Making**
 
-Obstacle detection is based on the sensor data from the perception area. If an obstacle is recognized, the decision making sends a message to the local path planning. The System chooses another lanelet.
-With the Lanelets it is possible to give a prediciton for other objects and the vehicle itself, by following the lanelet direction of an object.
+Obstacle detection is based on the sensor data from the perception area. If an obstacle is being recognized, the decision making sends a message to the local path planning where the system then chooses another trajectory/lanelet.
+With the Lanelets Model it is possible to give a prediction for other objects and the vehicle itself, by following the lanelet direction of an object.
 
-The decision making can be implemented with a state machine. For every incoming command (from the perception) must be a state defined. The system needs to make good predicitions to avoid collisions. The Perception data and the Lanelet modell are the main input for the system.
+The decision making can be implemented with a state machine. For every incoming perception there must be a state defined. The system needs to make good predictions to avoid collisions. The Perception data and the Lanelet modell are the main input for the system.
 
 Input:
 
@@ -110,15 +116,17 @@ Output:
 * updated driving status (acting, local path planning)
 * Lanelet data (acting)
 
-Occupacy grid and Markov Modell
-
+## Occupancy grid and Markov Modell
+TODO
 
 ---
 ## Next steps
 
-* Implement the commonroad route planner (old projects and Gitlab TUM)
+* Implement Map Manager to convert data into a compatible type for route planning and to extract additional informations (Speed Limits, trafic signs, traffic lights)
+* Implement a commonroad route planner (old projects and Gitlab TUM)
 * Analyze Lanelet plan and be familiar with it (Which information can we additionally receive from the plan?)
-* Choose the Decision Maker (Evaluate Markov Modell in combination with occupacy grid)
+* Enrich Lanelet Modell/Map with additional Informations (additional/parallel Lanes, Speed Limits, trafic signs, traffic lights)
+* Choose the Decision Maker (Evaluate Markov Modell in combination with occupancy grid)
 * Read Lidar Sensor data and calculate distances
 * Publish available and needed data (data available in this stage) 
 ---

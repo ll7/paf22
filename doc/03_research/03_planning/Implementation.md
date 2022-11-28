@@ -31,7 +31,7 @@ Simon Erlbacher
 ---
 ## **Visualization** 
 
-![Implementation](./doc/00_assets/Planning_Implemenation.png)
+![Implementation](../00_assets/Planning_Implementation.png)
 
 ---
 ## **Preplanning**

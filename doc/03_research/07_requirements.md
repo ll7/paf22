@@ -36,6 +36,7 @@ Josef Kircher, Simon Erlbacher
 * complete 10 routes (2 weather conditions)
 
 ---
+
 ## Carla Leaderboard Score
 
 The driving proficiency of an agent can be characterized by multiple metrics.
@@ -47,6 +48,7 @@ The driving proficiency of an agent can be characterized by multiple metrics.
 Every agent starts with a base score of 1.0 at the beginning.
 
 Types of infractions:
+
 * collisions with pedestrians: 0.50
 * collisions with other vehicles: 0.60
 * collisions with static elements: 0.65
@@ -58,9 +60,12 @@ Types of infractions:
 * Off-road driving: not considered towards the computation of the route completion score
 
 ---
+
 ## Prioritized driving aspects
 
-There are different ways to prioritize the driving aspects mentioned in the document [08_use_cases](https://github.com/ll7/paf22/blob/482c1f5a201b52276d7b77cf402009bd99c93317/doc/03_research/08_use_cases.md). The most important topics, in relation to this project, are the driving score and the safety aspect. Also it is appropriate to implement the basic features of an autonomous car first. The list is a mixture of the different approaches. Prioritizing from very important functionalities to less important features.
+There are different ways to prioritize the driving aspects mentioned in the document [08_use_cases](https://github.com/ll7/paf22/blob/482c1f5a201b52276d7b77cf402009bd99c93317/doc/03_research/08_use_cases.md).
+The most important topics, in relation to this project, are the driving score and the safety aspect.
+Also, it is appropriate to implement the basic features of an autonomous car first. The list is a mixture of the different approaches. Prioritizing from very important functionalities to less important features.
 
 `Very important:`
 
@@ -74,8 +79,8 @@ There are different ways to prioritize the driving aspects mentioned in the docu
 * Street rules (no street signs available)
 * Change lane (obstacles)
 
-
 `Important:`
+
 * Check Intersection
 * Sense traffic (speed and trajectory)
 * Predict traffic
@@ -86,13 +91,14 @@ There are different ways to prioritize the driving aspects mentioned in the docu
 * Recognize emergency vehicle
 * Recognize unexpected dynamic situations (opening door, bycicles,...)
 
-
 `Less important:`
+
 * Smooth driving (accelerate, decelerate, stop)
 * Weather Condition
 * Predict pedestrians
 
 ---
+
 ## more Content
 
 ### Sources

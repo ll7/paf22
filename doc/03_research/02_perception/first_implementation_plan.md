@@ -67,7 +67,8 @@ There are three different kinds of image segmentation:
 ### Image Panoptic Segmentation
 
 Possible implementation with [EfficientPS](https://arxiv.org/pdf/2004.02307.pdf).
-This net has a pretty high panoptic quality of 64-67% and a relatively low calculation time of 166ms on a 1024x2048 image.
+This net has a pretty high panoptic quality of 64-67% and a relatively low calculation 
+time of 166ms on a 1024x2048 image.
 
 ###  LIDAR Panoptic Segmentation
 
@@ -112,7 +113,10 @@ the information about the state given by the camera images.
 
 For state classification, the part showing the traffic light is snipped out of the camera image to get a better and 
 faster prediction due to a smaller image size and less information. To prevent the classification network to classify 
-the state always as orange on traffic lights with orange housings, the housing is masked out.
+the state always as orange on traffic lights with orange housings, the housing is masked out. 
+As classification net I would recommend the net implemented by PAF21-1.
+
+![](https://raw.githubusercontent.com/ll7/paf21-1/master/imgs/ConvolutionNetwork.png)
 
 Possible states are:
 - green
@@ -133,3 +137,17 @@ faster prediction due to a smaller image size and less information.
 
 ---
 ## Prediction
+
+
+
+---
+## Possible Issues/Milestones
+
+- Implement/Adapt panoptic segmentation model (EfficientPS)
+- (Implement/Adapt) LIDAR panoptic segmentation model (EfficientLPS)
+- Choose datasets for training
+- Generate own training data for fine-tuning
+- Implement classification net for traffic light/sign classification
+- Find ways for lane detection
+- Find solutions/implementations for the projection of LIDAR, Radar and image data
+- Position validation necessary?

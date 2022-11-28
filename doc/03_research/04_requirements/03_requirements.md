@@ -37,30 +37,6 @@ Josef Kircher, Simon Erlbacher
 
 ---
 
-## Carla Leaderboard Score
-
-The driving proficiency of an agent can be characterized by multiple metrics.
-
-* `Driving score:` Product between route completion and infractions penalty
-* `Route completion:` Percentage of the route distance completed by an agent
-* `Infraction penalty:` The leaderboard tracks several types of infractions which reduce the score
-
-Every agent starts with a base score of 1.0 at the beginning.
-
-Types of infractions:
-
-* collisions with pedestrians: 0.50
-* collisions with other vehicles: 0.60
-* collisions with static elements: 0.65
-* running a red light: 0.70
-* running a stop sign: 0.80
-* scenario timeout (feature behaviours can block ego vehicle): 0.70
-* Failure to maintain minimum speed: 0.70
-* Failure to yield to emergency vehicle: 0.70
-* Off-road driving: not considered towards the computation of the route completion score
-
----
-
 ## Prioritized driving aspects
 
 There are different ways to prioritize the driving aspects mentioned in the document [08_use_cases](https://github.com/ll7/paf22/blob/482c1f5a201b52276d7b77cf402009bd99c93317/doc/03_research/08_use_cases.md).

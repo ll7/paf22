@@ -58,6 +58,14 @@ none
   * night
   * more ...
 
+Possible traffic signs (not complete):
+
+* Stop sign
+* Speed limitation
+* Traffic lights
+* Arrows on street
+* Stop sign on street
+
 ## Participation modalities
 
 The two modes are **SENSORS** and **MAP**. They differ in the type of input data the agent can request from the platform.
@@ -121,7 +129,15 @@ Determination how "good" the agent performs on the Leaderboard.
 
 ### Main score
 
-Arithmetic mean of all routes driving scores
+The driving proficiency of an agent can be characterized by multiple metrics.
+
+* `Driving score:` Product between route completion and infractions penalty
+* `Route completion:` Percentage of the route distance completed by an agent
+* `Infraction penalty:` The leaderboard tracks several types of infractions which reduce the score
+
+Every agent starts with a base infraction score of 1.0 at the beginning.
+
+Complete score is arithmetic mean of all routes driving scores.
 
 ### Driving Score for route i
 
@@ -131,27 +147,27 @@ Product of route completion of route i and Infraction penalty of route i
 
 Not complying with traffic rules will result in a penalty. Multiple penalties can be applied per route. Infractions ordered by severity are:
 
-* Collisions with pedestrians
-* Collisions with other vehicles
-* Collisions with static elements
-* Running a red light
-* Running a stop sign
+* collisions with pedestrians: 0.50
+* collisions with other vehicles: 0.60
+* collisions with static elements: 0.65
+* running a red light: 0.70
+* running a stop sign: 0.80
 
 It is possible that the vehicle is stuck in some scenario. After a timeout of **4 minutes** the vehicle will be released, however a penalty is applied
 
-* Scenario timeout
+* scenario timeout (feature behaviours can block ego vehicle): 0.70
 
 Agent should keep a minimum speed compared to the nearby traffic. The penalty is increases with the difference in speed.
 
-* Failure to maintain minimum speed
+* Failure to maintain minimum speed: 0.70
 
 Agent should let emergency vehicles from behind pass.
 
-* Failure to yield to emergency vehicle
+* Failure to yield to emergency vehicle: 0.70
 
 If the agent drives off-road that percentage does not count towards the road completion
 
-* Off-road driving
+* Off-road driving: not considered towards the computation of the route completion score
 
 ### Shutdown criteria
 

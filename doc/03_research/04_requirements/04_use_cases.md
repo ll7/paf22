@@ -49,7 +49,7 @@ Josef Kircher
 
 ## 1. Control loss due to bad road condition
 
-![img](../00_assets/TR01.png)
+![img](../../00_assets/TR01.png)
 
 ### Description
 
@@ -77,7 +77,7 @@ None
 
 ## 2. Unprotected left turn at intersection with oncoming traffic
 
-![img](../00_assets/TR08.png)
+![img](../../00_assets/TR08.png)
 
 ### Description
 
@@ -124,7 +124,7 @@ Turn left at the intersection without violating traffic rules
 
 ## 3. Right turn at an intersection with crossing traffic
 
-![img](../00_assets/TR09.png)
+![img](../../00_assets/TR09.png)
 
 ### Description
 
@@ -170,7 +170,7 @@ Turn right at the intersection without violating traffic rules
 
 ## 4. Crossing negotiation at unsignalized intersection
 
-![img](../00_assets/TR10.png)
+![img](../../00_assets/TR10.png)
 
 ### Description
 
@@ -213,7 +213,7 @@ Cross the intersection without violating traffic rules
 
 ## 5. Crossing traffic running a red light at intersection
 
-![img](../00_assets/TR07.png)
+![img](../../00_assets/TR07.png)
 
 ### Description
 
@@ -250,7 +250,7 @@ Emergency brake to avoid collision
 
 ## 6. Highway merge from on-ramp
 
-![img](../00_assets/TR18.png)
+![img](../../00_assets/TR18.png)
 
 ### Description
 
@@ -290,7 +290,7 @@ Join the highway traffic without any traffic violation
 
 ## 7. Highway cut-in from on-ramp
 
-![img](../00_assets/TR19.png)
+![img](../../00_assets/TR19.png)
 
 ### Description
 
@@ -332,7 +332,7 @@ Let vehicle join the highway traffic without any traffic violation
 
 ## 8. Static cut-in
 
-![img](../00_assets/TR20.png)
+![img](../../00_assets/TR20.png)
 
 ### Description
 
@@ -374,7 +374,7 @@ Let vehicle join the lane without any traffic violation
 
 ## 9. Highway exit
 
-![img](../00_assets/TR21.png)
+![img](../../00_assets/TR21.png)
 
 ### Description
 
@@ -420,7 +420,7 @@ Vehicle exits the highway traffic without any traffic violation
 
 ## 10. Yield to emergency vehicle
 
-![img](../00_assets/TR23.png)
+![img](../../00_assets/TR23.png)
 
 ### Description
 
@@ -460,7 +460,7 @@ Let emergency vehicle pass without any traffic violation
 
 ## 11. Obstacle in lane
 
-![img](../00_assets/TR14.png)
+![img](../../00_assets/TR14.png)
 
 ### Description
 
@@ -515,7 +515,7 @@ Pass an obstacle without any traffic violation
 
 ## 12. Door Obstacle
 
-![img](../00_assets/TR15.png)
+![img](../../00_assets/TR15.png)
 
 ### Description
 
@@ -564,7 +564,7 @@ Pass the open door without any traffic violation
 
 ## 13. Slow moving hazard at lane edge
 
-![img](../00_assets/TR16.png)
+![img](../../00_assets/TR16.png)
 
 ### Description
 
@@ -613,7 +613,7 @@ Pass the slow moving hazard without any traffic violation
 
 ## 14. Vehicle invading lane on bend
 
-![img](../00_assets/TR22.png)
+![img](../../00_assets/TR22.png)
 
 ### Description
 
@@ -649,7 +649,7 @@ None
 
 ## 15. Longitudinal control after leading vehicle brakes
 
-![img](../00_assets/TR02.png)
+![img](../../00_assets/TR02.png)
 
 ### Description
 
@@ -692,7 +692,7 @@ Slow down without crashing in vehicle in front of us
 
 ## 16. Obstacle avoidance without prior action
 
-![img](../00_assets/TR03.png)
+![img](../../00_assets/TR03.png)
 
 ### Description
 
@@ -743,7 +743,7 @@ Slow down without crashing in the obstacle in front of us
 
 ## 17. Pedestrian emerging from behind parked vehicle
 
-![img](../00_assets/TR17.png)
+![img](../../00_assets/TR17.png)
 
 ### Description
 
@@ -786,7 +786,7 @@ Slow down without crashing into the pedestrian in front of us
 
 ## 18. Obstacle avoidance with prior action
 
-![img](../00_assets/TR04.png)
+![img](../../00_assets/TR04.png)
 
 ### Description
 
@@ -825,7 +825,7 @@ Slow down without crashing into the obstacle in our path
 
 ## 19. Parking Cut-in
 
-![img](../00_assets/TR12.png)
+![img](../../00_assets/TR12.png)
 
 ### Description
 
@@ -862,7 +862,7 @@ Slow down without crashing into the car joining our lane
 
 ## 20. Lane changing to evade slow leading vehicle
 
-![img](../00_assets/TR05.png)
+![img](../../00_assets/TR05.png)
 
 ### Description
 
@@ -909,7 +909,7 @@ Change lane without any traffic violations
 
 ## 21. Passing obstacle with oncoming traffic
 
-![img](../00_assets/TR06.png)
+![img](../../00_assets/TR06.png)
 
 ### Description
 
@@ -962,7 +962,7 @@ Maneuver around obstacle without any traffic violations
 
 ## 22. Parking Exit
 
-![img](../00_assets/TR11.png)
+![img](../../00_assets/TR11.png)
 
 ### Description
 

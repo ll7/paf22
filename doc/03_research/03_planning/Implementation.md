@@ -11,7 +11,7 @@ Simon Erlbacher, Niklas Vogel
 
 ## Date
 
-24.11.2022
+29.11.2022
 
 ## Prerequisite
 
@@ -38,10 +38,10 @@ Simon Erlbacher, Niklas Vogel
 ---
 ## **Preplanning**
   
-The Preplanning receives the next [target point](basics.md#wie-sehen-die-daten-vom-leaderboard-fr-das-global-planning-aus) from the Carla Leaderboard. Also it reads the map data which is in [OpenDrive](https://www.asam.net/standards/detail/opendrive/) format. The [commonroad route planner (CRP)](https://gitlab.lrz.de/tum-cps/commonroad-route-planner/) from TUM can be used to calculate a Lanelet model (Note that almost all old PAF-Projects have adapted versions of the CRP). Internally the CRP converts the Map into a Scenario Object. When given a start and goal position and the current orientation of the vehicle a so called planning problem is created by the planer. The Orientation can be calculated on the Odometry and the GNUU data from the sensoring area. The Output (Solution of the planning problem) will be a route defined by a sequence of lanelets and a sequence of points (~ 10cm apart).
+The Preplanning receives the next [target point](./basics.md#wie-sehen-die-daten-vom-leaderboard-fr-das-global-planning-aus) from the Carla Leaderboard. Also it reads the map data which is in [OpenDrive](https://www.asam.net/standards/detail/opendrive/) format. The [commonroad route planner (CRP)](https://gitlab.lrz.de/tum-cps/commonroad-route-planner/) from TUM can be used to calculate a Lanelet model (Note that almost all old PAF-Projects have adapted versions of the CRP). Internally the CRP converts the Map into a Scenario Object. When given a start and goal position and the current orientation of the vehicle a so called planning problem is created by the planer. The Orientation can be calculated on the Odometry and the GNUU data from the sensoring area. The Output (Solution of the planning problem) will be a route defined by a sequence of lanelets and a sequence of points (~ 10cm apart).
 
 Lanelet Model Example :
-![](../../00_assets/Lanelets.png)[[Source]](https://github.com/ll7/psaf2/tree/main/Planning/global_planner)
+![Lanelet Model Example](../../00_assets/Lanelets.png)[[Source]](https://github.com/ll7/psaf2/tree/main/Planning/global_planner)
 
 
 Input: 
@@ -116,8 +116,6 @@ Output:
 * updated driving status (acting, local path planning)
 * Lanelet data (acting)
 
-## Occupancy grid and Markov Modell
-TODO
 
 ---
 ## Next steps

@@ -51,14 +51,14 @@ found [here](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sens
 The msgs necessary to control the vehicle via the Carla bridge can be
 found [here](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
 
-![Architecture overview](../00_assets/Übersicht.jpg)
+![Architecture overview](../00_assets/overview.jpg)
 
 ## Perception
 
 The perception is responsible for the efficient conversion of raw sensor and map data into a useful
 environment representation that can be used by the [Planning](#Planning) for further processing.
 
-Further information can be found [here](../03_research/02_perception/Readme.md).
+Further information regarding the perception can be found [here](../03_research/02_perception/Readme.md).
 
 ### Obstacle Detection and Classification
 
@@ -73,7 +73,7 @@ Subscriptions:
 - ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
 - ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
 - ````gnss```` ([sensor_msgs/NavSatFix](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/))
-- ```map``` (([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html)))
+- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
 Publishes:
 
@@ -173,7 +173,7 @@ Publishes:
 The planning uses the data from the [Perception](#Perception) to find a path on which the ego vehicle can safely reach
 its destination
 
-Further information can be found [here](../03_research/03_planning/Readme.md).
+Further information regarding the planning can be found [here](../03_research/03_planning/Readme.md).
 
 ### Preplanning
 
@@ -235,7 +235,7 @@ The job of this component is to translate the trajectory planned by the [Plannin
 steering controls for the vehicle.
 This node only takes on tasks that have lower computing time, so that a fast response of the component is ensured.
 
-Further information can be found [here](../03_research/01_acting/Readme.md).
+Further information regarding the acting can be found [here](../03_research/01_acting/Readme.md).
 
 ### Path following
 

@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
-from ackermann_msgs.msg import AckermannDrive
+from carla_msgs.msg import CarlaEgoVehicleControl
 from rospy import Publisher
+from ros_compatibility.qos import QoSProfile, DurabilityPolicy
+from std_msgs.msg import Bool, Header
 
 
 class Acting(CompatibleNode):
@@ -13,21 +15,39 @@ class Acting(CompatibleNode):
         self.control_loop_rate = self.get_param('control_loop_rate', 0.1)
         self.role_name = self.get_param('role_name', 'ego_vehicle')
 
-        self.ackermann_publisher: Publisher = self.new_publisher(
-            AckermannDrive,
-            f'/carla/{self.role_name}/ackermann_cmd',
-            qos_profile=0
+        self.control_publisher: Publisher = self.new_publisher(
+            CarlaEgoVehicleControl,
+            f'/carla/{self.role_name}/vehicle_control_cmd',
+            qos_profile=1
         )
+        self.status_pub = self.new_publisher(
+            Bool, f"/carla/{self.role_name}/status",
+            qos_profile=QoSProfile(
+                depth=1,
+                durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        )
+        self.status_pub.publish(True)
 
     def run(self):
         self.loginfo('Acting node running')
 
         def loop(timer_event=None):
             self.loginfo('Acting node loop')
-            message = AckermannDrive()
-            message.speed = 1
-            self.ackermann_publisher.publish(message)
+            message = CarlaEgoVehicleControl()
+
+            # create header with correct timestamp
+            header = Header()
+            header.frame_id = 'map'
+            header.stamp = roscomp.ros_timestamp(sec=self.get_time(),
+                                                 from_sec=True)
+            message.header = header
+
+            # set throttle to 0.1
+            message.throttle = 0.1
+            self.control_publisher.publish(message)
             self.loginfo('Acting message published')
+            self.loginfo(message)
+            self.loginfo(self.get_time())
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
@@ -35,8 +55,8 @@ class Acting(CompatibleNode):
 
 def main(args=None):
     """
-    main function runs the node
-    :param args:
+      main function runs the node
+      :param args:
     """
     roscomp.init('acting', args=args)
 

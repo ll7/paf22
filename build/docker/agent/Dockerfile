@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
         mlocate python3-pip wget git python-is-python3 \
         ros-noetic-ackermann-msgs ros-noetic-derived-object-msgs \
         ros-noetic-carla-msgs ros-noetic-pcl-conversions \
-        ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros
+        ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server
 
 SHELL ["/bin/bash", "-c"]
 
@@ -72,6 +72,8 @@ RUN python -m pip install -r $LEADERBOARD_ROOT/requirements.txt
 RUN sudo mkdir /opt/leaderboard-py3 && sudo chown $USERNAME:$USERNAME /opt/leaderboard-py3 && \
     ln -s $LEADERBOARD_ROOT/leaderboard /opt/leaderboard-py3/leaderboard && \
     ln -s $SCENARIO_RUNNER_ROOT/srunner /opt/leaderboard-py3/srunner
+
+RUN python -m pip install roslibpy
 
 ENV ROUTES=$LEADERBOARD_ROOT/data/routes
 ENV REPETITIONS=1

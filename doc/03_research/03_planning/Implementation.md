@@ -6,7 +6,7 @@ and how the topics are edited
 
 ---
 
-## Author
+## Authors
 
 Simon Erlbacher, Niklas Vogel
 
@@ -14,15 +14,11 @@ Simon Erlbacher, Niklas Vogel
 
 29.11.2022
 
-## Prerequisite
-
-
 ---
 <!-- TOC -->
-* [Planning Implementation Details](#coding-style-guidelines)
-  * [Author](#author)
+* [Planning Implementation](#planning-implementation)
+  * [Authors](#authors)
   * [Date](#date)
-  * [Prerequisite](#prerequisite)
   * [Overview](#overview)
   * [Preplanning](#preplanning)
   * [Decision Making](#decision-making)

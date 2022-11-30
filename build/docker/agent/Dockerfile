@@ -30,19 +30,24 @@ RUN apt-get update && apt-get install -y \
 
 SHELL ["/bin/bash", "-c"]
 
-# Create and apply the user
+# Create and apply the non-root user
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && apt-get update \
     && apt-get install -y sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
-
 USER $USERNAME
+
+# create a catkin workspace
 WORKDIR /catkin_ws
+# make sure the catkin workspace belongs to the user
 RUN sudo chown $USERNAME:$USERNAME /catkin_ws && mkdir src
+
+# install the CARLA ROS bridge
 ARG ROS_BRIDGE_GITHUB_URL=https://github.com/carla-simulator/ros-bridge
 RUN git clone -b leaderboard-2.0 --recurse-submodules --single-branch $ROS_BRIDGE_GITHUB_URL src/ros-bridge
+# apply patch to fix the build of carla_ros_bridge
 RUN cd src/ros-bridge/carla_ackermann_control && \
     sed -i '24 i \  <build_depend condition="$ROS_VERSION == 1">carla_msgs</build_depend>' package.xml
 RUN source /opt/ros/noetic/setup.bash && \
@@ -50,6 +55,9 @@ RUN source /opt/ros/noetic/setup.bash && \
     catkin_make install
 
 ENV CARLA_ROS_BRIDGE_ROOT=/catkin_ws/src/ros-bridge
+
+# avoid python warnings about missing bin directory in PATH
+# (as we're not running as root, pip installs into ~/.local/bin)
 ENV PATH=$PATH:/home/$USERNAME/.local/bin
 
 # install simple_pid
@@ -75,6 +83,8 @@ RUN sudo mkdir /opt/leaderboard-py3 && sudo chown $USERNAME:$USERNAME /opt/leade
 
 RUN python -m pip install roslibpy
 
+
+# environment variables for the leaderboard_evaluator
 ENV ROUTES=$LEADERBOARD_ROOT/data/routes
 ENV REPETITIONS=1
 ENV DEBUG_CHALLENGE=1
@@ -87,6 +97,7 @@ ENV CARLA_SIM_HOST=localhost
 ENV CARLA_SIM_WAIT_SECS=15
 ENV SCENARIO_RUNNER_PATH=/opt/scenario_runner
 
+# setup python path for PyCharm integration
 RUN echo /catkin_ws/install/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
     echo /catkin_ws/devel/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
     echo /opt/ros/noetic/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
@@ -99,15 +110,16 @@ RUN sudo mkdir /workspace && sudo chown $USERNAME:$USERNAME /workspace
 # Add agent code
 COPY --chown=$USERNAME:$USERNAME ./code /workspace/code/
 
+# Link code into catkin workspace
 RUN ln -s /workspace/code /catkin_ws/src
 
+# re-make the catkin workspace
 RUN source /opt/ros/noetic/setup.bash && catkin_make
 
 ADD ./build/docker/agent/entrypoint.sh /entrypoint.sh
-ADD ./build/docker/agent/agent.launch /agent.launch
 
+# set the default working directory to the code
 WORKDIR /workspace/code
-
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]

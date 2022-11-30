@@ -24,7 +24,7 @@ Simon Erlbacher, Niklas Vogel
   * [Lokalisierung](#lokalisierung)
   * [Hindernisse erkennen](#hindernisse-erkennen)
   * [Sicherheitseigenschaften](#sicherheitseigenschaften)
-  * [Decision Making (Behaviour Planner)](#decision-making--behaviour-planner-)
+  * [Decision Making (Behaviour Planner)](#decision-making-behaviour-planner)
   * [Trajektorie](#trajektorie)
   * [Trajektorie Tracking](#trajektorie-tracking)
   * [Offene Fragen aus dem Issue](#offene-fragen-aus-dem-issue)

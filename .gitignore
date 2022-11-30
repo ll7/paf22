@@ -1,2 +1,5 @@
 .DS_Store
 .idea
+code/build
+code/log
+code/simulation_results.json

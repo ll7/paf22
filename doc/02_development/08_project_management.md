@@ -29,8 +29,8 @@ Josef Kircher
       * [Example for "Feature"](#example-for--feature-)
     * [🚗 Bug in CARLA Simulator](#-bug-in-carla-simulator)
       * [Example for "Bug in CARLA Simulator"](#example-for--bug-in-carla-simulator-)
-
   * [Create a Pull Request](#create-a-pull-request)
+  * [Merging a Pull Request](#merging-a-pull-request)
 <!-- TOC -->
 
 ---
@@ -92,3 +92,12 @@ For completing the pull request, fill out the template that opens up automatical
 Merge the pull request after the review process is complete and all the feedback from the reviewer has been worked in.
 
 For more information about the review process, see [Review process](./07_review_guideline.md).
+
+## Merging a Pull Request
+
+The reviewer should always be the person to merge the PR after an approved review.
+
+If the reviewer has anything he/she would like to have changed or clarified, the review should be marked as `Request Changes`.
+If there are no uncertainties the reviewer merges the PR. After a revision of the requested changes the reviewer conducts a second review, if he/she is satisfied with the changes, the PR will be merged by him/her.
+
+Long story short, the reviewer who approves the PR should merge. Only approve if there is nothing to change.

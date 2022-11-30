@@ -28,10 +28,19 @@ class Acting(CompatibleNode):
         )
 
     def run(self):
+        """
+        Starts the main loop of the node
+        :return:
+        """
         self.status_pub.publish(True)
         self.loginfo('Acting node running')
 
         def loop(timer_event=None):
+            """
+            Main loop of the acting node
+            :param timer_event: Timer event from ROS
+            :return:
+            """
             message = CarlaEgoVehicleControl()
 
             # set throttle to 0.1
@@ -44,18 +53,13 @@ class Acting(CompatibleNode):
                                                          from_sec=True)
             self.control_publisher.publish(message)
 
-            # debug
-            self.loginfo('header: {}'.format(message.header))
-            self.loginfo(
-                roscomp.ros_timestamp(self.get_time(), from_sec=True))
-
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
 
 def main(args=None):
     """
-      main function runs the node
+      main function starts the acting node
       :param args:
     """
     roscomp.init('acting', args=args)

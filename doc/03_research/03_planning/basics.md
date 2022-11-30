@@ -17,7 +17,7 @@ Simon Erlbacher, Niklas Vogel
     * [Vehicle Controller](#vehicle-controller)
     * [Decision-Making-Component](#decision-making-component)
   * [PAF 2021-2](#paf-2021-2)
-  * [PAF 2020 (1 & 2)](#paf-2020--1--2-)
+  * [PAF 2020 (1 & 2)](#paf-2020-1--2)
   * [Informationen aus alten Projekten](#informationen-aus-alten-projekten)
   * [Planning Unterteilung](#planning-unterteilung)
   * [Probleme](#probleme)
@@ -31,10 +31,10 @@ Simon Erlbacher, Niklas Vogel
     * [Was ist zu tun?](#was-ist-zu-tun)
     * [Eingang](#eingang)
     * [Ausgang](#ausgang)
-    * [Wie sehen die Daten vom Leaderboard für das Global Planning aus](#wie-sehen-die-daten-vom-leaderboard-fr-das-global-planning-aus)
+    * [Wie sehen die Daten vom Leaderboard für das Global Planning aus](#wie-sehen-die-daten-vom-leaderboard-für-das-global-planning-aus)
     * [Daten aus dem LB und Global planning, wie kann daraus eine Trajektorie generiert werden](#daten-aus-dem-lb-und-global-planning-wie-kann-daraus-eine-trajektorie-generiert-werden)
     * [Wie sieht die Grenze zwischen global und local plan aus?](#wie-sieht-die-grenze-zwischen-global-und-local-plan-aus)
-    * [Müssen Staus umfahren werden?](#mssen-staus-umfahren-werden)
+    * [Müssen Staus umfahren werden?](#müssen-staus-umfahren-werden)
     * [Sollgeschwindigkeitsplanung](#sollgeschwindigkeitsplanung)
 <!-- TOC -->
 

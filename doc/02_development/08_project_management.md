@@ -101,3 +101,9 @@ If the reviewer has anything he/she would like to have changed or clarified, the
 If there are no uncertainties the reviewer merges the PR. After a revision of the requested changes the reviewer conducts a second review, if he/she is satisfied with the changes, the PR will be merged by him/her.
 
 Long story short, the reviewer who approves the PR should merge. Only approve if there is nothing to change.
+
+## Deadlines for pull requests and reviews
+
+The deadline for submitting a pull request is **Tuesday** before the end of the sprint at **12:15**.
+
+The deadline for submitting a review for a pull request is **Wednesday** before the end of the sprint at **12:15**.

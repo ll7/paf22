@@ -23,10 +23,10 @@ Simon Erlbacher, Niklas Vogel
   * [Author](#author)
   * [Date](#date)
   * [Prerequisite](#prerequisite)
-  * [Visualization](#visualization)
+  * [Overview](#overview)
   * [Preplanning](#preplanning)
-  * [Local Path Planning](#local-path-planning)
   * [Decision Making](#decision-making)
+  * [Local Path Planning](#local-path-planning)
   * [Next steps](#next-steps)
 * [Sources](#sources)
 <!-- TOC -->

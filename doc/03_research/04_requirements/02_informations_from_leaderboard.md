@@ -139,9 +139,9 @@ Every agent starts with a base infraction score of 1.0 at the beginning.
 
 Complete score is arithmetic mean of all routes driving scores.
 
-### Driving Score for route i
+### Driving score for single route
 
-Product of route completion of route i and Infraction penalty of route i
+Product of route completion and infraction penalty of this route
 
 ### Infraction penalty
 

@@ -85,12 +85,12 @@ RUN python -m pip install roslibpy
 
 
 # environment variables for the leaderboard_evaluator
-ENV ROUTES=$LEADERBOARD_ROOT/data/routes
+ENV ROUTES=$LEADERBOARD_ROOT/data/routes_devtest.xml
 ENV REPETITIONS=1
 ENV DEBUG_CHALLENGE=1
-ENV TEAM_AGENT=$LEADERBOARD_ROOT/leaderboard/autoagents/human_agent.py
-#ENV TEAM_AGENT=/workspace/code/agent/src/agent/agent.py
-ENV CHECKPOINT_ENDPOINT=$LEADERBOARD_ROOT/results.json
+#ENV TEAM_AGENT=$LEADERBOARD_ROOT/leaderboard/autoagents/human_agent.py
+ENV TEAM_AGENT=/workspace/code/agent/src/agent/agent.py
+ENV CHECKPOINT_ENDPOINT=/workspace/code/simulation_results.json
 ENV CHALLENGE_TRACK=MAP
 
 ENV CARLA_SIM_HOST=localhost
@@ -122,4 +122,10 @@ ADD ./build/docker/agent/entrypoint.sh /entrypoint.sh
 WORKDIR /workspace/code
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/bin/bash"]
+CMD ["bash", "-c", "sleep 10 && python3 /opt/leaderboard/leaderboard/leaderboard_evaluator.py --debug=${DEBUG_CHALLENGE} \
+--repetitions=${REPETITIONS} \
+--checkpoint=${CHECKPOINT_ENDPOINT} \
+--track=${CHALLENGE_TRACK} \
+--agent=${TEAM_AGENT} \
+--routes=${ROUTES} \
+--host=${CARLA_SIM_HOST}"]

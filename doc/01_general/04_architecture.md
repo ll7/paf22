@@ -13,31 +13,30 @@ Marco Riedenauer, Simon Erlbacher, Julian Graf
 
 25.11.2022
 
-
 ---
 <!-- TOC -->
 
 * [Architecture of vehicle agent](#architecture-of-vehicle-agent)
-    * [Author](#authors)
-    * [Date](#date)
-    * [Overview](#overview)
-    * [Perception](#perception)
-        * [Obstacle Detection and Classification](#obstacle-detection-and-classification)
-        * [Lane detection](#lane-detection)
-        * [Traffic Light Detection](#traffic-light-detection)
-        * [Traffic Signs Detection](#traffic-signs-detection)
-        * [Prediction](#prediction)
-        * [Localization](#localization)
-    * [Planning](#planning)
-        * [Preplanning](#preplanning)
-        * [Decision Making](#decision-making)
-        * [Local path planning](#local-path-planning)
-    * [Acting](#acting)
-        * [Path following](#path-following)
-        * [Velocity control](#velocity-control)
-        * [Emergency](#emergency)
-    * [Visualization](#visualization)
-    * [Topics](#topics)
+  * [Author](#authors)
+  * [Date](#date)
+  * [Overview](#overview)
+  * [Perception](#perception)
+    * [Obstacle Detection and Classification](#obstacle-detection-and-classification)
+    * [Lane detection](#lane-detection)
+    * [Traffic Light Detection](#traffic-light-detection)
+    * [Traffic Signs Detection](#traffic-signs-detection)
+    * [Prediction](#prediction)
+    * [Localization](#localization)
+  * [Planning](#planning)
+    * [Preplanning](#preplanning)
+    * [Decision Making](#decision-making)
+    * [Local path planning](#local-path-planning)
+  * [Acting](#acting)
+    * [Path following](#path-following)
+    * [Velocity control](#velocity-control)
+    * [Emergency](#emergency)
+  * [Visualization](#visualization)
+  * [Topics](#topics)
 
 <!-- TOC -->
 
@@ -69,15 +68,15 @@ In the case of dynamic objects, an attempt is made to recognize the direction an
 
 Subscriptions:
 
-- ```radar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
-- ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
-- ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
-- ````gnss```` ([sensor_msgs/NavSatFix](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/))
-- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+* ```radar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
+* ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
+* ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
+* ````gnss```` ([sensor_msgs/NavSatFix](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/))
+* ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
 Publishes:
 
-- ```obstacles``` (Custom msg:
+* ```obstacles``` (Custom msg:
   obstacle ([vision_msgs/Detection3DArray Message](http://docs.ros.org/en/api/vision_msgs/html/msg/Detection3DArray.html))
   and its classification ([std_msgs/String Message](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/String.html)))
 
@@ -89,14 +88,14 @@ and to plan and execute lane changes.
 
 Subscriptions:
 
-- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-- ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
-- ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
-- ```gnss``` ([sensor_msgs/NavSatFix](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/))
+* ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+* ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
+* ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
+* ```gnss``` ([sensor_msgs/NavSatFix](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/))
 
-- Publishes:
+* Publishes:
 
-- ```lanes``` ([derived_object_msgs/LaneModels Message](http://docs.ros.org/en/kinetic/api/derived_object_msgs/html/msg/LaneModels.html))
+* ```lanes``` ([derived_object_msgs/LaneModels Message](http://docs.ros.org/en/kinetic/api/derived_object_msgs/html/msg/LaneModels.html))
 
 ### Traffic Light Detection
 
@@ -106,14 +105,14 @@ are recognized early and reliably.
 
 Subscriptions:
 
-- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-- ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
-- ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
-- ```gnss``` ([sensor_msgs/NavSatFix](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/))
+* ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+* ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
+* ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
+* ```gnss``` ([sensor_msgs/NavSatFix](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/))
 
 Publishes:
 
-- ```traffic_lights``` (Custom msg:
+* ```traffic_lights``` (Custom msg:
   state ([std_msgs/UInt8 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt8.html])),
   position ([geometry_msgs/Pose Message](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Pose.html)),
   distance_to_stop_line ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html)))
@@ -126,12 +125,12 @@ are recognized early and reliably.
 
 Subscriptions:
 
-- ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
-- ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
+* ```rgb_camera``` ([sensor_msgs/Image](https://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html))
+* ```lidar``` ([sensor_msgs/PointCloud2](https://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html))
 
 Publishes:
 
-- ```traffic_signs``` (Custom msg:
+* ```traffic_signs``` (Custom msg:
   type ([std_msgs/UInt8 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt8.html])),
   position ([geometry_msgs/Pose Message](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Pose.html)),
   distance_to_stop_line
@@ -144,12 +143,12 @@ Tries to predict the movement of dynamic objects recognized in the
 
 Subscriptions:
 
-- ```obstacles``` ([vision_msgs/Detection3DArray Message](http://docs.ros.org/en/api/vision_msgs/html/msg/Detection3DArray.html))
-- ```lanes``` ([derived_object_msgs/LaneModels Message](http://docs.ros.org/en/kinetic/api/derived_object_msgs/html/msg/LaneModels.html))
+* ```obstacles``` ([vision_msgs/Detection3DArray Message](http://docs.ros.org/en/api/vision_msgs/html/msg/Detection3DArray.html))
+* ```lanes``` ([derived_object_msgs/LaneModels Message](http://docs.ros.org/en/kinetic/api/derived_object_msgs/html/msg/LaneModels.html))
 
 Publishes:
 
-- ```predictions``` (Custom msg: array of
+* ```predictions``` (Custom msg: array of
   vehicle_id ([std_msgs/UInt16 Message](https://docs.ros.org/en/api/std_msgs/html/msg/UInt16.html)) and
   vehicle_path ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html)))
 
@@ -159,14 +158,14 @@ Provides corrected accurate position, direction and speed of the ego vehicle
 
 Subscriptions:
 
-- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-- ```imu``` ([sensor_msgs/Imu Message](https://docs.ros.org/en/api/sensor_msgs/html/msg/Imu.html))
-- ```speedometer``` ([std_msgs/Float32](https://docs.ros.org/en/api/std_msgs/html/msg/Float32.html))
-- ```gnss``` ([sensor_msgs/NavSatFix](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/))
+* ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+* ```imu``` ([sensor_msgs/Imu Message](https://docs.ros.org/en/api/sensor_msgs/html/msg/Imu.html))
+* ```speedometer``` ([std_msgs/Float32](https://docs.ros.org/en/api/std_msgs/html/msg/Float32.html))
+* ```gnss``` ([sensor_msgs/NavSatFix](https://carla.readthedocs.io/projects/ros-bridge/en/latest/ros_sensors/))
 
 Publishes:
 
-- ```ego_position``` ([nav_msgs/Odometry Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Odometry.html))
+* ```ego_position``` ([nav_msgs/Odometry Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Odometry.html))
 
 ## Planning
 
@@ -184,13 +183,13 @@ yet taken into account.
 
 Subscriptions:
 
-- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-- ```navigation``` (waypoints and high-level route description)
-- ```odometry``` ([nav_msgs/Odometry](https://docs.ros.org/en/api/nav_msgs/html/msg/Odometry.html))
+* ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+* ```navigation``` (waypoints and high-level route description)
+* ```odometry``` ([nav_msgs/Odometry](https://docs.ros.org/en/api/nav_msgs/html/msg/Odometry.html))
 
 Publishes:
 
-- ```provisional_path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+* ```provisional_path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
 
 ### Decision Making
 
@@ -201,15 +200,15 @@ Based on this decision, the [Local path planning](#Local-path-planning) plans a 
 
 Subscriptions:
 
-- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-- ```navigation``` (waypoints and high-level route description)
-- ```odometry``` ([nav_msgs/Odometry](https://docs.ros.org/en/api/nav_msgs/html/msg/Odometry.html))
-- ```provisional_path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
-- all data from [Perception](#Perception)
+* ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+* ```navigation``` (waypoints and high-level route description)
+* ```odometry``` ([nav_msgs/Odometry](https://docs.ros.org/en/api/nav_msgs/html/msg/Odometry.html))
+* ```provisional_path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+* all data from [Perception](#Perception)
 
 Publishes:
 
-- ```decision``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+* ```decision``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
 ### Local path planning
 
@@ -218,16 +217,16 @@ Can publish the distance to the vehicle in front to use the [Path following](#pa
 
 Subscriptions:
 
-- ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-- ```odometry``` ([nav_msgs/Odometry](https://docs.ros.org/en/api/nav_msgs/html/msg/Odometry.html))
-- ```provisional_path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
-- all data from [Perception](#Perception)
+* ```map``` ([std_msgs/String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+* ```odometry``` ([nav_msgs/Odometry](https://docs.ros.org/en/api/nav_msgs/html/msg/Odometry.html))
+* ```provisional_path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+* all data from [Perception](#Perception)
 
 Publishes:
 
-- ```path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
-- ```max_velocity``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
-- ```distance_to_next_vehicle``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
+* ```path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+* ```max_velocity``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
+* ```distance_to_next_vehicle``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
 
 ## Acting
 
@@ -244,15 +243,15 @@ the [Local path planning](#Local-path-planning).
 
 Subscriptions:
 
-- ```path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+* ```path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
 
 Publishes:
 
-- ```steer```
+* ```steer```
   for ```vehicle_control_cmd_manual``` ([CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg))
 
 Note: To avoid competing ```vehicle_control_cmd_manual``` msgs, [Path following](#path-following) should publish custom
-steering msgs that can then be published combined with velocity, etc. to single ```vehicle_control_cmd_manual``` 
+steering msgs that can then be published combined with velocity, etc. to single ```vehicle_control_cmd_manual```
 by [Velocity control](#velocity-control).
 
 ### Velocity control
@@ -263,14 +262,14 @@ distance to the vehicle in front.
 
 Subscriptions:
 
-- ```ego_position``` ([nav_msgs/Odometry Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Odometry.html))
-- ```max_velocity``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
-- ```distance_to_next_vehicle``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
-- ```path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
+* ```ego_position``` ([nav_msgs/Odometry Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Odometry.html))
+* ```max_velocity``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
+* ```distance_to_next_vehicle``` ([std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html]))
+* ```path``` ([nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html))
 
 Publishes:
 
-- ```throttle```,  ```brake```,  ```reverse```
+* ```throttle```,  ```brake```,  ```reverse```
   for ```vehicle_control_cmd_manual``` ([CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg))
 
 ### Emergency
@@ -280,12 +279,12 @@ Initiates emergency braking in the event of an emergency and notifies all notes 
 
 Subscriptions:
 
-- all data that's needed
+* all data that's needed
 
 Publishes:
 
-- ```vehicle_control_cmd_manual``` ([CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg))
-- ```emergency``` ([std_msgs/Bool Message](http://docs.ros.org/en/api/std_msgs/html/msg/Bool.html))
+* ```vehicle_control_cmd_manual``` ([CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg))
+* ```emergency``` ([std_msgs/Bool Message](http://docs.ros.org/en/api/std_msgs/html/msg/Bool.html))
 
 ## Visualization
 
@@ -293,7 +292,7 @@ Visualizes outputs of certain nodes to provide a basis for debugging.
 
 Subscriptions:
 
-- all data that's needed
+* all data that's needed
 
 ## Topics
 

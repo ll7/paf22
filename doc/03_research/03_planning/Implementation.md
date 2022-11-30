@@ -1,9 +1,9 @@
 # Planning Implementation
 
 **Summary:** 
-
 The document gives a first impression of how the planning could/should work
 and how the topics are edited
+
 ---
 
 ## Author

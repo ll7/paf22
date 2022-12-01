@@ -101,13 +101,46 @@ It is one way to display an algorithm that only contains conditional control sta
 
 ### PAF21-2
 
-**State machine**
+**No clear concept**
 
-* state machine integrated in local planner
+* some sort of state machine integrated in local planner
 * obstacle planner for dynamic obstacles (pedestrians, cars, bicycles)
 * useful parameters which we could adapt
 * path prediction for obstacles
-* obstacles are only interesting if the cross the path of the ego vehicle
+* obstacles are only interesting if they cross the path of the ego vehicle
+
+**Take away**
+
+* Obstacle planner might be useful for dynamic obstacle detection if not handled elsewhere
+* path prediction might reduce the number objects tracked that we could interfere with
+* Also, if we adapt our local plan this path prediction of other vehicles might come in handy
+* On the other hand, overhead to keep track of vehicles and maybe repredict paths if some vehicles change direction
+
+### PSAF1(2020)
+
+**State machine**
+
+* Three driving functions: Driving, stopping at traffic light, stopping at stop sign
+* First project iteration so state machine more simple
+* still covers many important scenarios
+
+**Take away**
+
+* Good starting point to have a minimal viable state machine
+* Need adaption depending on what information we are getting forwarded/process in the planning module
+
+### PSAF2(2020)
+
+**Decision tree**
+
+* This team used a decision tree to cover the major driving scenarios
+* Within the scenarios the actions are more linear
+* Reminds me of the execution of a state where driving scenarios are the states and the execution the things our local planner should do within that state
+
+**Take Away**
+
+* Even though the approach is different, the execution might be similar to the other team algorithms
+* We might not be interested in a decision tree as we want to keep the option to switch to a Markov chain, which would be more overhead if we start with a decision tree
 
 ## Python ROS libraries for these decision-making algorithms
 
@@ -116,3 +149,9 @@ It is one way to display an algorithm that only contains conditional control sta
 <https://de.wikipedia.org/wiki/Markow-Kette#:~:text=Eine%20Markow%2DKette%20(englisch%20Markov,das%20Eintreten%20zuk%C3%BCnftiger%20Ereignisse%20anzugeben.>
 
 <https://github.com/ll7/paf21-1/wiki/Decision-Making-Component>
+
+<https://github.com/ll7/paf21-2/tree/main/paf_ros/paf_planning>
+
+<https://github.com/ll7/psaf1/tree/master/psaf_ros/psaf_local_planner>
+
+<https://github.com/ll7/psaf2/tree/main/Planning/behavior_agent>

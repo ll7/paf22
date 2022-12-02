@@ -22,15 +22,23 @@ Josef Kircher
   * [Prerequisite](#prerequisite)
   * [Decision-making algorithms](#decision-making-algorithms)
     * [State machine](#state-machine)
-      * [Advantages](#advantages)
-      * [Disadvantages](#disadvantages)
     * [Markov Chain](#markov-chain)
-      * [Advantages](#advantages)
-      * [Disadvantages](#disadvantages)
-    * [Behaviour Tree](#behaviour-tree)
-      * [Advantages](#advantages)
-      * [Disadvantages](#disadvantages)
-  * [Python ROS libraries for these decision-making algorithms](#python-ros-libraries-for-these-decision-making-algorithms)
+    * [Decision Tree](#decision-tree)
+  * [Previous approaches](#previous-approaches)
+    * [PAF21-1](#paf21-1)
+    * [PAF21-2](#paf21-2)
+    * [PSAF1(2020)](#psaf1--2020-)
+    * [PSAF2(2020)](#psaf2--2020-)
+  * [Python or ROS libraries for these decision-making algorithms](#python-or-ros-libraries-for-these-decision-making-algorithms)
+    * [State machines](#state-machines)
+      * [SMACH](#smach)
+      * [SMACC](#smacc)
+    * [Markov Chains](#markov-chains)
+      * [QuantEcon](#quantecon)
+      * [markov_decision_making](#markov_decision_making)
+    * [Decision trees](#decision-trees)
+      * [pytrees](#pytrees)
+  * [Conclusion](#conclusion)
     * [Sources](#sources)
 <!-- TOC -->
 
@@ -41,7 +49,8 @@ Josef Kircher
 A finite-state machine (FSM) or finite-state automaton (FSA, plural: automata), finite automaton, or simply a state machine, is a mathematical model of computation.
 It is an abstract machine that can be in exactly one of a finite number of states at any given time.
 The FSM can change from one state to another in response to some inputs; the change from one state to another is called a transition.
-An FSM is defined by a list of its states, its initial state, and the inputs that trigger each transition. Finite-state machines are of two types—deterministic finite-state machines and non-deterministic finite-state machines. A deterministic finite-state machine can be constructed equivalent to any non-deterministic one.
+An FSM is defined by a list of its states, its initial state, and the inputs that trigger each transition.
+Finite-state machines are of two types—deterministic finite-state machines and non-deterministic finite-state machines. A deterministic finite-state machine can be constructed equivalent to any non-deterministic one.
 
 #### Advantages
 
@@ -88,12 +97,12 @@ It is one way to display an algorithm that only contains conditional control sta
 
 ### PAF21-1
 
-**State machine**
+#### State machine
 
 * 2 state machines: one for maneuvers, one for speed control
 * Speed control more complex, when to brake seems like the most challenging task
 
-**Take away**
+#### Take away
 
 * Some states seem to be comparable to what we are required to accomplish by the leaderboard
 * Our task might be more complex, needs additional states and transitions
@@ -101,7 +110,7 @@ It is one way to display an algorithm that only contains conditional control sta
 
 ### PAF21-2
 
-**No clear concept**
+#### No clear concept
 
 * some sort of state machine integrated in local planner
 * obstacle planner for dynamic obstacles (pedestrians, cars, bicycles)
@@ -109,7 +118,7 @@ It is one way to display an algorithm that only contains conditional control sta
 * path prediction for obstacles
 * obstacles are only interesting if they cross the path of the ego vehicle
 
-**Take away**
+#### Take away
 
 * Obstacle planner might be useful for dynamic obstacle detection if not handled elsewhere
 * path prediction might reduce the number objects tracked that we could interfere with
@@ -118,37 +127,37 @@ It is one way to display an algorithm that only contains conditional control sta
 
 ### PSAF1(2020)
 
-**State machine**
+#### State machine
 
 * Three driving functions: Driving, stopping at traffic light, stopping at stop sign
 * First project iteration so state machine more simple
 * still covers many important scenarios
 
-**Take away**
+#### Take away
 
 * Good starting point to have a minimal viable state machine
 * Need adaption depending on what information we are getting forwarded/process in the planning module
 
 ### PSAF2(2020)
 
-**Decision tree**
+#### Decision tree
 
 * This team used a decision tree to cover the major driving scenarios
 * Within the scenarios the actions are more linear
 * Reminds me of the execution of a state where driving scenarios are the states and the execution the things our local planner should do within that state
 
-**Take Away**
+#### Take Away
 
 * Even though the approach is different, the execution might be similar to the other team algorithms
 * We might not be interested in a decision tree as we want to keep the option to switch to a Markov chain, which would be more overhead if we start with a decision tree
 
 ## Python or ROS libraries for these decision-making algorithms
 
-### State machine
+### State machines
 
 #### SMACH
 
-* Task-level architecture for creating state machines for robot behaviour. 
+* Task-level architecture for creating state machines for robot behaviour.
 * Based on Python
 * Fast prototyping: Quickly create state machines
 * Complex state machines can easily be created
@@ -165,6 +174,8 @@ Not use SMACH for:
 * Unstructured tasks: SMACH is not efficient in sheduling unstructured tasks
 * Low-level systems: SMACH is not build for high efficiency, might fall short for emergency maneuvers
 
+* Simple examples run without problem
+
 #### SMACC
 
 * event-driven, asynchronous, behavioral state machine library
@@ -179,7 +190,9 @@ Why not use SMACC:
 * more sophisticated library might need more time to get used to
 * awful country music in the back of tutorial videos
 
-### Markov Chain
+* Tutorials do not run without further debugging which I didn't invest the time to do so
+
+### Markov Chains
 
 #### QuantEcon
 
@@ -209,6 +222,12 @@ Why not use markov_decision_making:
 * used by a group two years ago
 * not usable for real-time application code according to their docs
 * priority handling - higher level interrupts are handled first
+
+## Conclusion
+
+In my opinion, a state machine would be a great start for the project. There are plenty of resources available from recent projects.
+It needs to be further discussed if the libraries presented above possess the needed functionality to run our state machine. The planning team might meet on the issue and present a suitable solution.
+It is possible to start with a skeleton of both and compare them.
 
 ### Sources
 

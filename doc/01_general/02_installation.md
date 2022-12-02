@@ -73,4 +73,6 @@ sudo systemctl restart docker
 
 ## 🚨 Common Problems
 
-Currently we are not aware about any Problems.
+**`b5: command not found`**
+
+If you already installed b5 (`pip install b5`) try to log out and log back in ([possible reason](https://stackoverflow.com/a/73256004))

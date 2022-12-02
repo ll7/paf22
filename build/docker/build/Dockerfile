@@ -1,5 +1,5 @@
 # syntax = edrevo/dockerfile-plus
 
-INCLUDE+ ./build/docker/agent/Dockerfile
+INCLUDE+ ./../agent/Dockerfile
 
 RUN cd

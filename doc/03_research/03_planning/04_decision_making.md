@@ -142,7 +142,73 @@ It is one way to display an algorithm that only contains conditional control sta
 * Even though the approach is different, the execution might be similar to the other team algorithms
 * We might not be interested in a decision tree as we want to keep the option to switch to a Markov chain, which would be more overhead if we start with a decision tree
 
-## Python ROS libraries for these decision-making algorithms
+## Python or ROS libraries for these decision-making algorithms
+
+### State machine
+
+#### SMACH
+
+* Task-level architecture for creating state machines for robot behaviour. 
+* Based on Python
+* Fast prototyping: Quickly create state machines
+* Complex state machines can easily be created
+* Introspection: smach_viewer provides a visual aid to follow the state machine executing its tasks
+  * smach_viewer is unmaintained and does not work with noetic
+* Allows nested state machines
+* Values can be passed between states
+* Tutorials and documentation seems to be easy to understand so creating a first state machine shouldn't be too hard
+* working with several ROS topics and messages within the state machine needs to be evaluated:
+  * the execution of states is mostly planned to happen in the local planner so for just sending a ROS message, SMACH might be efficient
+
+Not use SMACH for:
+
+* Unstructured tasks: SMACH is not efficient in sheduling unstructured tasks
+* Low-level systems: SMACH is not build for high efficiency, might fall short for emergency maneuvers
+
+#### SMACC
+
+* event-driven, asynchronous, behavioral state machine library
+* real-time ROS applications
+* written in C++
+* designed to allow programmers to build robot control applications for multicomponent robots, in an intuitive and systematic manner.
+* well maintained, lots of prebuild state machines to possibly start from
+
+Why not use SMACC:
+
+* might get some time to get back into C++
+* more sophisticated library might need more time to get used to
+* awful country music in the back of tutorial videos
+
+### Markov Chain
+
+#### QuantEcon
+
+* a economics library for implementing Markov chains
+* more focussed on simulation than actually using it in an AD agent
+* maybe usable for testing and simulating a Markov chain before implementing it
+
+#### markov_decision_making
+
+* ROS library for robot decision-making based on Markov Decision Problems
+* written in C++
+* callback-based action interpretation allows to use other frameworks (SMACH)
+* relatively easy to implement hierarchical MDPs
+* supports synchronous and asynchronous execution
+
+Why not use markov_decision_making:
+
+* not maintained
+* only works with ROS hydro
+
+### Decision trees
+
+#### pytrees
+
+* easy framework for implementing behaviour trees
+* written in python
+* used by a group two years ago
+* not usable for real-time application code according to their docs
+* priority handling - higher level interrupts are handled first
 
 ### Sources
 
@@ -155,3 +221,17 @@ It is one way to display an algorithm that only contains conditional control sta
 <https://github.com/ll7/psaf1/tree/master/psaf_ros/psaf_local_planner>
 
 <https://github.com/ll7/psaf2/tree/main/Planning/behavior_agent>
+
+<http://wiki.ros.org/smach>
+
+<http://wiki.ros.org/smach_viewer>
+
+<https://automaticaddison.com/how-to-create-a-finite-state-machine-using-smach-and-ros/>
+
+<https://quantecon.org/quantecon-py/>
+
+<https://python.quantecon.org/finite_markov.html>
+
+<http://wiki.ros.org/markov_decision_making>
+
+<https://py-trees.readthedocs.io/en/devel/introduction.html>

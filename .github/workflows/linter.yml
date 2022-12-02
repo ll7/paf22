@@ -9,6 +9,7 @@ jobs:
         steps:
           - name: Check out the repo
             uses: actions/checkout@v2
+          # Execute the markdown linter
           - name: Run the markdown linter
             uses: addnab/docker-run-action@v3
             with:
@@ -16,6 +17,7 @@ jobs:
                 options: -v ${{ github.workspace }}:/md
                 run: |
                     markdownlint .
+           # Execute the python linter (executes even if the previous step failed)
           - name: Run the python linter
             if: always()
             uses: addnab/docker-run-action@v3

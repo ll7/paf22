@@ -20,14 +20,9 @@ Tim Dreier
   * [Table of contents](#table-of-contents)
   * [General](#general)
   * [Pull requests](#pull-requests)
-  * [Steps](#steps)
-    * [1. Check out the repo](#1-check-out-the-repo)
-      * [Checkout definition in yaml file](#checkout-definition-in-yaml-file)
-    * [2. Run the markdown linter](#2-run-the-markdown-linter)
-      * [Markdown lint definition in yaml file](#markdown-lint-definition-in-yaml-file)
-    * [3. Run the python linter](#3-run-the-python-linter)
-      * [Python lint definition in yaml file](#python-lint-definition-in-yaml-file)
-  * [Sources](#sources)
+  * [🚨 Common Problems](#-common-problems)
+    * [1. Error in the markdown linter](#1-error-in-the-markdown-linter)
+    * [2. Error in the python linter](#2-error-in-the-python-linter)
 <!-- TOC -->
 
 ## General
@@ -64,43 +59,18 @@ To enforce this behaviour, we set the action as requirement as described in the 
 
 More information about creating and merging pull requests can be found [here](./08_project_management.md).
 
-## Steps
+## 🚨 Common Problems
 
-### 1. Check out the repo
+### 1. Error in the markdown linter
 
-Checks out the repo to use the files in the following steps.
-
-#### Checkout definition in yaml file
-
-```yaml
-  - name: Check out the repo
-    uses: actions/checkout@v2
-```
-
-### 2. Run the markdown linter
-
-Executes the markdown linter.
 If there are errors in any file which need to be fixed,
 the output of the action will look similar to this:
 
 ![markdown lint error](../00_assets/github-action-md.png)
 
-#### Markdown lint definition in yaml file
+### 2. Error in the python linter
 
-```yaml
-  - name: Run the markdown linter
-    uses: addnab/docker-run-action@v3
-    with:
-        image: peterdavehello/markdownlint:0.32.2
-        options: -v ${{ github.workspace }}:/md
-        run: |
-            markdownlint .
-```
-
-### 3. Run the python linter
-
-Executes the python linter.
-If there are errors in any file which need to be fixed,
+If there are errors in any python file,
 the output of the action will look similar to this:
 
 ![python lint error](../00_assets/github-action-py.png)
@@ -108,20 +78,5 @@ the output of the action will look similar to this:
 This step even runs if the markdown linter has already failed.
 This way, all errors of different steps are directly visible
 instead of errors only becoming apparent after errors in the previous steps have been fixed.
-
-#### Python lint definition in yaml file
-
-```yaml
-  - name: Run the python linter
-    if: always()
-    uses: addnab/docker-run-action@v3
-    with:
-      image: alpine/flake8
-      options: -v ${{ github.workspace }}:/apps
-      run: |
-        flake8 code
-```
-
-## Sources
 
 * <https://aschmelyun.com/blog/using-docker-run-inside-of-github-actions/>

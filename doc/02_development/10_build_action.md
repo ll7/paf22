@@ -20,7 +20,9 @@ Tim Dreier
 
 Trivial, just checks out the repo.
 
-#### 2. Set up Docker Buildx
+#### 2. Set up Docker Buildx ([`docker/setup-buildx-action@v2`])
+
+Set's up Buildx. Needed that caching in step 5 works.
 
 #### 3. Log in to the Container registry
 

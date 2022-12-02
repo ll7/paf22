@@ -48,6 +48,6 @@ jobs:
           context: .
           file: ./build/docker/build/Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ steps.tag.outputs.new_tag }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.new_tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

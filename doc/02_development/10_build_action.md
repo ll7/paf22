@@ -30,6 +30,7 @@ Tim Dreier
 <!-- TOC -->
 
 ## General
+
 The workflow defined in [`.github/workflows/build.yml`](../../.github/workflows/build.yml) creates an executable image which can later be submitted to the [CARLA leaderboard](https://leaderboard.carla.org) and pushes it to [GitHub Packages](ghcr.io).
 
 The image can then be pulled with `docker pull ghcr.io/ll7/paf22:latest` to get the latest version or `docker pull ghcr.io/ll7/paf22:<version>` to get a specific version.
@@ -65,10 +66,11 @@ The version number is determinated by the name of the commits in the release.
 This is possible since [conventional commits](https://www.conventionalcommits.org/) are enforced by comlipy as described [here](./02_linting.md).
 
 #### Example
+
 | Commit message                                         | Release type  | Previous version number | New version number |
 |--------------------------------------------------------|---------------|-------------------------|--------------------|
 | fix(#39): build failing due to incorrect configuration | Patch Release | 0.0.1                   | 0.0.2              |
-| feat(#39): Add automatic build process                 | Minor Release | 0.0.1                   | 0.1.0              | 
+| feat(#39): Add automatic build process                 | Minor Release | 0.0.1                   | 0.1.0              |
 
 Major releases can be done manually (e.g. `git tag v1.0.0`).
 

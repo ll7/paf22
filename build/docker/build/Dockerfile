@@ -2,4 +2,6 @@
 
 INCLUDE+ ./build/docker/agent/Dockerfile
 
-RUN cd
+# if you change the paths here also change the volume
+# in docker-compose.yml for service agent
+COPY ./code /workspace/code/

@@ -18,7 +18,7 @@ services:
 
       # based on https://github.com/ll7/paf21-1/blob/master/scenarios/docker-carla-sim-compose.yml
   carla-simulator:
-    command: /bin/bash CarlaUE4.sh -carla-server
+    command: /bin/bash CarlaUE4.sh -quality-level=Epic -world-port=2000 -resx=800 -resy=600
     image: kstein/carla:leaderboard
     init: true
     deploy:
@@ -26,7 +26,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              capabilities: [gpu]
+              capabilities: [ gpu ]
     environment:
       - DISPLAY
       - NVIDIA_VISIBLE_DEVICES=all
@@ -43,54 +43,44 @@ services:
   roscore:
     image: ros:noetic
     command: roscore
+    ports:
+      - 11311:11311
+    environment:
+      - ROS_MASTER_URI=http://roscore:11311
+      - ROS_HOSTNAME=roscore
     expose:
       - 11311
     networks:
       - ros
 
-  carla-ros-bridge:
-    build: docker/carla_ros_bridge
-    restart: always
-    init: true
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: [gpu]
-    environment:
-      - DISPLAY
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=all
-      - ROS_MASTER_URI=http://roscore:11311
-      - ROS_HOSTNAME=carla-ros-bridge
-      - CARLA_SIM_HOST=carla-simulator
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-    networks:
-      - carla
-      - ros
-
   agent:
     build:
       dockerfile: build/docker/agent/Dockerfile
+      args:
+        - USER_UID=${DOCKER_HOST_UNIX_UID:-1000}
+        - USER_GID=${DOCKER_HOST_UNIX_GID:-1000}
       context: ../
     init: true
+    tty: true
+    #command: bash -c "sleep 10 && python3 /opt/leaderboard/leaderboard/leaderboard_evaluator.py --debug=1 --routes=/opt/leaderboard/data/routes_devtest.xml --agent=/workspace/code/agent/src/agent/agent.py --host=carla-simulator --track=MAP"
+    logging:
+      driver: "local"
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              capabilities: [gpu]
+              capabilities: [ gpu ]
     environment:
       - DISPLAY
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
       - ROS_MASTER_URI=http://roscore:11311
+      - CARLA_SIM_HOST=carla-simulator
       - ROS_HOSTNAME=agent
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ../code:/code/src
+      - ../code:/workspace/code
     networks:
       - carla
       - ros

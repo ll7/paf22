@@ -1,8 +1,0 @@
-<!-- TODO: Insert all components of our agent -->
-<launch>
-
-    <!-- acting -->
-    <include file="$(find acting)/launch/acting.launch">
-    </include> 
-
-</launch>

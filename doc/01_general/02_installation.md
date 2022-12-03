@@ -73,6 +73,16 @@ sudo systemctl restart docker
 
 ## 🚨 Common Problems
 
-**`b5: command not found`**
+### `b5: command not found`
 
-If you already installed b5 (`pip install b5`) try to log out and log back in ([possible reason](https://stackoverflow.com/a/73256004))
+---
+
+1. If you already installed b5 (`pip install b5`) try to log out and log back in.
+
+2. If that doesn't help add this line to your `~/.bash_profile` or `~/.bashrc`:
+
+    ```shell
+    export PATH=$PATH:$HOME/.local/bin
+    ```
+
+([possible reason](https://stackoverflow.com/a/73256004))

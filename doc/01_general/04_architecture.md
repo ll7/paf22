@@ -15,9 +15,8 @@ Marco Riedenauer, Simon Erlbacher, Julian Graf
 
 ---
 <!-- TOC -->
-
 * [Architecture of vehicle agent](#architecture-of-vehicle-agent)
-  * [Author](#authors)
+  * [Authors](#authors)
   * [Date](#date)
   * [Overview](#overview)
   * [Perception](#perception)
@@ -34,10 +33,10 @@ Marco Riedenauer, Simon Erlbacher, Julian Graf
   * [Acting](#acting)
     * [Path following](#path-following)
     * [Velocity control](#velocity-control)
+    * [Vehicle controller](#vehicle-controller)
     * [Emergency](#emergency)
   * [Visualization](#visualization)
   * [Topics](#topics)
-
 <!-- TOC -->
 
 ## Overview
@@ -51,6 +50,7 @@ The msgs necessary to control the vehicle via the Carla bridge can be
 found [here](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg)
 
 ![Architecture overview](../00_assets/overview.jpg)
+The miro-board can be found [here]([CarlaEgoVehicleControl.msg](https://miro.com/app/board/uXjVPC_3kvU=/)).
 
 ## Perception
 
@@ -250,10 +250,6 @@ Publishes:
 * ```steer```
   for ```vehicle_control_cmd_manual``` ([CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg))
 
-Note: To avoid competing ```vehicle_control_cmd_manual``` msgs, [Path following](#path-following) should publish custom
-steering msgs that can then be published combined with velocity, etc. to single ```vehicle_control_cmd_manual```
-by [Velocity control](#velocity-control).
-
 ### Velocity control
 
 Calculates velocity inputs to drive the velocity given by the [Local path planning](#Local-path-planning).
@@ -272,14 +268,26 @@ Publishes:
 * ```throttle```,  ```brake```,  ```reverse```
   for ```vehicle_control_cmd_manual``` ([CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg))
 
-### Emergency
+### Vehicle controller
 
-Reads data from all nodes to detect emergency situations.
-Initiates emergency braking in the event of an emergency and notifies all notes that an emergency stop has occurred.
+Decides which steering controller to use and assembles [CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg).
 
 Subscriptions:
 
-* all data that's needed
+* ```throttle```,  ```brake```,  ```reverse```
+* ```steer```
+
+Publishes:
+
+* ```vehicle_control_cmd_manual``` ([CarlaEgoVehicleControl.msg](https://carla.readthedocs.io/en/0.9.8/ros_msgs/#CarlaEgoVehicleControlmsg))
+
+### Emergency
+
+Initiates emergency braking if an emergency-msg is received and notifies all notes when emergency braking is over.
+
+Subscriptions:
+
+* ```emergency``` ([std_msgs/Bool Message](http://docs.ros.org/en/api/std_msgs/html/msg/Bool.html))
 
 Publishes:
 
@@ -315,4 +323,4 @@ Intern topics published by vehicle agent:
 | ```path```                     | Improved ```provisional_path```  path for the ego vehicle to follow                                               | [Local path planning](#local-path-planning)                  | [nav_msgs/Path Message](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Path.html)                                                                                                                                                                                                                                              |
 | ```max_velocity```             | Maximal velocity the ego vehicle should drive  in m/s                                                             | [Local path planning](#local-path-planning)                  | [std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html])                                                                                                                                                                                                                                              |
 | ```distance_to_next_vehicle``` | Distance to   the vehicle the      [Velocity control](#velocity-control) should keep a certain distance to (in m) | [Local path planning](#local-path-planning)                  | [std_msgs/Float64 Message](http://docs.ros.org/en/api/std_msgs/html/msg/Float64.html])                                                                                                                                                                                                                                              |
-| ```emergency```                | True if emergency is triggered; false indicates that emergency is over                                            | [Emergency](#emergency)                                      | [std_msgs/Bool Message](http://docs.ros.org/en/api/std_msgs/html/msg/Bool.html)                                                                                                                                                                                                                                                     |
+| ```emergency```                | True if emergency is triggered; false indicates that emergency is over                                            | any note                                                     | [std_msgs/Bool Message](http://docs.ros.org/en/api/std_msgs/html/msg/Bool.html)                                                                                                                                                                                                                                                     |

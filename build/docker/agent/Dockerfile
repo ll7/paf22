@@ -121,6 +121,8 @@ ADD ./build/docker/agent/entrypoint.sh /entrypoint.sh
 # set the default working directory to the code
 WORKDIR /workspace/code
 
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash", "-c", "sleep 10 && python3 /opt/leaderboard/leaderboard/leaderboard_evaluator.py --debug=${DEBUG_CHALLENGE} \
 --repetitions=${REPETITIONS} \

@@ -8,9 +8,9 @@ from torchvision.datasets import ImageFolder
 from pathlib import Path
 from data_generation.transforms import Normalize, ResizeAndPadToSquare, \
     load_image
-from traffic_light_detection.ClassificationModel import ClassificationModel
+from data_generation.weights_organizer import WeightsOrganizer
+from traffic_light_detection.classification_model import ClassificationModel
 from torchvision.transforms import ToTensor
-import os
 
 
 def parse_args():
@@ -19,18 +19,13 @@ def parse_args():
                         default=100,
                         help='number of epochs',
                         type=int)
-
-    parser.add_argument('--overwrite',
-                        default=False,
-                        help='should this training overwrite existing weights',
-                        type=bool)
     return parser.parse_args()
 
 
 class TrafficLightTraining:
 
-    def __init__(self, dataset_root, device, overwrite):
-        self.overwrite = overwrite
+    def __init__(self, dataset_root, weights_root, device):
+        self.weights_root = weights_root
         self.device = device
         train_transforms = t.Compose([
             ToTensor(),
@@ -59,10 +54,11 @@ class TrafficLightTraining:
         self.model = ClassificationModel(num_classes=4, in_channels=3)
         self.optimizer = Adam(self.model.parameters())
         self.loss_function = torch.nn.CrossEntropyLoss()
+        self.weights_organizer = WeightsOrganizer(model=self.model,
+                                                  path=self.weights_root,
+                                                  num_saves=3)
 
     def run(self, epochs):
-        maximum_val = 0
-        maximum_train = 0
         self.model.to(self.device)
         tepoch = tqdm(range(epochs))
         for i in range(epochs):
@@ -77,21 +73,7 @@ class TrafficLightTraining:
             tepoch.set_postfix(loss=epoch_loss, accuracy=epoch_correct,
                                val_loss=loss, val_accuracy=correct)
             tepoch.update(1)
-
-            if self.overwrite and \
-                (correct > maximum_val or
-                 (correct >= maximum_val and epoch_correct > maximum_train)):
-                path = str(Path(__file__).parents[2].resolve()) \
-                       + "/model_weights/"
-                filelist = [f for f in os.listdir(path)]
-                for f in filelist:
-                    os.remove(os.path.join(path, f))
-                torch.save(self.model.state_dict(), path
-                           + f"model_acc_{round(epoch_correct, 2)}"
-                           + f"_val_{round(correct, 2)}")
-                maximum_val = correct
-                maximum_train = epoch_correct \
-                    if epoch_correct > maximum_train else maximum_train
+            self.weights_organizer.save(epoch_correct, correct)
 
     def epoch(self):
         self.model.train()
@@ -140,8 +122,8 @@ if __name__ == '__main__':
     args = parse_args()
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Computation device: {device}\n")
-    root = Path(__file__).parents[2]
-    tr = TrafficLightTraining(str(root.resolve())
-                              + '/dataset',
-                              device, args.overwrite)
+    root = str(Path(__file__).parents[2].resolve())
+    tr = TrafficLightTraining(root + '/dataset',
+                              root + '/model_weights',
+                              device)
     tr.run(args.epochs)

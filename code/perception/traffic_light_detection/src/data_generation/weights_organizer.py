@@ -6,6 +6,12 @@ import torch
 class WeightsOrganizer:
 
     def __init__(self, model, path, num_saves):
+        """
+        Initializes a weights organizer for the given model.
+        @param model: Classification model that has to be saved
+        @param path: Path to save the model weights in
+        @param num_saves: Number of model-weights to be saved
+        """
         self.model = model
         self.num_saves = num_saves
         self.best = []
@@ -14,9 +20,13 @@ class WeightsOrganizer:
         os.mkdir(self.path)
 
     def save(self, accuracy, val_accuracy):
-        filename = self.path \
-                   + f"model_acc_{round(accuracy, 2)}" \
-                   + f"_val_{round(val_accuracy, 2)}.pt"
+        """
+        Saves the model when validation-accuracy and/or accuracy has improved
+        @param accuracy: Accuracy of the model in the last epoch
+        @param val_accuracy: Accuracy of the model on the validation-subset
+        """
+        filename = self.path + f"model_acc_{round(accuracy, 2)}" \
+                             + f"_val_{round(val_accuracy, 2)}.pt"
         if len(self.best) == 0:
             torch.save(self.model.state_dict(), filename)
             self.best.append((accuracy, val_accuracy, filename))

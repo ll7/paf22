@@ -8,8 +8,8 @@ class ClassificationModel(nn.Module):
     def __init__(self, num_classes, in_channels=3):
         """
         Creates a small classification net for traffic light
-        and traffic sign classification
-        @param num_classes: Number of classifiaction classes
+        and traffic sign classification.
+        @param num_classes: Number of classes
         """
         super(ClassificationModel, self).__init__()
         self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=4,
@@ -30,10 +30,10 @@ class ClassificationModel(nn.Module):
 
     def forward(self, x):
         """
-        Propagates an image through the classification net
+        Propagates an image through the classification net.
 
-        @param x: input image of shape (C, H, W)
-        @return: classification scores for input image
+        @param x: input images of shape (B, C, H, W)
+        @return: classification scores  of shape (B, Classes) for input image
         """
         x = F.relu(self.conv1(x))
         x = self.batch_norm1(x)
@@ -50,5 +50,18 @@ class ClassificationModel(nn.Module):
 
     @staticmethod
     def load_model(num_classes, in_channels, path):
+        """
+        Loads a pretrained model by given path.
+        @param num_classes: Number of classes
+        @param in_channels: Number of channels of input images
+        @param path: Path to pretrained model-weights
+        @return: object of type ClassificationModel with pretrained weights
+        """
         model = ClassificationModel(num_classes, in_channels)
-        return model.load_state_dict(torch.load(path)).eval()
+        try:
+            print(f"Pretrained model loaded from {path}")
+            return model.load_state_dict(torch.load(path)).eval()
+        except (Exception, ):
+            print(f"No pretrained model found at {path}. "
+                  f"Created new model with random weights.")
+            return model

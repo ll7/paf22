@@ -21,14 +21,14 @@ Josef Kircher
   * [Date](#date)
   * [Prerequisite](#prerequisite)
   * [Decision-making algorithms](#decision-making-algorithms)
-    * [State machine](#state-machine)
+    * [Finite State machine](#finite-state-machine)
     * [Markov Chain](#markov-chain)
     * [Decision Tree](#decision-tree)
   * [Previous approaches](#previous-approaches)
     * [PAF21-1](#paf21-1)
     * [PAF21-2](#paf21-2)
-    * [PSAF1(2020)](#psaf1--2020-)
-    * [PSAF2(2020)](#psaf2--2020-)
+    * [PSAF1 2020](#psaf1-2020)
+    * [PSAF2 2020](#psaf2-2020)
   * [Python or ROS libraries for these decision-making algorithms](#python-or-ros-libraries-for-these-decision-making-algorithms)
     * [State machines](#state-machines)
       * [SMACH](#smach)
@@ -44,7 +44,7 @@ Josef Kircher
 
 ## Decision-making algorithms
 
-### State machine
+### Finite State machine
 
 A finite-state machine (FSM) or finite-state automaton (FSA, plural: automata), finite automaton, or simply a state machine, is a mathematical model of computation.
 It is an abstract machine that can be in exactly one of a finite number of states at any given time.
@@ -61,6 +61,7 @@ Finite-state machines are of two types—deterministic finite-state machines and
 #### Disadvantages
 
 * many states necessary
+* even though we can try to map all possible states, there still might be some situation we could not account for
 
 ### Markov Chain
 
@@ -125,7 +126,7 @@ It is one way to display an algorithm that only contains conditional control sta
 * Also, if we adapt our local plan this path prediction of other vehicles might come in handy
 * On the other hand, overhead to keep track of vehicles and maybe repredict paths if some vehicles change direction
 
-### PSAF1(2020)
+### PSAF1 2020
 
 #### State machine
 
@@ -138,7 +139,7 @@ It is one way to display an algorithm that only contains conditional control sta
 * Good starting point to have a minimal viable state machine
 * Need adaption depending on what information we are getting forwarded/process in the planning module
 
-### PSAF2(2020)
+### PSAF2 2020
 
 #### Decision tree
 

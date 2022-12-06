@@ -2,10 +2,9 @@
 import ros_compatibility as roscomp
 from carla_msgs.msg import CarlaSpeedometer
 from ros_compatibility.node import CompatibleNode
-from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from rospy import Publisher, Subscriber
 from simple_pid import PID
-from std_msgs.msg import Float32, Bool
+from std_msgs.msg import Float32
 
 
 # todo: docs
@@ -34,14 +33,6 @@ class VelocityController(CompatibleNode):
             f"/carla/{self.role_name}/throttle",
             qos_profile=1)
 
-        self.status_pub = self.new_publisher(  # todo: delete (this is only
-            # necessary if vehicle controller isn't running)
-            Bool, f"/carla/{self.role_name}/status",
-            qos_profile=QoSProfile(
-                depth=1,
-                durability=DurabilityPolicy.TRANSIENT_LOCAL)
-        )
-
         self.__current_velocity: float = 0
         self.__max_velocity: float = 0
 
@@ -51,9 +42,7 @@ class VelocityController(CompatibleNode):
         :return:
         """
         self.loginfo('VehicleController node running')
-        self.status_pub.publish(True)  # todo: delete (this is only
-        # necessary if vehicle controller isn't running)
-        pid = PID(0.25, 0, 0.1)  # values from paf21-2 todo: tune
+        pid = PID(0.25, 0, 0.1)  # values from paf21-2 todo: test
 
         def loop(timer_event=None):
             """
@@ -68,22 +57,16 @@ class VelocityController(CompatibleNode):
                                 "driving yet.")
             pid.setpoint = self.__max_velocity
             throttle = pid(self.__current_velocity)
-            throttle = max(throttle, -1.0)  # ensures that throttle >= -1
-            throttle = min(throttle, 1.0)  # ensures that throttle <= 1
-            self.loginfo('max:' + str(self.__max_velocity) + "; curr: " +
-                         str(self.__current_velocity) +
-                         "; throttle: " + str(throttle))  # todo: delete
-
             self.throttle_pub.publish(throttle)
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
-    def __get_current_velocity(self, data: CarlaSpeedometer):
-        self.__current_velocity = float(data.speed)
+    def __get_current_velocity(self, data):
+        self.__current_velocity = data
 
-    def __get_max_velocity(self, data: Float32):
-        self.__max_velocity = float(data.data)
+    def __get_max_velocity(self, data):
+        self.__max_velocity = data
 
 
 def main(args=None):

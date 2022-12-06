@@ -1,11 +1,8 @@
 #!/usr/bin/env python
-from random import random
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
-from carla_msgs.msg import CarlaEgoVehicleControl, CarlaEgoVehicleStatus
-from rospy import Publisher, Subscriber
-from ros_compatibility.qos import QoSProfile, DurabilityPolicy
-from std_msgs.msg import Bool, Float32
+from rospy import Publisher
+from std_msgs.msg import Bool
 
 
 # todo: docs

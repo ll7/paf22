@@ -7,4 +7,10 @@
         <param name="control_loop_rate" value="$(arg control_loop_rate)" />
         <param name="role_name" value="$(arg role_name)" />
     </node>
+
+    <node pkg="acting" type="emergency_trigger_dummy.py" name="emergency_trigger_dummy" output="screen">
+          <param name="role_name" value="$(arg role_name)" />
+              <param name="control_loop_rate" value="10" />
+
+      </node>
 </launch>

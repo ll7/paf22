@@ -10,7 +10,7 @@
 
     <node pkg="acting" type="emergency_trigger_dummy.py" name="emergency_trigger_dummy" output="screen">
           <param name="role_name" value="$(arg role_name)" />
-              <param name="control_loop_rate" value="10" />
-
+          <param name="control_loop_rate" value="10" />
+          <param name="enabled" value="False" /> <!-- set to True to trigger emergency messages for testing-->
       </node>
 </launch>

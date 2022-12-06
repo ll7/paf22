@@ -40,7 +40,7 @@
 -->
 
   <include file="$(find carla_spawn_objects)/launch/carla_spawn_objects.launch">
-    <arg name="objects_definition_file" value='$(find carla_spawn_objects)/config/objects.json'/>
+    <arg name="objects_definition_file" value='$(find agent)/config/dev_objects.json'/>
   </include>
 
   <include file="$(find carla_manual_control)/launch/carla_manual_control.launch">

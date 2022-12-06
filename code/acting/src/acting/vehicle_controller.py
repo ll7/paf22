@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
-from carla_msgs.msg import CarlaEgoVehicleControl
-from rospy import Publisher
+from carla_msgs.msg import CarlaEgoVehicleControl, CarlaSpeedometer
+from rospy import Publisher, Subscriber
 from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from std_msgs.msg import Bool, Float32
 
@@ -10,9 +10,10 @@ PURE_PURSUIT_CONTROLLER = 1
 STANLEY_CONTROLLER = 2
 
 
+# todo: docs
 class VehicleController(CompatibleNode):
     def __init__(self):
-        super(VehicleController, self).__init__('acting')
+        super(VehicleController, self).__init__('vehicle_controller')
         self.loginfo('VehicleController node started')
 
         self.control_loop_rate = self.get_param('control_loop_rate', 0.05)
@@ -24,41 +25,62 @@ class VehicleController(CompatibleNode):
             qos_profile=10
         )
         self.status_pub: Publisher = self.new_publisher(
-            Bool, f"/carla/{self.role_name}/status",
+            Bool,
+            f"/carla/{self.role_name}/status",
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
         self.status_pub: Publisher = self.new_publisher(
-            Bool, f"/carla/{self.role_name}/status",
+            Bool,
+            f"/carla/{self.role_name}/status",
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
         self.emergency_pub: Publisher = self.new_publisher(
-            Bool, f"/carla/{self.role_name}/emergency",
+            Bool,
+            f"/carla/{self.role_name}/emergency",
             qos_profile=10
         )
 
-        self.Subsciber(f"/carla/{self.role_name}/emergency", Bool,
-                       self.emergency_break)
+        self.emergency_sub: Subscriber = self.new_subscription(
+            Bool,
+            f"/carla/{self.role_name}/emergency",
+            self.__emergency_break,
+            qos_profile=10)
 
-        self.Subsciber(f"/carla/{self.role_name}/CarlaEgoVehicleStatus",
-                       Float32, self.get_velocity)
+        self.velocity_sub: Subscriber = self.new_subscription(
+            CarlaSpeedometer,
+            f"/carla/{self.role_name}/Speed",
+            self.__get_velocity,
+            qos_profile=1)
 
-        self.Subsciber(f"/carla/{self.role_name}/pure_pursuit_throttle",
-                       Float32, self.set_pure_pursuit_throttle)
+        self.pure_pursuit_throttle_sub: Subscriber = self.new_subscription(
+            Float32,
+            f"/carla/{self.role_name}/pure_pursuit_throttle",
+            self.__set_pure_pursuit_throttle,
+            qos_profile=1)
 
-        self.Subsciber(f"/carla/{self.role_name}/pure_pursuit_steer", Float32,
-                       self.set_pure_pursuit_steer)
+        self.stanley_throttle_sub: Subscriber = self.new_subscription(
+            Float32,
+            f"/carla/{self.role_name}/stanley_throttle",
+            self.__set_stanley_throttle,
+            qos_profile=1)
 
-        self.Subsciber(f"/carla/{self.role_name}/stanley_throttle", Float32,
-                       self.set_stanley_throttle)
+        self.pure_pursuit_steer_sub: Subscriber = self.new_subscription(
+            Float32,
+            f"/carla/{self.role_name}/pure_pursuit_steer",
+            self.__set_pure_pursuit_steer,
+            qos_profile=1)
 
-        self.Subsciber(f"/carla/{self.role_name}/stanley_steer", Float32,
-                       self.set_stanley_steer)
+        self.stanley_steer_sub: Subscriber = self.new_subscription(
+            Float32,
+            f"/carla/{self.role_name}/stanley_steer",
+            self.__set_stanley_steer,
+            qos_profile=1)
 
         self.emergency: bool = False
         self.pure_pursuit_throttle: float = 0
@@ -72,7 +94,7 @@ class VehicleController(CompatibleNode):
         :return:
         """
         self.status_pub.publish(True)
-        self.loginfo('Acting node running')
+        self.loginfo('VehicleController node running')
 
         def loop(timer_event=None):
             """
@@ -80,18 +102,25 @@ class VehicleController(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-            if self.choose_controller() == PURE_PURSUIT_CONTROLLER:
+            # self.loginfo('Vehicle Controller Running')
+
+            controller = self.__choose_controller()
+            if controller == PURE_PURSUIT_CONTROLLER:
+                self.logdebug('Using PURE_PURSUIT_CONTROLLER')
                 throttle = self.pure_pursuit_throttle
                 steer = self.pure_pursuit_steer
-            elif self.choose_controller() == STANLEY_CONTROLLER:
+            elif controller == STANLEY_CONTROLLER:
+                self.logdebug('Using STANLEY_CONTROLLER')
                 throttle = self.stanley_throttle
                 steer = self.stanley_steer
             else:
-                raise Exception("Controller not found")
+                self.logerr("Vehicle Controller couldn't find requested "
+                            "controller.")
+                raise Exception("Requested Controller not found")
 
             message = CarlaEgoVehicleControl()
             message.reverse = False
-            if self.throttle > 0:  # todo: driving backwards?
+            if throttle > 0:  # todo: driving backwards?
                 message.brake = 0
                 message.throttle = throttle
             else:
@@ -109,9 +138,12 @@ class VehicleController(CompatibleNode):
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
-    def emergency_break(self, data):
+    def __emergency_break(self, data):
         if not data.data:  # not an emergency
             return
+        if self.emergency:  # emergency was already triggered
+            return
+        self.loginfo("Emergency breaking engaged")
         self.emergency = True
         message = CarlaEgoVehicleControl()
         message.throttle = 1
@@ -124,10 +156,10 @@ class VehicleController(CompatibleNode):
                                                      from_sec=True)
         self.control_publisher.publish(message)
 
-    def get_velocity(self, data):
+    def __get_velocity(self, data: CarlaSpeedometer):
         if not self.emergency:  # nothing to do in this case
             return
-        if data.data < 0.1:  # vehicle has come to a stop
+        if data.speed < 0.1:  # vehicle has come to a stop
             self.emergency = False
             message = CarlaEgoVehicleControl()
             message.throttle = 0
@@ -140,22 +172,24 @@ class VehicleController(CompatibleNode):
                                                          from_sec=True)
             self.control_publisher.publish(message)
 
+            self.loginfo("Emergency breaking disengaged "
+                         "(Emergency breaking has been executed successfully)")
             self.emergency_pub.publish(
                 Bool(False))  # todo: publish multiple times?
 
-    def set_pure_pursuit_throttle(self, data):
+    def __set_pure_pursuit_throttle(self, data):
         self.pure_pursuit_throttle = data.data
 
-    def set_pure_pursuit_steer(self, data):
+    def __set_pure_pursuit_steer(self, data):
         self.pure_pursuit_steer = data.data
 
-    def set_stanley_throttle(self, data):
+    def __set_stanley_throttle(self, data):
         self.stanley_throttle = data.data
 
-    def set_stanley_steer(self, data):
+    def __set_stanley_steer(self, data):
         self.stanley_steer = data.data
 
-    def choose_controller(self):  # todo: implement
+    def __choose_controller(self):  # todo: implement
         return PURE_PURSUIT_CONTROLLER
 
 

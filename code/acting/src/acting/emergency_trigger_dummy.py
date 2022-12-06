@@ -9,10 +9,10 @@ from std_msgs.msg import Bool
 class EmergencyTriggerDummy(CompatibleNode):
     def __init__(self):
         super(EmergencyTriggerDummy, self).__init__('Emergency_trigger_dummy')
-        self.loginfo('EmergencyTriggerDummy node started')
 
         self.control_loop_rate = self.get_param('control_loop_rate', 10)
         self.role_name = self.get_param('role_name', 'ego_vehicle')
+        self.enabled = self.get_param('enabled', False)
 
         self.emergency_pub: Publisher = self.new_publisher(
             Bool,
@@ -25,6 +25,8 @@ class EmergencyTriggerDummy(CompatibleNode):
         Starts the main loop of the node
         :return:
         """
+        if not self.enabled:
+            return
         self.loginfo('EmergencyTriggerDummy node running')
 
         def loop(timer_event=None):

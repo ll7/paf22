@@ -58,16 +58,10 @@ class VehicleController(CompatibleNode):
             self.__get_velocity,
             qos_profile=1)
 
-        self.pure_pursuit_throttle_sub: Subscriber = self.new_subscription(
+        self.throttle_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/pure_pursuit_throttle",
-            self.__set_pure_pursuit_throttle,
-            qos_profile=1)
-
-        self.stanley_throttle_sub: Subscriber = self.new_subscription(
-            Float32,
-            f"/carla/{self.role_name}/stanley_throttle",
-            self.__set_stanley_throttle,
+            f"/carla/{self.role_name}/throttle",
+            self.__set_throttle,
             qos_profile=1)
 
         self.pure_pursuit_steer_sub: Subscriber = self.new_subscription(
@@ -82,11 +76,10 @@ class VehicleController(CompatibleNode):
             self.__set_stanley_steer,
             qos_profile=1)
 
-        self.emergency: bool = False
-        self.pure_pursuit_throttle: float = 0
-        self.pure_pursuit_steer: float = 0
-        self.stanley_throttle: float = 0
-        self.stanley_steer: float = 0
+        self.__emergency: bool = False
+        self.__throttle: float = 0
+        self.__pure_pursuit_steer: float = 0
+        self.__stanley_steer: float = 0
 
     def run(self):
         """
@@ -107,12 +100,10 @@ class VehicleController(CompatibleNode):
             controller = self.__choose_controller()
             if controller == PURE_PURSUIT_CONTROLLER:
                 self.logdebug('Using PURE_PURSUIT_CONTROLLER')
-                throttle = self.pure_pursuit_throttle
-                steer = self.pure_pursuit_steer
+                steer = self.__pure_pursuit_steer
             elif controller == STANLEY_CONTROLLER:
                 self.logdebug('Using STANLEY_CONTROLLER')
-                throttle = self.stanley_throttle
-                steer = self.stanley_steer
+                steer = self.__stanley_steer
             else:
                 self.logerr("Vehicle Controller couldn't find requested "
                             "controller.")
@@ -120,12 +111,12 @@ class VehicleController(CompatibleNode):
 
             message = CarlaEgoVehicleControl()
             message.reverse = False
-            if throttle > 0:  # todo: driving backwards?
+            if self.__throttle > 0:  # todo: driving backwards?
                 message.brake = 0
-                message.throttle = throttle
+                message.throttle = self.__throttle
             else:
                 message.throttle = 0
-                message.brake = abs(throttle)
+                message.brake = abs(self.__throttle)
 
             message.hand_brake = False
             message.manual_gear_shift = False
@@ -141,10 +132,10 @@ class VehicleController(CompatibleNode):
     def __emergency_break(self, data):
         if not data.data:  # not an emergency
             return
-        if self.emergency:  # emergency was already triggered
+        if self.__emergency:  # emergency was already triggered
             return
         self.loginfo("Emergency breaking engaged")
-        self.emergency = True
+        self.__emergency = True
         message = CarlaEgoVehicleControl()
         message.throttle = 1
         message.steer = 1  # todo: look up 30 degree angle
@@ -157,10 +148,10 @@ class VehicleController(CompatibleNode):
         self.control_publisher.publish(message)
 
     def __get_velocity(self, data: CarlaSpeedometer):
-        if not self.emergency:  # nothing to do in this case
+        if not self.__emergency:  # nothing to do in this case
             return
         if data.speed < 0.1:  # vehicle has come to a stop
-            self.emergency = False
+            self.__emergency = False
             message = CarlaEgoVehicleControl()
             message.throttle = 0
             message.steer = 0
@@ -177,17 +168,14 @@ class VehicleController(CompatibleNode):
             self.emergency_pub.publish(
                 Bool(False))  # todo: publish multiple times?
 
-    def __set_pure_pursuit_throttle(self, data):
-        self.pure_pursuit_throttle = data.data
+    def __set_throttle(self, data):
+        self.__throttle = data.data
 
     def __set_pure_pursuit_steer(self, data):
-        self.pure_pursuit_steer = data.data
-
-    def __set_stanley_throttle(self, data):
-        self.stanley_throttle = data.data
+        self.__pure_pursuit_steer = data.data
 
     def __set_stanley_steer(self, data):
-        self.stanley_steer = data.data
+        self.__stanley_steer = data.data
 
     def __choose_controller(self):  # todo: implement
         return PURE_PURSUIT_CONTROLLER

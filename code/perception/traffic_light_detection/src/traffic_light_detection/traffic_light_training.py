@@ -110,6 +110,7 @@ class TrafficLightTraining:
             tepoch.set_postfix(loss=epoch_loss, accuracy=epoch_correct,
                                val_loss=loss, val_accuracy=correct)
             tepoch.update(1)
+            print(tepoch)
             self.weights_organizer.save(epoch_correct, correct)
 
     def epoch(self):

@@ -8,6 +8,8 @@ If you contribute to this project please read the following guidelines first:
 4. [Git Style](./05_git_workflow.md)
 5. [Reviewing](./07_review_guideline.md)
 6. [Project management](./08_project_management.md)
+7. [GitHub actions](./09_actions.md)
+8. [Install python packages](./10_installing_python_packages.md)
 
 ## Templates
 

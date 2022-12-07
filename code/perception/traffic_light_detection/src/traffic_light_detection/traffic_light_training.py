@@ -23,7 +23,7 @@ def parse_args():
                         default=100,
                         help='number of epochs',
                         type=int)
-    parser.add_argument('--num-saves',
+    parser.add_argument('--num_saves',
                         default=3,
                         help='number of model-weights to be saved',
                         type=int)
@@ -167,8 +167,9 @@ if __name__ == '__main__':
     args = parse_args()
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Computation device: {device}\n")
-    root = str(Path(__file__).parents[2].resolve())
+    root = str(Path(__file__).resolve().parents[2].resolve())
     tr = TrafficLightTraining(root + '/dataset',
                               root + '/model_weights',
-                              device)
+                              device,
+                              args.num_saves)
     tr.run(args.epochs)

@@ -82,6 +82,9 @@ RUN sudo mkdir /opt/leaderboard-py3 && sudo chown $USERNAME:$USERNAME /opt/leade
     ln -s $SCENARIO_RUNNER_ROOT/srunner /opt/leaderboard-py3/srunner
 
 RUN python -m pip install roslibpy
+RUN pip install torch
+RUN pip install torchvision
+RUN pip install tqdm
 
 
 # environment variables for the leaderboard_evaluator

@@ -12,10 +12,9 @@ services:
       - ../:/apps
 
   mdlint:
-    image: peterdavehello/markdownlint
+    image: peterdavehello/markdownlint:0.32.2
     volumes:
       - ../:/md
-      - ../build/docker/mdlint/.markdownlint.yaml/:/md/.markdownlint.yaml
 
       # based on https://github.com/ll7/paf21-1/blob/master/scenarios/docker-carla-sim-compose.yml
   carla-simulator:

@@ -1,6 +1,6 @@
-# Data Version Controls
+# Data Version Control (DVC)
 
-**Summary:** This page describes what dvc is and how/where to use it.
+**Summary:** This page describes what DVC is and how/where to use it.
 
 ---
 
@@ -14,7 +14,7 @@ Tim Dreier
 
 ## Table of contents
 <!-- TOC -->
-* [Data Version Controls](#data-version-controls)
+* [Data Version Control (DVC)](#data-version-control--dvc-)
   * [Author](#author)
   * [Date](#date)
   * [Table of contents](#table-of-contents)
@@ -23,15 +23,16 @@ Tim Dreier
   * [Common commands](#common-commands)
     * [Pull / push](#pull--push)
       * [Authentication](#authentication)
-  * [Add file or folder to dvc](#add-file-or-folder-to-dvc)
+  * [Add file or folder to DVC](#add-file-or-folder-to-dvc)
   * [Python API](#python-api)
+  * [Storage](#storage)
   * [Example](#example)
 <!-- TOC -->
 
 ## General
 
 DVC enables us to manage our datasets and trained models outside from git.
-Instead of storing the full datasets or models inside git, dvc will just store a reference to the dataset or trained model stored in a separate storage.
+Instead of storing the full datasets or models inside git, DVC will just store a reference to the dataset or trained model stored in a separate storage.
 This makes it possible to switch between versions of datasets and trained models and train models without touching the git repo.
 
 ![DVC flow](https://dvc.org/img/flow.gif)
@@ -43,7 +44,7 @@ Additional information can also be found in the according [GitHub repsoitory](ht
 
 ## Installation
 
-Install dvc and the according gdrive extension by running `pip install dvc dvc-gdrive`.
+Install DVC and the according gdrive extension by running `pip install dvc dvc-gdrive`.
 
 ## Common commands
 
@@ -74,7 +75,7 @@ https://accounts.google.com/o/oauth2/auth?client_id=xxxxxxxxxxxx
 
 To authenticate please click the link and login with your Google account.
 
-> ❗️ Your Google account has to be added to the users with write access. Please contact [@timdreier](https://www.github.com/timdreier).
+> ❗️ Your Google account has to be added to the users with write access. Please contact [@timdreier](https://www.github.com/timdreier) or [@ll7](https://github.com/ll7).
 
 After this, you should get a success message similar to this in your browser:
 
@@ -84,9 +85,9 @@ The authentication flow has completed.
 
 Back in your shell, you should see that the push was successful.
 
-## Add file or folder to dvc
+## Add file or folder to DVC
 
-To add a file or folder to dvc use the following commands:
+To add a file or folder to DVC use the following commands:
 
 ```shell
 # Add file data/data.xml
@@ -95,6 +96,8 @@ dvc add data/data.xml
 # Add the whole data directory
 dvc add data
 ```
+
+   > ❗️ if you already added the directory to git you have to remove it by running `git rm -r --cached '<file or foldername>'`
 
 ## Python API
 
@@ -115,16 +118,33 @@ with dvc.api.open(
 
 More information can be found [here](https://dvc.org/doc/api-reference).
 
+## Storage
+
+Currently, we use Google Drive as repo for DVC.
+Pull access is available for everyone, since the storage folder is accessible for everyone with the link.
+
+However, if you want to push changes you need write access.
+An administrator has to add your Google Account by doing the following.
+
+1. Go to `https://drive.google.com` and login with our user
+2. Click the folder `paf22`:
+
+![paf22 folder](../00_assets/gdrive-paf.png)
+3. click on `Manage permissions` on the right side
+4. Add the user as `Collaborator`
+
+![paf22 folder](../00_assets/gdrive-permissions.png)
+
 ## Example
 
-This example should give a short overview how to work with dvc. In this case it stores a dateset with dvc.
+This example should give a short overview how to work with DVC. In this case it stores a dateset with DVC.
 Storing a model file can be done the same way.
 
 > The commands below are not meant to execute, since the example is already added in git.
-> It should give a brief overview about how dvc works.
+> It should give a brief overview about how DVC works.
 > However, the process is adaptable for any file or folder if you replace `doc/04_examples/dvc_example/dataset` with your path.
 
-1. Add the folder `doc/04_examples/dvc_example/dataset` to dvc
+1. Add the folder `doc/04_examples/dvc_example/dataset` to DVC
 
    ```shell
    dvc add doc/04_examples/dvc_example/dataset
@@ -135,10 +155,10 @@ Storing a model file can be done the same way.
 2. Commit your changes in git
 
    ```shell
-   git commit -m "feat(#83): Add dataset to dvc"
+   git commit -m "feat(#83): Add dataset to DVC"
    ```
 
-3. Push your changes to dvc
+3. Push your changes to DVC
 
    ```shell
    dvc push

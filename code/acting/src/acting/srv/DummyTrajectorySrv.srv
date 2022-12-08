@@ -1,0 +1,6 @@
+int64 start_wp_x
+int64 start_wp_y
+int64 target_wp_x
+int64 target_wp_y
+---
+variable-length array[] wp_list

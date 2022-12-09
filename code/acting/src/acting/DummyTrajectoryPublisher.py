@@ -6,31 +6,30 @@ when receiving a message containing two points.
 """
 
 import ros_compatibility as roscomp
-from std_msgs.msg import Header
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
-from msg import DummyTrajectoryMsg, DummyTrajectoryRequest
+# from msg import DummyTrajectoryMsg, DummyTrajectoryRequest
 from ros_compatibility.node import CompatibleNode
 from trajectory_interpolation import interpolate_route
 import rospy
 
 
 class DummyTrajectoryPub(CompatibleNode):
-
     """
     Creates a node capable of publishing a dummy trajectory,
     between to points
     """
 
-    def __int__(self):
+    def __init__(self):
         """
         Constructor
         :return:
         """
-        super(DummyTrajectoryPub, self).__init("trajectory_pub")
-
+        super(DummyTrajectoryPub, self).__init__('dummy_trajectory_pub')
+        self.loginfo('DummyTrajectoryPub node started')
         # basic info
-        self.role_name = "Dummy Trajectory"
+        self.role_name = self.get_param('role_name', 'ego_vehicle')
+        self.control_loop_rate = self.get_param('control_loop_rate', 0.05)
 
         self.current_trajectory = []
         self.path_msg = Path()
@@ -42,19 +41,19 @@ class DummyTrajectoryPub(CompatibleNode):
             (1083.5, -5273.2),
             (1083.5, -5273.2)
         ]
-        self.updated_trajectory(self, initial_trajectory)
+        self.updated_trajectory(initial_trajectory)
 
         # request for a new interpolated dummy trajectory
-        self.dummy_trajectory_request_subscriber = self.new_subscription(
-            DummyTrajectoryRequest,
-            "/carla/"+self.role_name+"/dummy_trajectory_request",
-            self.dummy_trajectory_requested,
-            qos_profile=1)
+        # self.dummy_trajectory_request_subscriber = self.new_subscription(
+        #     DummyTrajectoryRequest,
+        #     "/carla/"+self.role_name+"/dummy_trajectory_request",
+        #     self.dummy_trajectory_requested,
+        #     qos_profile=1)
 
         # publisher for the current trajectory
         self.trajectory_publisher = self.new_publisher(
             Path,
-            "/carla/"+self.role_name+"/trajectory",
+            "/carla/" + self.role_name + "/trajectory",
             qos_profile=1)
 
     def updated_trajectory(self, target_trajectory):
@@ -62,7 +61,7 @@ class DummyTrajectoryPub(CompatibleNode):
         self.path_msg.header.stamp = rospy.Time.now()
         self.path_msg.header.frame_id = "Frame ID Path Update"
 
-        #clear old waypoints
+        # clear old waypoints
         self.path_msg.poses.clear()
 
         for wp in self.current_trajectory:
@@ -70,8 +69,8 @@ class DummyTrajectoryPub(CompatibleNode):
             pos.header.stamp = rospy.Time.now()
             pos.header.frame_id = "Frame ID Pos"
 
-            pos.pose.position.x = wp[1]
-            pos.pose.position.y = wp[2]
+            pos.pose.position.x = wp[0]
+            pos.pose.position.y = wp[1]
 
             # currently not used therfore zeros
             pos.pose.position.z = 0
@@ -89,7 +88,8 @@ class DummyTrajectoryPub(CompatibleNode):
         :param dummy_trajectory_request: start and end waypoints
         :return:
         ""
-        self.target_trajectory = interpolate_route(dummy_trajectory_request.wp_list)
+        self.target_trajectory =
+            interpolate_route(dummy_trajectory_request.wp_list)
         self.pub_trajectory_msg.wp_list = self.target_trajectory
     """
 
@@ -104,8 +104,8 @@ class DummyTrajectoryPub(CompatibleNode):
             # Continuously update path
             self.trajectory_publisher.publish(self.path_msg)
 
+        self.new_timer(self.control_loop_rate, loop)
         self.spin()
-
 
 
 def main(args=None):
@@ -116,7 +116,7 @@ def main(args=None):
     :return:
     """
 
-    roscomp.init("trajectory_pub")
+    roscomp.init("dummy_trajectory_pub", args=args)
     try:
         node = DummyTrajectoryPub()
         node.run()

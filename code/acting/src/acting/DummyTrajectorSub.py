@@ -9,8 +9,8 @@ import ros_compatibility as roscomp
 from msg import DummyTrajectoryMsg
 from ros_compatibility.node import CompatibleNode
 
-class DummyTrajectorySub(CompatibleNode):
 
+class DummyTrajectorySub(CompatibleNode):
     """
     Creates a node capable of publishing a dummy trajectory,
     between to points
@@ -24,7 +24,7 @@ class DummyTrajectorySub(CompatibleNode):
 
         super(DummyTrajectorySub, self).__init("dummy_trajectory_sub")
 
-        #basic info
+        # basic info
         self.role_name = "Dummy Trajectory"
 
         # initial waypoints
@@ -34,7 +34,7 @@ class DummyTrajectorySub(CompatibleNode):
 
         self.dummy_trajectory_subscriber = self.new_subscription(
             DummyTrajectoryMsg,
-            "/carla/"+self.role_name+"/dummy_trajectory",
+            "/carla/" + self.role_name + "/dummy_trajectory",
             self.update_trajectory,
             qos_profile=1)
 
@@ -54,6 +54,7 @@ class DummyTrajectorySub(CompatibleNode):
         """
         self.spin()
 
+
 def main(args=None):
     """
     main function
@@ -70,6 +71,7 @@ def main(args=None):
         pass
     finally:
         roscomp.shutdown()
+
 
 if __name__ == "__main__":
     main()

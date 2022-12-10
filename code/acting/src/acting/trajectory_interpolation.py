@@ -1,10 +1,11 @@
 """A module for interpolating routes"""
 
-from math import dist as euclid_dist, floor, asin, sqrt, pi, sin, cos
+from math import dist as euclid_dist, floor, sqrt, sin, cos
 from typing import List, Tuple
 
 
-def points_to_vector(p_1: Tuple[float, float], p_2: Tuple[float, float]) -> Tuple[float, float]:
+def points_to_vector(p_1: Tuple[float, float],
+                     p_2: Tuple[float, float]) -> Tuple[float, float]:
     """Create the vector starting at p1 and ending at p2"""
     return p_2[0] - p_1[0], p_2[1] - p_1[1]
 
@@ -14,12 +15,14 @@ def vector_len(vec: Tuple[float, float]) -> float:
     return sqrt(vec[0]**2 + vec[1]**2)
 
 
-def add_vector(v_1: Tuple[float, float], v_2: Tuple[float, float]) -> Tuple[float, float]:
+def add_vector(v_1: Tuple[float, float],
+               v_2: Tuple[float, float]) -> Tuple[float, float]:
     """Add the given vectors"""
     return v_1[0] + v_2[0], v_1[1] + v_2[1]
 
 
-def scale_vector(vector: Tuple[float, float], new_len: float) -> Tuple[float, float]:
+def scale_vector(vector: Tuple[float, float],
+                 new_len: float) -> Tuple[float, float]:
     """Amplify the length of the given vector"""
     old_len = vector_len(vector)
     if old_len == 0:
@@ -29,7 +32,8 @@ def scale_vector(vector: Tuple[float, float], new_len: float) -> Tuple[float, fl
     return scaled_vector
 
 
-def rotate_vector(vector: Tuple[float, float], angle_rad: float) -> Tuple[float, float]:
+def rotate_vector(vector: Tuple[float, float],
+                  angle_rad: float) -> Tuple[float, float]:
     """Rotate the given vector by an angle"""
     return (cos(angle_rad) * vector[0] - sin(angle_rad) * vector[1],
             sin(angle_rad) * vector[0] + cos(angle_rad) * vector[1])
@@ -73,9 +77,11 @@ def circular_interpolation(start: Tuple[float, float], end: Tuple[float, float],
 
     # construct the mid-perpendicular of |start, end| to determine the center
     conn_middle = ((start[0] + end[0]) / 2, (start[1] + end[1]) / 2)
-    center_offset = sqrt(pow(arc_radius, 2) - pow(euclid_dist(start, end) / 2, 2))
+    center_off = sqrt(pow(arc_radius, 2) - pow(euclid_dist(start, end) / 2, 2))
     mid_perpend = rotate_vector(points_to_vector(start, end), pi/2 * sign)
-    circle_center = add_vector(conn_middle, scale_vector(mid_perpend, center_offset))
+    circle_center = add_vector(conn_middle,
+                              scale_vector(mid_perpend, center_offset)
+                              )
 
     # partition the arc into steps (-> interpol. geometries)
     arc_circumference = arc_radius * angle         # (r * 2 pi) * (angle / 2 pi)
@@ -84,7 +90,11 @@ def circular_interpolation(start: Tuple[float, float], end: Tuple[float, float],
     # compute the interpolated points on the circle arc
     vec = points_to_vector(circle_center, start)
     rot_angles = [angle * (i / num_steps) for i in range(num_steps+1)]
-    points = [add_vector(circle_center, rotate_vector(vec, rot * sign)) for rot in rot_angles]
+    points = [add_vector(
+                        circle_center,
+                        rotate_vector(vec, rot * sign)
+                        )
+                        for rot in rot_angles]
 
     return points
 '''
@@ -113,7 +123,8 @@ def interpolate_route(orig_route: List[Tuple[float, float]], interval_m=0.5):
     orig_route = _clean_route_duplicates(orig_route, 0.01)
     route = []
     for index in range(len(orig_route) - 1):
-        waypoints = linear_interpolation(orig_route[index], orig_route[index + 1], interval_m)
+        waypoints = linear_interpolation(orig_route[index],
+                                         orig_route[index + 1], interval_m)
         route.extend(waypoints)
 
     route = route + [orig_route[-1]]

@@ -44,7 +44,8 @@ class Acting(CompatibleNode):
             message = CarlaEgoVehicleControl()
 
             # set throttle to 0.1
-            message.throttle = 0.1
+            message.throttle = 0.3
+            message.gear = 1
             message.brake = 0
             message.hand_brake = False
             message.manual_gear_shift = False

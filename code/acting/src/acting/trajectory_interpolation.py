@@ -63,7 +63,8 @@ def linear_interpolation(start: Tuple[float, float], end: Tuple[float, float],
 
 
 '''
-def circular_interpolation(start: Tuple[float, float], end: Tuple[float, float],
+def circular_interpolation(start: Tuple[float, float],
+                           end: Tuple[float, float],
                            arc_radius: float) -> List[Tuple[float, float]]:
     """Interpolate points between start / end point
     on top of the circular arc given by the arc radius."""
@@ -84,7 +85,7 @@ def circular_interpolation(start: Tuple[float, float], end: Tuple[float, float],
                               )
 
     # partition the arc into steps (-> interpol. geometries)
-    arc_circumference = arc_radius * angle         # (r * 2 pi) * (angle / 2 pi)
+    arc_circumference = arc_radius * angle        # (r * 2 pi) * (angle / 2 pi)
     num_steps = int(arc_circumference / step_size) + 1  # each step < step size
 
     # compute the interpolated points on the circle arc

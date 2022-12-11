@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 
 """
-This node publishes a dummy trajectory between two points,
-when receiving a message containing two points.
+This node publishes a dummy trajectory between predefined points.
 """
 
 import ros_compatibility as roscomp
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
-# from msg import DummyTrajectoryMsg, DummyTrajectoryRequest
 from ros_compatibility.node import CompatibleNode
 from trajectory_interpolation import interpolate_route
 import rospy
@@ -16,8 +14,8 @@ import rospy
 
 class DummyTrajectoryPub(CompatibleNode):
     """
-    Creates a node capable of publishing a dummy trajectory,
-    between to points
+    Creates a node that publishes an interpolated trajectory between
+    predefined points as a nav_msgs/Path message.
     """
 
     def __init__(self):
@@ -36,6 +34,7 @@ class DummyTrajectoryPub(CompatibleNode):
         self.path_msg.header.stamp = rospy.Time.now()
         self.path_msg.header.frame_id = "Frame ID Path"
 
+        # Static trajectory for testing purposes
         initial_trajectory = [
             (983.5, -5373.2),
             (1083.5, -5273.2),
@@ -57,6 +56,11 @@ class DummyTrajectoryPub(CompatibleNode):
             qos_profile=1)
 
     def updated_trajectory(self, target_trajectory):
+        """
+        Updates the published Path message with the new target trajectory.
+        :param: target_trajectory: the new target trajectory to be published
+        :return:
+        """
         self.current_trajectory = interpolate_route(target_trajectory, 5)
         self.path_msg.header.stamp = rospy.Time.now()
         self.path_msg.header.frame_id = "Frame ID Path Update"
@@ -72,7 +76,7 @@ class DummyTrajectoryPub(CompatibleNode):
             pos.pose.position.x = wp[0]
             pos.pose.position.y = wp[1]
 
-            # currently not used therfore zeros
+            # currently not used therefore zeros
             pos.pose.position.z = 0
             pos.pose.orientation.x = 0
             pos.pose.orientation.y = 0
@@ -80,18 +84,6 @@ class DummyTrajectoryPub(CompatibleNode):
             pos.pose.orientation.w = 0
 
             self.path_msg.poses.append(pos)
-
-    """
-    def dummy_trajectory_requested(self, dummy_trajectory_request):
-        ""
-        Stores the new trajectory
-        :param dummy_trajectory_request: start and end waypoints
-        :return:
-        ""
-        self.target_trajectory =
-            interpolate_route(dummy_trajectory_request.wp_list)
-        self.pub_trajectory_msg.wp_list = self.target_trajectory
-    """
 
     def run(self):
         """

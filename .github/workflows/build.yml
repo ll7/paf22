@@ -42,8 +42,9 @@ jobs:
       - name: Alternatively - get commit hash
         # only run if tag step was skipped
         if: steps.tag.outputs.new_tag == ''
-        id: tag
-        run: echo ::set-output name=new-version::$(git rev-parse --short HEAD)
+        id: hash
+        # set the output to the commit hash
+        run: echo "::set-output name=hash::$(git rev-parse --short HEAD)"
 
       - name: Build and push Docker image
         id: build
@@ -53,6 +54,6 @@ jobs:
           file: ./build/docker/build/Dockerfile
           push: true
           # only tag 'latest' on push to main, otherwise use created tag or commit hash
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.new-version }}${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && ' latest' || '' }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.new_tag == '' && steps.hash.outputs.hash || steps.tag.outputs.new_tag }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

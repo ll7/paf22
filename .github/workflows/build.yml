@@ -3,6 +3,7 @@ name: Build and publish a ready2run image
 on:
   push:
     branches: ['main']
+  pull_request:
 
 env:
   REGISTRY: ghcr.io

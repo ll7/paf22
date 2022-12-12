@@ -200,8 +200,8 @@ class VehicleController(CompatibleNode):
 
 def main(args=None):
     """
-      main function starts the acting node
-      :param args:
+    Main function starts the node
+    :param args:
     """
     roscomp.init('vehicle_controller', args=args)
 

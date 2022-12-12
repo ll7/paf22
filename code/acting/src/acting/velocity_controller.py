@@ -58,10 +58,12 @@ class VelocityController(CompatibleNode):
                 self.logdebug("VehicleController hasn't received max_velocity"
                               " yet and can therefore not publish a "
                               "throttle value")
+                return
             if self.__current_velocity is None:
                 self.logdebug("VehicleController hasn't received "
                               "current_velocity yet and can therefore not"
                               "publish a throttle value")
+                return
             if self.__max_velocity < 0:
                 self.logerr("Velocity controller doesn't support backward "
                             "driving yet.")

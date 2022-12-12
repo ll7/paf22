@@ -8,6 +8,21 @@ import numpy as np
 from geometry_msgs.msg import PoseStamped
 from tf.transformations import euler_from_quaternion
 from nav_msgs.msg import Path
+from scipy.spatial.transform import Rotation
+
+
+# todo: docs
+def quaternion2heading(x: float, y: float, z: float, w: float) -> float:
+    quaternion = (x, y, z, w)
+    rot = Rotation.from_quat(quaternion)
+    rot_euler = rot.as_euler("xyz", degrees=True)
+    return rot_euler[2]
+
+
+def heading2quaternion(heading: float) -> (float, float, float, float):
+    rot = Rotation.from_euler("xyz", (0, 0, heading), degrees=True)
+    quat = rot.as_quat()
+    return quat[0], quat[1], quat[2], quat[3]
 
 
 def calc_path_yaw(path: Path, idx: int) -> float:

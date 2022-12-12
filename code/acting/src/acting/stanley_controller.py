@@ -37,10 +37,10 @@ class StanleyController(CompatibleNode):
         self._speed_to_change_k_factor: float = 70 / 3.6
         self._k_factor_change_at_high_speed: float = 2.0
 
-        self.position_sub: Subscriber = self.new_subscription(
+        self.trajectory_sub: Subscriber = self.new_subscription(
             Path,
-            f"/carla/{self.role_name}/path",
-            self.__set_path,
+            "/carla/" + self.role_name + "/trajectory",
+            self.__set_trajectory,
             qos_profile=1)
 
         self.heading_sub: Subscriber = self.new_subscription(
@@ -49,7 +49,7 @@ class StanleyController(CompatibleNode):
             self.__set_heading,
             qos_profile=1)
 
-        self.path_sub: Subscriber = self.new_subscription(
+        self.position_sub: Subscriber = self.new_subscription(
             NavSatFix,
             f"/carla/{self.role_name}/GPS",
             self.__set_position,
@@ -116,7 +116,7 @@ class StanleyController(CompatibleNode):
                             "velocity of the vehicle yet "
                             "and can therefore not publish steering")
                 return
-            self.pure_pursuit_steer_pub.publish(
+            self.stanley_steer_pub.publish(
                 self.run_step(
                     self.__path,
                     self.__position,
@@ -129,7 +129,7 @@ class StanleyController(CompatibleNode):
     def __set_position(self, data: NavSatFix):
         self.__position = (data.latitude, data.longitude)
 
-    def __set_path(self, data: Path):
+    def __set_trajectory(self, data: Path):
         self.__path = data
 
     def __set_heading(self, data: Imu):  # todo: test

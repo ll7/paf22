@@ -3,9 +3,8 @@ from typing import List
 
 import numpy as np
 import ros_compatibility as roscomp
-import scipy
 from carla_msgs.msg import CarlaSpeedometer
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from nav_msgs.msg import Path
 from ros_compatibility.node import CompatibleNode
 from ros_compatibility.qos import QoSProfile, DurabilityPolicy
@@ -13,7 +12,8 @@ from rospy import Publisher, Subscriber
 from sensor_msgs.msg import NavSatFix, Imu
 from std_msgs.msg import Float32, Bool
 
-from helper_functions import calc_egocar_yaw, normalize_angle, calc_path_yaw
+from helper_functions import calc_egocar_yaw, normalize_angle, calc_path_yaw, \
+    quaternion2heading, heading2quaternion
 
 
 # todo: docs
@@ -74,7 +74,7 @@ class StanleyController(CompatibleNode):
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
-        self.__position: (float, float) = None  # latitude, longitude in deg
+        self.__position: PoseStamped = None  # latitude, longitude in deg
         self.__path: Path = None
         self.__heading: float = None
         self.__velocity: float = None
@@ -96,25 +96,25 @@ class StanleyController(CompatibleNode):
             :return:
             """
             if self.__path is None:
-                self.logerr("StanleyController hasn't received a path yet "
-                            "and can therefore not publish steering")
+                self.loginfo("StanleyController hasn't received a path yet "
+                             "and can therefore not publish steering")
                 return
             if self.__position is None:
-                self.logerr("StanleyController hasn't received the"
-                            "position of the vehicle yet "
-                            "and can therefore not publish steering")
+                self.loginfo("StanleyController hasn't received the"
+                             "position of the vehicle yet "
+                             "and can therefore not publish steering")
                 return
 
             if self.__heading is None:
-                self.logerr("StanleyController hasn't received the heading"
-                            "of the vehicle yet and can therefore "
-                            "not publish steering")
+                self.loginfo("StanleyController hasn't received the heading"
+                             "of the vehicle yet and can therefore "
+                             "not publish steering")
                 return
 
             if self.__velocity is None:
-                self.logerr("StanleyController hasn't received the "
-                            "velocity of the vehicle yet "
-                            "and can therefore not publish steering")
+                self.loginfo("StanleyController hasn't received the "
+                             "velocity of the vehicle yet "
+                             "and can therefore not publish steering")
                 return
             self.stanley_steer_pub.publish(
                 self.run_step(
@@ -127,17 +127,22 @@ class StanleyController(CompatibleNode):
         self.spin()
 
     def __set_position(self, data: NavSatFix):
-        self.__position = (data.latitude, data.longitude)
+        position = Point(data.latitude, data.longitude, data.altitude)
+        heading = self.__heading
+        quat = heading2quaternion(heading)
+        orientation = Quaternion(quat[0], quat[1], quat[2], quat[3])
+        # todo: header missing
+        self.__position = PoseStamped(None, Pose(position, orientation))
 
     def __set_trajectory(self, data: Path):
         self.__path = data
 
     def __set_heading(self, data: Imu):  # todo: test
-        quaternion = (data.orientation.x, data.orientation.y,
-                      data.orientation.z, data.orientation.w)
-        rot = scipy.spatial.transform.Rotation.from_quat(quaternion)
-        rot_euler = rot.as_euler("xyz")
-        self.__heading = rot_euler[2]
+        self.__heading = quaternion2heading(
+            data.orientation.x,
+            data.orientation.y,
+            data.orientation.z,
+            data.orientation.w)
 
     def __set_velocity(self, data):
         self.__velocity = data.speed
@@ -157,7 +162,7 @@ class StanleyController(CompatibleNode):
            distance [float]: distance to the point we want to drive to
         """
         # get the path points of the message
-        path = msg.points
+        path = msg
 
         # get target point to drive to
         current_target_idx, error_front_axle, target_speed, distance = \
@@ -196,7 +201,7 @@ class StanleyController(CompatibleNode):
 
     def calc_target_index(self, msg: Path, pose: PoseStamped,
                           is_reverse: bool) -> [
-                            int, float, float, float]:
+                          int, float, float, float]:
         """
             Calculates the index of the closest Point on the Path relative
             to the front axle
@@ -212,11 +217,11 @@ class StanleyController(CompatibleNode):
                 distance [float]: distance to the point we want to drive to
             """
         # get points of path to follow
-        path = msg.points
+        path = msg
 
         # handle edge case if there is no path or no target speeds
-        if len(path) == 0 or len(msg.target_speed) == 0:
-            return 0, 0, 0, 0
+        # if len(path) == 0 or len(msg.target_speed) == 0:
+        #     return 0, 0, 0, 0
 
         # Calc front axle position
         yaw: float = calc_egocar_yaw(pose)
@@ -238,7 +243,7 @@ class StanleyController(CompatibleNode):
         dy: List[float] = [fy - icy for icy in py]
         d: np.ndarray = np.hypot(dx, dy)
         target_idx: int = np.argmin(d)
-        # distance: float = d[target_idx]
+        distance: float = d[target_idx]
 
         # Project RMS error onto front axle vector
         front_axle_vec: List[float] = [-np.cos(yaw + np.pi / 2),
@@ -251,14 +256,13 @@ class StanleyController(CompatibleNode):
         # error of the front axle to disired path
         # the disired speed of the path that we look at
         # distance to the point we want to drive to
-        return target_idx, error_front_axle, msg.target_speed[
-            min([target_idx, len(msg.target_speed) - 1])],
+        return target_idx, error_front_axle, 0, distance
 
 
 def main(args=None):
     """
-      main function starts the acting node
-      :param args:
+    Main function starts the node
+    :param args:
     """
     roscomp.init('stanley_controller', args=args)
 

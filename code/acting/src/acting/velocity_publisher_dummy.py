@@ -50,7 +50,7 @@ class VelocityPublisherDummy(CompatibleNode):
                 self.__dv = -self.delta_velocity
             if self.velocity < self.min_velocity:
                 self.__dv = self.delta_velocity
-            self.velocity += self.delta_velocity
+            self.velocity += self.__dv
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 

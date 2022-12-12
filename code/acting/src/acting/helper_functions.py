@@ -25,7 +25,7 @@ def heading2quaternion(heading: float) -> (float, float, float, float):
     return quat[0], quat[1], quat[2], quat[3]
 
 
-def calc_path_yaw(path, idx: int) -> float:
+def calc_path_yaw(path: Path, idx: int) -> float:
     """
     Calculates the path yaw.
 

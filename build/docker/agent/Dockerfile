@@ -121,6 +121,8 @@ ADD ./build/docker/agent/entrypoint.sh /entrypoint.sh
 # set the default working directory to the code
 WORKDIR /workspace/code
 
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+
 RUN pip install -r requirements.txt
 
 ENTRYPOINT ["/entrypoint.sh"]

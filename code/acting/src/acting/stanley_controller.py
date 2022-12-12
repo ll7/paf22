@@ -74,7 +74,7 @@ class StanleyController(CompatibleNode):
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
-        self.__position: PoseStamped = None  # latitude, longitude in deg
+        self.__position: (float, float) = None  # latitude, longitude in deg
         self.__path: Path = None
         self.__heading: float = None
         self.__velocity: float = None
@@ -96,25 +96,24 @@ class StanleyController(CompatibleNode):
             :return:
             """
             if self.__path is None:
-                self.loginfo("StanleyController hasn't received a path yet "
-                             "and can therefore not publish steering")
+                self.logerr("StanleyController hasn't received a path yet "
+                            "and can therefore not publish steering")
                 return
             if self.__position is None:
-                self.loginfo("StanleyController hasn't received the"
-                             "position of the vehicle yet "
-                             "and can therefore not publish steering")
+                self.logerr("StanleyController hasn't received the"
+                            "position of the vehicle yet "
+                            "and can therefore not publish steering")
                 return
-
             if self.__heading is None:
-                self.loginfo("StanleyController hasn't received the heading"
-                             "of the vehicle yet and can therefore "
-                             "not publish steering")
+                self.logerr("StanleyController hasn't received the heading"
+                            "of the vehicle yet and can therefore "
+                            "not publish steering")
                 return
 
             if self.__velocity is None:
-                self.loginfo("StanleyController hasn't received the "
-                             "velocity of the vehicle yet "
-                             "and can therefore not publish steering")
+                self.logerr("StanleyController hasn't received the "
+                            "velocity of the vehicle yet "
+                            "and can therefore not publish steering")
                 return
             self.stanley_steer_pub.publish(
                 self.run_step(
@@ -127,6 +126,7 @@ class StanleyController(CompatibleNode):
         self.spin()
 
     def __set_position(self, data: NavSatFix):
+        self.__position = (data.latitude, data.longitude)
         position = Point(data.latitude, data.longitude, data.altitude)
         heading = self.__heading
         quat = heading2quaternion(heading)
@@ -261,13 +261,14 @@ class StanleyController(CompatibleNode):
         # error of the front axle to disired path
         # the disired speed of the path that we look at
         # distance to the point we want to drive to
-        return target_idx, error_front_axle, 0, distance
+        return target_idx, error_front_axle, msg.target_speed[
+            min([target_idx, len(msg.target_speed) - 1])],
 
 
 def main(args=None):
     """
-    Main function starts the node
-    :param args:
+      main function starts the acting node
+      :param args:
     """
     roscomp.init('stanley_controller', args=args)
 

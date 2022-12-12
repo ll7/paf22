@@ -5,8 +5,12 @@ from rospy import Publisher
 from std_msgs.msg import Float32
 
 
-# todo: docs
 class VelocityPublisherDummy(CompatibleNode):
+    """
+    This node publishes velocities. It can be used for testing.
+    Published velocities move up and down in steps of delta_velocity between
+    min_velocity and max_velocity.
+    """
     def __init__(self):
         super(VelocityPublisherDummy, self).\
             __init__('velocity_publisher_dummy')
@@ -21,6 +25,9 @@ class VelocityPublisherDummy(CompatibleNode):
             qos_profile=1)
         self.velocity = 10
         self.delta_velocity = 0.25
+        self.max_velocity = 25
+        self.min_velocity = 5
+        self.__dv = self.delta_velocity
 
     def run(self):
         """
@@ -33,16 +40,16 @@ class VelocityPublisherDummy(CompatibleNode):
 
         def loop(timer_event=None):
             """
-            Main loop of the acting node
+            Publishes dummy velocity
             :param timer_event: Timer event from ROS
             :return:
             """
             self.loginfo('Published dummy velocity: ' + str(self.velocity))
             self.velocity_pub.publish(self.velocity)
-            if self.velocity > 25:
-                self.delta_velocity = -0.25
-            if self.velocity < 5:
-                self.delta_velocity = 0.25
+            if self.velocity > self.max_velocity:
+                self.__dv = -self.delta_velocity
+            if self.velocity < self.min_velocity:
+                self.__dv = self.delta_velocity
             self.velocity += self.delta_velocity
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
@@ -50,8 +57,8 @@ class VelocityPublisherDummy(CompatibleNode):
 
 def main(args=None):
     """
-      main function starts the acting node
-      :param args:
+    Main function starts the node
+    :param args:
     """
     roscomp.init('velocity_publisher_dummy', args=args)
 

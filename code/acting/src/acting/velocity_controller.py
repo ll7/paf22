@@ -2,14 +2,16 @@
 import ros_compatibility as roscomp
 from carla_msgs.msg import CarlaSpeedometer
 from ros_compatibility.node import CompatibleNode
-from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from rospy import Publisher, Subscriber
 from simple_pid import PID
-from std_msgs.msg import Float32, Bool
+from std_msgs.msg import Float32
 
 
-# todo: docs
 class VelocityController(CompatibleNode):
+    """
+    This node controls the velocity of the vehicle.
+    For this it uses a PID controller
+    """
     def __init__(self):
         super(VelocityController, self).__init__('velocity_controller')
         self.loginfo('VelocityController node started')
@@ -34,14 +36,6 @@ class VelocityController(CompatibleNode):
             f"/carla/{self.role_name}/throttle",
             qos_profile=1)
 
-        self.status_pub = self.new_publisher(  # todo: delete (this is only
-            # necessary if vehicle controller isn't running)
-            Bool, f"/carla/{self.role_name}/status",
-            qos_profile=QoSProfile(
-                depth=1,
-                durability=DurabilityPolicy.TRANSIENT_LOCAL)
-        )
-
         self.__current_velocity: float = 0
         self.__max_velocity: float = 0
 
@@ -51,13 +45,11 @@ class VelocityController(CompatibleNode):
         :return:
         """
         self.loginfo('VehicleController node running')
-        self.status_pub.publish(True)  # todo: delete (this is only
-        # necessary if vehicle controller isn't running)
         pid = PID(0.25, 0, 0.1)  # values from paf21-2 todo: tune
 
         def loop(timer_event=None):
             """
-            Main loop of the acting node
+            Calculates the result of the PID controller and publishes it.
             :param timer_event: Timer event from ROS
             :return:
             """
@@ -70,10 +62,6 @@ class VelocityController(CompatibleNode):
             throttle = pid(self.__current_velocity)
             throttle = max(throttle, -1.0)  # ensures that throttle >= -1
             throttle = min(throttle, 1.0)  # ensures that throttle <= 1
-            self.loginfo('max:' + str(self.__max_velocity) + "; curr: " +
-                         str(self.__current_velocity) +
-                         "; throttle: " + str(throttle))  # todo: delete
-
             self.throttle_pub.publish(throttle)
 
         self.new_timer(self.control_loop_rate, loop)
@@ -88,8 +76,8 @@ class VelocityController(CompatibleNode):
 
 def main(args=None):
     """
-      main function starts the acting node
-      :param args:
+    Main function starts the node
+    :param args:
     """
     roscomp.init('velocity_controller', args=args)
 

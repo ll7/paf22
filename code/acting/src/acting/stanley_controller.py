@@ -162,13 +162,17 @@ class StanleyController(CompatibleNode):
            distance [float]: distance to the point we want to drive to
         """
         # get the path points of the message
-        path = msg
+        path = msg.poses
 
         # get target point to drive to
         current_target_idx, error_front_axle, target_speed, distance = \
             self.calc_target_index(msg, pose, is_reverse)
 
         # compute heading error correction (adjusted if reversed)
+        self.loginfo("Path length: ")
+        self.loginfo(path.__len__())
+        self.loginfo("current target index: ")
+        self.loginfo(current_target_idx)
         theta_e: float = normalize_angle(
             calc_path_yaw(path, current_target_idx) + (
                 calc_egocar_yaw(pose) if is_reverse else
@@ -217,28 +221,29 @@ class StanleyController(CompatibleNode):
                 distance [float]: distance to the point we want to drive to
             """
         # get points of path to follow
-        path = msg
+        path = msg.poses
 
         # handle edge case if there is no path or no target speeds
         # if len(path) == 0 or len(msg.target_speed) == 0:
         #     return 0, 0, 0, 0
 
         # Calc front axle position
-        yaw: float = calc_egocar_yaw(pose)
+        yaw: float = calc_egocar_yaw(pose.pose)
 
         # calculate reference point for the stanley controller
         fx: float = 0.0
         fy: float = 0.0
         if is_reverse:
-            fx = pose.position.x - self.L * np.cos(yaw)
-            fy = pose.position.y - self.L * np.sin(yaw)
+            fx = pose.pose.position.x - self.L * np.cos(yaw)
+            fy = pose.pose.position.y - self.L * np.sin(yaw)
         else:
-            fx = pose.position.x + self.L * np.cos(yaw)
-            fy = pose.position.y + self.L * np.sin(yaw)
+            fx = pose.pose.position.x + self.L * np.cos(yaw)
+            fy = pose.pose.position.y + self.L * np.sin(yaw)
 
-        # Search nearest point index and distance to it
-        px: List[float] = [posen.x for posen in path]
-        py: List[float] = [posen.y for posen in path]
+        # Search the nearest point index and distance to it
+
+        px: List[float] = [pose.pose.position.x for pose in path]
+        py: List[float] = [pose.pose.position.y for pose in path]
         dx: List[float] = [fx - icx for icx in px]
         dy: List[float] = [fy - icy for icy in py]
         d: np.ndarray = np.hypot(dx, dy)

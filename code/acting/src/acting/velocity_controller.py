@@ -12,6 +12,7 @@ class VelocityController(CompatibleNode):
     This node controls the velocity of the vehicle.
     For this it uses a PID controller
     """
+
     def __init__(self):
         super(VelocityController, self).__init__('velocity_controller')
         self.loginfo('VelocityController node started')
@@ -36,8 +37,8 @@ class VelocityController(CompatibleNode):
             f"/carla/{self.role_name}/throttle",
             qos_profile=1)
 
-        self.__current_velocity: float = 0
-        self.__max_velocity: float = 0
+        self.__current_velocity: float = None
+        self.__max_velocity: float = None
 
     def run(self):
         """
@@ -53,6 +54,14 @@ class VelocityController(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
+            if self.__max_velocity is None:
+                self.logdebug("VehicleController hasn't received max_velocity"
+                              " yet and can therefore not publish a "
+                              "throttle value")
+            if self.__current_velocity is None:
+                self.logdebug("VehicleController hasn't received "
+                              "current_velocity yet and can therefore not"
+                              "publish a throttle value")
             if self.__max_velocity < 0:
                 self.logerr("Velocity controller doesn't support backward "
                             "driving yet.")

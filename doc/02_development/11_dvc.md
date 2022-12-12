@@ -19,13 +19,13 @@ Tim Dreier
   * [Date](#date)
   * [Table of contents](#table-of-contents)
   * [General](#general)
-  * [Installation](#installation)
-  * [Common commands](#common-commands)
+    * [Installation](#installation)
+    * [Storage](#storage)
+  * [Using DVC](#using-dvc)
+    * [Add file or folder to DVC](#add-file-or-folder-to-dvc)
     * [Pull / push](#pull--push)
       * [Authentication](#authentication)
-  * [Add file or folder to DVC](#add-file-or-folder-to-dvc)
-  * [Python API](#python-api)
-  * [Storage](#storage)
+    * [Python API](#python-api)
   * [Example](#example)
 <!-- TOC -->
 
@@ -39,14 +39,45 @@ This makes it possible to switch between versions of datasets and trained models
 
 (Taken from <https://dvc.org/>)
 
-A great summary about what it does cant be found [here (german)](https://www.marianbiermann.de/data-version-control-reproduzierbares-machine-learning/).
+A more detailed summary about what it does cant be found [here (german)](https://www.marianbiermann.de/data-version-control-reproduzierbares-machine-learning/).
 Additional information can also be found in the according [GitHub repsoitory](https://github.com/iterative/dvc)
 
-## Installation
+### Installation
 
 Install DVC and the according gdrive extension by running `pip install dvc dvc-gdrive`.
 
-## Common commands
+### Storage
+
+Currently, we use Google Drive as repo for DVC.
+Pull access is available for everyone, since the storage folder is accessible for everyone with the link.
+
+However, if you want to push changes you need write access.
+An administrator has to add your Google Account by doing the following.
+
+1. Go to `https://drive.google.com` and login with our user
+2. Click the folder `paf22`:
+
+![paf22 folder](../00_assets/gdrive-paf.png)
+3. click on `Manage permissions` on the right side
+4. Add the user as `Collaborator`
+
+![paf22 folder](../00_assets/gdrive-permissions.png)
+
+## Using DVC
+
+### Add file or folder to DVC
+
+To add a file or folder to DVC use the following commands:
+
+```shell
+# Add file data/data.xml
+dvc add data/data.xml
+
+# Add the whole data directory
+dvc add data
+```
+
+   > ❗️ if you already added the directory to git you have to remove it by running `git rm -r --cached '<file or foldername>'`
 
 ### Pull / push
 
@@ -85,21 +116,7 @@ The authentication flow has completed.
 
 Back in your shell, you should see that the push was successful.
 
-## Add file or folder to DVC
-
-To add a file or folder to DVC use the following commands:
-
-```shell
-# Add file data/data.xml
-dvc add data/data.xml
-
-# Add the whole data directory
-dvc add data
-```
-
-   > ❗️ if you already added the directory to git you have to remove it by running `git rm -r --cached '<file or foldername>'`
-
-## Python API
+### Python API
 
 DVC also provides a great Python API, which makes it possible to use models stored in DVC directly.
 This way, the model is automatically loaded during code execution, so developers who do not work directly with the models or datasets do not have to care about DVC.
@@ -117,23 +134,6 @@ with dvc.api.open(
 ([Source](https://dvc.org/doc/start/data-management/data-and-model-access#python-api))
 
 More information can be found [here](https://dvc.org/doc/api-reference).
-
-## Storage
-
-Currently, we use Google Drive as repo for DVC.
-Pull access is available for everyone, since the storage folder is accessible for everyone with the link.
-
-However, if you want to push changes you need write access.
-An administrator has to add your Google Account by doing the following.
-
-1. Go to `https://drive.google.com` and login with our user
-2. Click the folder `paf22`:
-
-![paf22 folder](../00_assets/gdrive-paf.png)
-3. click on `Manage permissions` on the right side
-4. Add the user as `Collaborator`
-
-![paf22 folder](../00_assets/gdrive-permissions.png)
 
 ## Example
 
@@ -163,3 +163,5 @@ Storing a model file can be done the same way.
    ```shell
    dvc push
    ```
+
+4. (Use your model using the [python API](#python-api))

@@ -82,15 +82,18 @@ def linear_interpolation(start: Tuple[float, float], end: Tuple[float, float],
 #
 #    # construct the mid-perpendicular of |start, end| to determine the center
 #    conn_middle = ((start[0] + end[0]) / 2, (start[1] + end[1]) / 2)
-#    center_off = sqrt(pow(arc_radius, 2) - pow(euclid_dist(start, end) / 2, 2))
+#    center_off = sqrt(
+#                       pow(arc_radius, 2) - pow(euclid_dist(start, end)
+#                       / 2, 2)
+#                       )
 #    mid_perpend = rotate_vector(points_to_vector(start, end), pi/2 * sign)
 #    circle_center = add_vector(conn_middle,
 #                              scale_vector(mid_perpend, center_offset)
 #                              )
 #
 #    # partition the arc into steps (-> interpol. geometries)
-#    arc_circumference = arc_radius * angle        # (r * 2 pi) * (angle / 2 pi)
-#    num_steps = int(arc_circumference / step_size) + 1  # each step < step size
+#    arc_circumference = arc_radius * angle       # (r * 2 pi) * (angle / 2 pi)
+#    num_steps = int(arc_circumference / step_size) + 1 # each step < step size
 #
 #    # compute the interpolated points on the circle arc
 #    vec = points_to_vector(circle_center, start)
@@ -107,8 +110,8 @@ def linear_interpolation(start: Tuple[float, float], end: Tuple[float, float],
 def _clean_route_duplicates(route: List[Tuple[float, float]],
                             min_dist: float) -> List[Tuple[float, float]]:
     """
-    Remove duplicates in the given List of tuples, if the distance between them
-    is less than min_dist.
+    Remove duplicates in the given List of tuples,
+    if the distance between them is less than min_dist.
     :param route: list of points that should be cleaned up
     :param min_dist: minimal allowed distance between points
     :return: cleaned up list of points

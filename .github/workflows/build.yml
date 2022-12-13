@@ -91,21 +91,21 @@ jobs:
             const fs = require('fs');
             const path = require('path');
             // read the simulation results
-            const results = fs.readFileSync(join(__dirname, 'simulation_results.json'), 'utf8');
-            resultsJson = JSON.parse(results);
+            const results = fs.readFileSync(path.join(__dirname, 'simulation_results.json'), 'utf8');
+            let resultsJson = JSON.parse(results);
             // create a markdown list of the results
-            resultsList = resultsJson.results.map((result, i) => {
-              return `- ${resultsJson.labels[i]}: ${result}`;
+            let resultsList = resultsJson.values.map((value, i) => {
+              return `- ${resultsJson.labels[i]}: ${value}`;
             });
             // create a markdown table of the results
-            resultsTable = resultsJson.results.map((result, i) => {
-              return `| ${resultsJson.labels[i]} | ${result} |`;
+            let resultsTable = resultsJson.values.map((values, i) => {
+              return `| ${resultsJson.labels[i]} | ${values} |`;
             });
             // create a markdown table header
-            resultsTableHeader = `| Metric | Value |`;
+            let resultsTableHeader = `| Metric | Value |`;
             // create a markdown table divider
-            resultsTableDivider = `| --- | --- |`;
-            // create a markdown table of the results
+            let resultsTableDivider = `| --- | --- |`;
+            // add everything to the resultsTable
             resultsTable = resultsTableHeader + '\n' + resultsTableDivider + '\n' + resultsTable.join('\n');
             // add the results as a comment to the pull request
             github.rest.issues.createComment({
@@ -113,7 +113,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: "## Simulation results\n" + resultsList.join("\n") + "\n\n## Simulation results table \n" + resultsTable
-            })
+            }))
 
 
 

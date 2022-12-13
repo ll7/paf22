@@ -158,7 +158,7 @@ Transition:
 
 * From `driving state machine` by `intersection_detected`
 
-This state machine handles the passing of an intersection
+This state machine handles the passing of an intersection.
 
 ### APPROACH_INTERSECTION
 

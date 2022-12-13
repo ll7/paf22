@@ -113,7 +113,4 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: "## Simulation results\n" + resultsList.join("\n") + "\n\n## Simulation results table \n" + resultsTable
-            }))
-
-
-
+            });

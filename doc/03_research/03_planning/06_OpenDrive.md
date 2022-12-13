@@ -26,6 +26,8 @@ Simon Erlbacher
     * [paf21-1](#paf21-1)
     * [Result](#result)
   * [More information about OpenDrive](#more-information-about-opendrive)
+    * [Start of the Implementation](#start-of-the-implementation)
+  * [Follow up Issues](#follow-up-issues)
   * [Sources](#sources)
   
 <!-- TOC -->
@@ -102,29 +104,114 @@ and the following roads required to reach the goal position.
 Then we need to create the trajectory points from the agent to the goal position.
 After that, we can add some more information about the signals to our trajectory.
 
-## Start of the implementation
+### Start of the implementation
 
 structure of the xodr files from the Simulator:
 
 * header
 * road (attributes: junction id (-1 if no junction), length, road id, Road name)
   * lanes
-  * link (predecessor and successor with id nad contactpoints)
+  * link (predecessor and successor with id)
   * signals
   * type (contains max speed)
   * planView (contains information about the geometry and the line type (= reference line))
 * controller (information about the controlled signals)
-* junction
+* junction (crossing lane sections)
+
+link:
+
+* every road has a successor and a predecessor road (sometimes only one of them)
+* the road can have the type "road" or "junction"
+* we can access the relevant sections with an id value
+* Example:
+
+```xml
+<link>
+    <predecessor elementType="road" elementId="11" contactPoint="start"/>
+    <successor elementType="junction" elementId="26"/>
+</link>
+* ```
 
 planView:
 
-* x and y world coordinates
+* x and y world coordinates (startposition of the reference line)
 * hdg value for the orientation
-* length value for the length of this road section
+* length value for the length of this road section (reference line)
+* reference line type: line, curvature (more possible in Asam OpenDrive)
+
+```xml
+<planView>
+    <geometry s="0.0000000000000000e+0" x="1.4496001044438231e+2" y="4.5530173674054729e-2" hdg="3.1414859243253437e+0" length="4.1771856710381215e+1">
+        <line/>
+    </geometry>
+    <geometry s="4.1771856710381229e+1" x="1.0318815397191554e+2" y="4.9988453207001515e-2" hdg="3.1414859243253437e+0" length="2.1631953836864781e-1">
+        <arc curvature="2.0000000000000000e-3"/>
+    </geometry>
+    <geometry s="4.1988176248749852e+1" x="1.0297183443653296e+2" y="4.9964746689786163e-2" hdg="-3.1412667437776545e+0" length="2.8182375125015824e-1">
+        <line/>
+    </geometry>
+</planView>
+* ```
 
 lane:
+* a lane is part of a road
+* road can consists of different lanes
+* the lane next to the reference line has the value 1
+* the lanes next to that lane have increasing numbers
+* lanes on the left and on the right side of the reference line have different signs
 
-* lane id
+
+junction:
+* a road section with crossing lanes
+* a junction has one id
+* every segment in the junction connects different lanes
+* every connection has its own id
+
+```xml
+<junction id="194" name="junction194">
+    <connection id="0" incomingRoad="19" connectingRoad="195" contactPoint="end">
+        <laneLink from="1" to="1"/>
+    </connection>
+    <connection id="1" incomingRoad="12" connectingRoad="197" contactPoint="start">
+        <laneLink from="-2" to="2"/>
+        <laneLink from="-3" to="1"/>
+    </connection>
+</junction>
+* ```
+
+Relevant coordinate system:
+* inertial coordinate system 
+  * x -> right (roll)
+  * y -> up (pitch)
+  * z -> coming out of the drawig plane (yaw)
+
+
+Driving direction: 
+* calculate on which road the agent drives
+* that has an impact on the way we have to calculate the end points
+* A road is decribed through the reference line. Every road segment has a 
+starting point and a length value. The distance to the following road segment.
+The calculation of the trajectory uses the startpoint of the next road segment
+to navigate along the street. If the agent drives on the other side of the street,
+than this reference points have to be calculated different.
+-> The driving direction has to be checked at the beginning and compared to the
+the start points of the reference line
+  
+
+## Follow up Issues
+* Implement the handling of the Leaderboard instructions
+* Check on which side the agent drives and based on that calculate the end points for the road segments.
+* Check out positioning
+  * Compare positioning of signs in Carla and in the OpenDrive Map
+  * Compare positioning of traffic lights in Carla and in the OpenDrive Map
+* Visualize Trajectory in Carla
+  * Problem with the Leaderboard -> scenarios change and no view control?
+  * Can we only visualize individual towns from the Leaderboard test scenarios?
+* Implement velocity profile
+* Check if waypoints fit with Simulator
+* Keep the lane limitation 
+* Extract signals information for the state machine
+* Implement local path planner for alternative routes and collision prediction
 
 ## Sources
 
@@ -133,3 +220,7 @@ lane:
 <https://docs.python.org/3/library/xml.etree.elementtree.html>
 
 <https://www.asam.net/index.php?eID=dumpFile&t=f&f=4422&token=e590561f3c39aa2260e5442e29e93f6693d1cccd#top-016f925e-bfe2-481d-b603-da4524d7491f>
+
+https://github.com/bradyz/leaderboard/tree/master/data/routes_training
+
+<https://carla.readthedocs.io/en/latest/core_map/>

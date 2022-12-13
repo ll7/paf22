@@ -83,7 +83,7 @@ jobs:
       # add rendered JSON as comment to the pull request
       - name: Add simulation results as comment
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # this script reads the simulation_results.json and creates a comment on the pull request with the results.
@@ -92,10 +92,6 @@ jobs:
             // read the simulation results
             const results = fs.readFileSync('./simulation_results.json', 'utf8');
             let resultsJson = JSON.parse(results);
-            // create a markdown list of the results
-            let resultsList = resultsJson.values.map((value, i) => {
-              return `- ${resultsJson.labels[i]}: ${value}`;
-            });
             // create a markdown table of the results
             let resultsTable = resultsJson.values.map((values, i) => {
               return `| ${resultsJson.labels[i]} | ${values} |`;
@@ -111,5 +107,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "## Simulation results\n" + resultsList.join("\n") + "\n\n## Simulation results table \n" + resultsTable
+              body: "## Simulation results\n" + resultsTable
             });

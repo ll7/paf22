@@ -79,6 +79,8 @@ jobs:
       - name: Copy results
         run: docker-compose cp agent:/tmp/simulation_results.json .
       - name: Stop docker-compose
+        # always run this step, to clean up even on error
+        if: always()
         run: docker-compose down -v
       # add rendered JSON as comment to the pull request
       - name: Add simulation results as comment

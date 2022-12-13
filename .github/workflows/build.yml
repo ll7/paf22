@@ -43,7 +43,7 @@ jobs:
 
       - name: Get commit hash
         id: hash
-        run: echo "::set-output name=hash::$(git rev-parse --short HEAD)"
+        run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         id: build
@@ -62,7 +62,7 @@ jobs:
       - name: Output version
         id: version
         # take either the created tag or the commit hash
-        run: echo "::set-output name=version::${{ steps.tag.outputs.new_version == '' && steps.hash.outputs.hash || steps.tag.outputs.new_version }}"
+        run: echo "version=${{ steps.tag.outputs.new_version == '' && steps.hash.outputs.hash || steps.tag.outputs.new_version }}" >> $GITHUB_OUTPUT
   drive:
     runs-on: self-hosted
     needs: build-and-push-image

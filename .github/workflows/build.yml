@@ -89,9 +89,8 @@ jobs:
           # this script reads the simulation_results.json and creates a comment on the pull request with the results.
           script: |
             const fs = require('fs');
-            const path = require('path');
             // read the simulation results
-            const results = fs.readFileSync(path.join(__dirname, 'simulation_results.json'), 'utf8');
+            const results = fs.readFileSync('./simulation_results.json', 'utf8');
             let resultsJson = JSON.parse(results);
             // create a markdown list of the results
             let resultsList = resultsJson.values.map((value, i) => {

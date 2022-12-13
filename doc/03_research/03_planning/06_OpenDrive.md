@@ -26,10 +26,9 @@ Simon Erlbacher
     * [paf21-1](#paf21-1)
     * [Result](#result)
   * [More information about OpenDrive](#more-information-about-opendrive)
-    * [Start of the Implementation](#start-of-the-implementation)
+    * [Start of the implementation](#start-of-the-implementation)
   * [Follow up Issues](#follow-up-issues)
   * [Sources](#sources)
-  
 <!-- TOC -->
 
 ## General
@@ -132,12 +131,14 @@ link:
 </link>
 * ```
 
+
 planView:
 
 * x and y world coordinates (startposition of the reference line)
 * hdg value for the orientation
 * length value for the length of this road section (reference line)
 * reference line type: line, curvature (more possible in Asam OpenDrive)
+
 
 ```xml
 <planView>
@@ -153,6 +154,7 @@ planView:
 </planView>
 * ```
 
+
 lane:
 * a lane is part of a road
 * road can consists of different lanes
@@ -166,6 +168,7 @@ junction:
 * a junction has one id
 * every segment in the junction connects different lanes
 * every connection has its own id
+* 
 
 ```xml
 <junction id="194" name="junction194">
@@ -178,6 +181,7 @@ junction:
     </connection>
 </junction>
 * ```
+
 
 Relevant coordinate system:
 * inertial coordinate system 

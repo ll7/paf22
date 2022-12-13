@@ -1,4 +1,4 @@
-# Title of wiki page
+# State machine design
 
 **Summary:** This page gives an overview of the design of the state machine and further describes states and transitions.
 
@@ -47,7 +47,7 @@ Josef Kircher
 
 ![img.png](../../00_assets/Super_SM.png)
 
-The super state machine functions a controller of the main functions of the agent.
+The super state machine functions as a controller of the main functions of the agent.
 
 Those functions are
 

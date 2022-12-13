@@ -1,4 +1,4 @@
-name: Build and publish a ready2run image
+name: Build, publish and run tests
 
 on:
   push:
@@ -12,6 +12,8 @@ env:
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.build.version.outputs.version }}
     permissions:
       contents: read
       packages: write
@@ -56,3 +58,61 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'latest' || steps.hash.outputs.hash }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Output version
+        id: version
+        # take either the created tag or the commit hash
+        run: echo "::set-output name=version::${{ steps.tag.outputs.new_version == '' && steps.hash.outputs.hash || steps.tag.outputs.new_version }}"
+  drive:
+    runs-on: self-hosted
+    needs: build-and-push-image
+    # run only on pull request for now
+    if: github.event_name == 'pull_request'
+    env:
+      AGENT_VERSION: ${{ needs.build-and-push-image.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Run docker-compose
+        run: docker-compose -f ./build/docker-compose.test.yml up --exit-code-from agent
+      - name: Copy results
+        run: docker-compose -f docker-compose.test.yml cp agent:/tmp/simulation_results.json .
+      - name: Stop docker-compose
+        run: docker-compose -f ./build/docker-compose.test.yml down -v
+      # add rendered JSON as comment to the pull request
+      - name: Add simulation results as comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # this script reads the simulation_results.json and creates a comment on the pull request with the results.
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            // read the simulation results
+            const results = fs.readFileSync(join(__dirname, 'simulation_results.json'), 'utf8');
+            resultsJson = JSON.parse(results);
+            // create a markdown list of the results
+            resultsList = resultsJson.results.map((result, i) => {
+              return `- ${resultsJson.labels[i]}: ${result}`;
+            });
+            // create a markdown table of the results
+            resultsTable = resultsJson.results.map((result, i) => {
+              return `| ${resultsJson.labels[i]} | ${result} |`;
+            });
+            // create a markdown table header
+            resultsTableHeader = `| Metric | Value |`;
+            // create a markdown table divider
+            resultsTableDivider = `| --- | --- |`;
+            // create a markdown table of the results
+            resultsTable = resultsTableHeader + '\n' + resultsTableDivider + '\n' + resultsTable.join('\n');
+            // add the results as a comment to the pull request
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "## Simulation results\n" + resultsList.join("\n") + "\n\n## Simulation results table \n" + resultsTable
+            })
+
+
+

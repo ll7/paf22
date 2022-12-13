@@ -70,15 +70,16 @@ jobs:
     if: github.event_name == 'pull_request'
     env:
       AGENT_VERSION: ${{ needs.build-and-push-image.outputs.version }}
+      COMPOSE_FILE: ./build/docker-compose.test.yml
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Run docker-compose
-        run: docker-compose -f ./build/docker-compose.test.yml up --exit-code-from agent
+        run: docker-compose up --exit-code-from agent
       - name: Copy results
-        run: docker-compose -f docker-compose.test.yml cp agent:/tmp/simulation_results.json .
+        run: docker-compose cp agent:/tmp/simulation_results.json .
       - name: Stop docker-compose
-        run: docker-compose -f ./build/docker-compose.test.yml down -v
+        run: docker-compose down -v
       # add rendered JSON as comment to the pull request
       - name: Add simulation results as comment
         if: github.event_name == 'pull_request'

@@ -64,34 +64,25 @@ Transition:
 * From `Intersection state machine`
 * From `Lane change state machine`
 
-This state machine controls the speed of the ego-vehicle. It either tells the acting part of the ego vehicle to `ACCELERATE`, `BRAKE` or `KEEP` the velocity.
+This state machine controls the speed of the ego-vehicle. It either tells the acting part of the ego vehicle to `UPDATE_TARGET_SPEED` or `KEEP` the velocity.
 
 This is assumably the main state of the state machine as the ego vehicle will most of the time follow the road.
+
+If there is an event requiring the ego-vehicle to change the lane as mentioned in [Lane change state machine](#lane-change-state-machine), the lane change requested transition is triggered.
 
 ### KEEP
 
 Transition:
 
-* From `ACCEL`
-* From `BRAKE`
+* From `UPDATE_TARGET_SPEED`
 
-Keep the current target speed, applied most of the time. From here changes to the `ACCEL` or `BRAKE` state are performed, if events require a change of `target_speed`.
+Keep the current target speed, applied most of the time. From here changes to the `UPDATE_TARGET_SPEED` state are performed, if events require a change of `target_speed`.
 
-### ACCEL
-
-Transition:
-
-* From `KEEP` if `new target_speed` is greater than current `target_speed`.
-* From `BRAKE` if `new target_speed` is greater than current `target_speed`.
-
-Set a new target speed and change back to `KEEP` state afterwards.
-
-### Brake
+### UPDATE_TARGET_SPEED
 
 Transition:
 
-* From `KEEP` if `new target_speed` is smaller than current `target_speed` or an `obstacle` or the `leading_vehicle` is in braking distance.
-* From `BRAKE` if `new target_speed` is smaller than current `target_speed` or an `obstacle` or the `leading_vehicle` is in braking distance.
+* From `KEEP` if `new target_speed` is smaller or greater than current `target_speed` or an `obstacle` or the `leading_vehicle` is in braking distance.
 
 Set a new target speed and change back to `KEEP` state afterwards.
 

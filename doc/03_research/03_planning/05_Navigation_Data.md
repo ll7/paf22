@@ -110,3 +110,5 @@ notes from team intern meeting:
 <https://leaderboard.carla.org/get_started/>
 
 <https://www.markdownguide.org/cheat-sheet/>
+
+<https://carla.readthedocs.io/en/latest/core_map/#non-layered-maps>

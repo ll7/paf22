@@ -1,4 +1,5 @@
-<!-- TODO: Insert components of component-->
+<!-- TODO: Insert components of component -->
 <launch>
-    
+    <node pkg="planning" type="navigation_data.py" name="navigation" output="screen">   </node>
+    <node pkg="planning" type="map_manager.py" name="map" output="screen">   </node>
 </launch>

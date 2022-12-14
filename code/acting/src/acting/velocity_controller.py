@@ -20,7 +20,7 @@ class VelocityController(CompatibleNode):
         self.control_loop_rate = self.get_param('control_loop_rate', 0.05)
         self.role_name = self.get_param('role_name', 'ego_vehicle')
 
-        self.stanley_steer_sub: Subscriber = self.new_subscription(
+        self.max_velocity_sub: Subscriber = self.new_subscription(
             Float32,
             f"/carla/{self.role_name}/max_velocity",
             self.__get_max_velocity,
@@ -71,7 +71,7 @@ class VelocityController(CompatibleNode):
                                 "driving yet.")
             pid.setpoint = self.__max_velocity
             throttle = pid(self.__current_velocity)
-            throttle = max(throttle, -1.0)  # ensures that throttle >= -1
+            throttle = max(throttle, 0)  # ensures that throttle >= 0
             throttle = min(throttle, 1.0)  # ensures that throttle <= 1
             self.throttle_pub.publish(throttle)
 

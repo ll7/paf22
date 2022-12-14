@@ -17,6 +17,17 @@ RUN apt-get update \
     libxext6 libx11-6 libglvnd0 libgl1 \
     libglx0 libegl1 freeglut3-dev
 
+# install dependecy for building libgit2
+RUN apt-get install wget
+
+# build libgit2
+RUN wget https://github.com/libgit2/libgit2/archive/refs/tags/v1.5.0.tar.gz -O libgit2-1.5.0.tar.gz \
+    && tar xzf libgit2-1.5.0.tar.gz \
+    && cd libgit2-1.5.0/ \
+    && cmake . \
+    && make \
+    && make install
+
 # override python path, carla pip package path didn't exist and was using Python 3.7 instead of 2.7
 ENV PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages
 ENV PYTHONPATH=$PYTHONPATH:/opt/carla/PythonAPI/carla/dist/carla-0.9.13-py3.7-linux-x86_64.egg:/opt/carla/PythonAPI/carla

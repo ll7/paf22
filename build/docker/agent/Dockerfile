@@ -1,6 +1,6 @@
 
 # Based on https://github.com/ll7/paf21-1/blob/master/components/carla_ros_bridge/Dockerfile
-FROM kstein/carla:leaderboard as carla
+FROM ghcr.io/nylser/carla:leaderboard as carla
 
 # supply the base image with an environment supporting ROS UI via x11
 FROM osrf/ros:noetic-desktop-full-focal

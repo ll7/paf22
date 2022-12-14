@@ -21,6 +21,7 @@ class VehicleController(CompatibleNode):
     and send an emergency msg with data = False back, after the velocity of the
     vehicle has reached 0.
     """
+
     def __init__(self):
         super(VehicleController, self).__init__('vehicle_controller')
         self.loginfo('VehicleController node started')
@@ -96,8 +97,9 @@ class VehicleController(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-            # self.loginfo('Vehicle Controller Running')
-
+            if self.__emergency:  # emergency is already handled in
+                # __emergency_break()
+                return
             controller = self.__choose_controller()
             if controller == PURE_PURSUIT_CONTROLLER:
                 self.logdebug('Using PURE_PURSUIT_CONTROLLER')
@@ -122,7 +124,6 @@ class VehicleController(CompatibleNode):
             message.hand_brake = False
             message.manual_gear_shift = False
             message.steer = steer
-            # message.throttle = 5  # for testing todo: delete
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)
@@ -178,8 +179,9 @@ class VehicleController(CompatibleNode):
 
             self.loginfo("Emergency breaking disengaged "
                          "(Emergency breaking has been executed successfully)")
-            self.emergency_pub.publish(
-                Bool(False))  # todo: publish multiple times?
+            for _ in range(7):  # publish 7 times just to be safe
+                self.emergency_pub.publish(
+                    Bool(False))
 
     def __set_throttle(self, data):
         self.__throttle = data.data

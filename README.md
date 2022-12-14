@@ -14,18 +14,18 @@ As the project is still in early development, these requirements are subject to 
 To run the project you have to install [b5](https://github.com/team23/b5)
 and [docker](https://docs.docker.com/engine/install/) with NVIDIA GPU support,
 [nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker).
-More detailed instruction about setup and execution can be found [here](./doc/01_general/Readme.md)
+
+Afterwards, you can set up and execute the project with the following two commands:
 
 ```shell
-# Install b5
-pip install b5
-
 # Setup project
 b5 install
 
 # Run project
 b5 run
 ```
+
+More detailed instruction about setup and execution can be found [here](./doc/01_general/Readme.md).
 
 More available b5 commands are documented [here](./doc/01_general/03_commands.md).
 

@@ -4,17 +4,34 @@ To run the project you have to install [b5](https://github.com/team23/b5) and [d
 
 For development, we further recommend PyCharm Professional. More information about its installation can be found in [PyCharm Setup](../02_development/06_pycharm_setup.md)
 
-## B5 installation
+## Installation
+
+If not yet installed first install b5 and docker as described in section [b5 installation](#b5-installation) and [Docker with NVIDIA GPU support](#docker-with-nvidia-gpu-support).
+
+After that setting up the project and executing it is as easy as that:
 
 ```shell
-# Install b5
-pip install b5
-
 # Setup project
 b5 install
 
 # Run project
 b5 run
+```
+
+## b5 installation
+
+Make sure you have installed python and pip. If not yet installed, you can do by the following (Ubuntu):
+
+```shell
+# Install python3
+sudo apt install python3
+```
+
+Afterwards just install b5 by running:
+
+```shell
+# Install b5
+pip install b5
 ```
 
 ## Docker with NVIDIA GPU support
@@ -73,4 +90,16 @@ sudo systemctl restart docker
 
 ## 🚨 Common Problems
 
-Currently we are not aware about any Problems.
+### `b5: command not found`
+
+---
+
+1. If you already installed b5 (`pip install b5`) try to log out and log back in.
+
+2. If that doesn't help add this line to your `~/.bash_profile` or `~/.bashrc`:
+
+    ```shell
+    export PATH=$PATH:$HOME/.local/bin
+    ```
+
+([possible reason](https://stackoverflow.com/a/73256004))

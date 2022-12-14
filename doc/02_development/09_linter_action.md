@@ -1,6 +1,6 @@
 # Github actions
 
-**Summary:** This page explains the GitHub actions we use to unsure Code quality.
+**Summary:** This page explains the GitHub lint action we use to unsure Code quality.
 
 ---
 

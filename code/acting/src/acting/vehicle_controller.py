@@ -45,14 +45,17 @@ class VehicleController(CompatibleNode):
         self.emergency_pub: Publisher = self.new_publisher(
             Bool,
             f"/carla/{self.role_name}/emergency",
-            qos_profile=10
+            qos_profile=QoSProfile(depth=10,
+                                   durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
         self.emergency_sub: Subscriber = self.new_subscription(
             Bool,
             f"/carla/{self.role_name}/emergency",
             self.__emergency_break,
-            qos_profile=10)
+            qos_profile=QoSProfile(depth=10,
+                                   durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        )
 
         self.velocity_sub: Subscriber = self.new_subscription(
             CarlaSpeedometer,

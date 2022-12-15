@@ -49,19 +49,20 @@ class ClassificationModel(nn.Module):
         return x
 
     @staticmethod
-    def load_model(num_classes, in_channels, path):
+    def load_model(cfg):
         """
-        Loads a pretrained model by given path.
-        @param num_classes: Number of classes
-        @param in_channels: Number of channels of input images
-        @param path: Path to pretrained model-weights
+        Loads a pretrained model by given path in config file.
         @return: object of type ClassificationModel with pretrained weights
         """
-        model = ClassificationModel(num_classes, in_channels)
-        try:
-            print(f"Pretrained model loaded from {path}")
-            return model.load_state_dict(torch.load(path)).eval()
-        except (Exception, ):
-            print(f"No pretrained model found at {path}. "
-                  f"Created new model with random weights.")
-            return model
+        model = ClassificationModel(cfg.NUM_CLASSES, cfg.NUM_CHANNELS)
+        path = cfg.MODEL_PATH
+        if path is not None:
+            try:
+                state_dict = torch.load(path)
+                model.load_state_dict(state_dict).eval()
+                print(f"Pretrained model loaded from {path}")
+                return model
+            except (Exception, ):
+                print(f"No pretrained model found at {path}. "
+                      f"Created new model with random weights.")
+        return model.eval()

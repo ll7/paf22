@@ -3,6 +3,7 @@ import torch.cuda
 import torchvision.transforms as t
 from tqdm import tqdm
 from torch.optim.adam import Adam
+from torch.optim.lr_scheduler import ExponentialLR
 from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
 from data_generation.transforms import Normalize, ResizeAndPadToSquare, \
@@ -62,7 +63,9 @@ class TrafficLightTraining:
                                      num_workers=self.cfg.NUM_WORKERS)
         self.model = ClassificationModel(num_classes=self.cfg.NUM_CLASSES,
                                          in_channels=self.cfg.NUM_CHANNELS)
+        self.model = self.model.to(self.cfg.DEVICE)
         self.optimizer = Adam(self.model.parameters())
+        self.lr_scheduler = ExponentialLR(self.optimizer, 0.95)
         self.loss_function = torch.nn.CrossEntropyLoss()
         self.weights_organizer = WeightsOrganizer(cfg=self.cfg,
                                                   model=self.model)
@@ -71,17 +74,11 @@ class TrafficLightTraining:
         """
         Trains the model for a given amount of epochs
         """
-        self.model.to(self.cfg.DEVICE)
         tepoch = tqdm(range(self.cfg.EPOCHS))
         for i in range(self.cfg.EPOCHS):
-            if i > int(self.cfg.EPOCHS * 0.5):
-                for g in self.optimizer.param_groups:
-                    g['lr'] = 0.0001
-            elif i > int(self.cfg.EPOCHS * 0.9):
-                for g in self.optimizer.param_groups:
-                    g['lr'] = 0.00001
             epoch_loss, epoch_correct = self.epoch()
             loss, correct = self.validate()
+            self.lr_scheduler.step()
             tepoch.set_postfix(loss=epoch_loss, accuracy=epoch_correct,
                                val_loss=loss, val_accuracy=correct)
             tepoch.update(1)

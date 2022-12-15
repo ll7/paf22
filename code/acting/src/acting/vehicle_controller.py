@@ -10,7 +10,6 @@ PURE_PURSUIT_CONTROLLER: int = 1
 STANLEY_CONTROLLER: int = 2
 
 
-# todo: docs
 class VehicleController(CompatibleNode):
     """
     This node is responsible for collecting all data needed for the

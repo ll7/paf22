@@ -8,7 +8,7 @@ from detectron2.modeling.proposal_generator import (
     PROPOSAL_GENERATOR_REGISTRY
 )
 
-from efficientps.utils import DepthwiseSeparableConv
+from efficientps.utils.depthwise_separable_conv import DepthwiseSeparableConv
 
 
 @PROPOSAL_GENERATOR_REGISTRY.register()

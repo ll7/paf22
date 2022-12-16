@@ -10,7 +10,7 @@ from detectron2.layers import ShapeSpec
 from detectron2.structures import Instances
 from inplace_abn import InPlaceABN
 
-from efficientps.utils import DepthwiseSeparableConv
+from efficientps.utils.depthwise_separable_conv import DepthwiseSeparableConv
 
 
 @ROI_HEADS_REGISTRY.register()

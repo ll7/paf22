@@ -4,7 +4,7 @@ from torch.nn import Conv2d
 import torch.nn.functional as F
 from inplace_abn import InPlaceABN
 
-from efficientps.utils import DepthwiseSeparableConv
+from efficientps.utils.depthwise_separable_conv import DepthwiseSeparableConv
 
 
 class TwoWayFpn(nn.Module):

@@ -1,2 +1,10 @@
+torch==1.13.0
+torchvision==0.14.0
+tqdm==4.64.1
 dvc==2.36.0
 dvc-gdrive==2.19.1
+pytorch-lightning==1.8.5
+protobuf==4.21.12
+git+https://github.com/cocodataset/panopticapi.git
+inplace-abn==1.1.0
+git+https://github.com/facebookresearch/detectron2.git

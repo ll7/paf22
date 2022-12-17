@@ -134,6 +134,15 @@ WORKDIR /workspace/code
 
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
+RUN sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
+RUN wget https://developer.download.nvidia.com/compute/cuda/11.7.0/local_installers/cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb
+RUN sudo dpkg -i cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb
+RUN sudo cp /var/cuda-repo-ubuntu2004-11-7-local/cuda-*-keyring.gpg /usr/share/keyrings/
+RUN sudo apt-get update
+RUN sudo DEBIAN_FRONTEND=noninteractive apt-get -y install cuda
+RUN export CUDA_HOME=/usr/local/cuda-11.7/bin
+RUN nvcc --version
 RUN cat requirements.txt | xargs -n 1 -L 1 pip install
 
 ENTRYPOINT ["/entrypoint.sh"]

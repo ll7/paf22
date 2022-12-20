@@ -8,3 +8,4 @@ code/simulation_results.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+/code/planning/executive_smach_tutorials/*

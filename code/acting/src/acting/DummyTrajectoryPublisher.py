@@ -96,6 +96,7 @@ class DummyTrajectoryPub(CompatibleNode):
 
         def loop(timer_event=None):
             # Continuously update path
+            self.updated_trajectory(self.initial_trajectory)
             self.trajectory_publisher.publish(self.path_msg)
 
         self.new_timer(self.control_loop_rate, loop)

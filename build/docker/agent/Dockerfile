@@ -1,6 +1,6 @@
 
 # Based on https://github.com/ll7/paf21-1/blob/master/components/carla_ros_bridge/Dockerfile
-FROM kstein/carla:leaderboard as carla
+FROM ghcr.io/nylser/carla:leaderboard as carla
 
 # supply the base image with an environment supporting ROS UI via x11
 FROM osrf/ros:noetic-desktop-full-focal
@@ -16,6 +16,17 @@ RUN apt-get update \
   && apt-get install -y -qq --no-install-recommends \
     libxext6 libx11-6 libglvnd0 libgl1 \
     libglx0 libegl1 freeglut3-dev
+
+# install dependecy for building libgit2
+RUN apt-get install wget
+
+# build libgit2
+RUN wget https://github.com/libgit2/libgit2/archive/refs/tags/v1.5.0.tar.gz -O libgit2-1.5.0.tar.gz \
+    && tar xzf libgit2-1.5.0.tar.gz \
+    && cd libgit2-1.5.0/ \
+    && cmake . \
+    && make \
+    && make install
 
 # override python path, carla pip package path didn't exist and was using Python 3.7 instead of 2.7
 ENV PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages
@@ -120,6 +131,8 @@ ADD ./build/docker/agent/entrypoint.sh /entrypoint.sh
 
 # set the default working directory to the code
 WORKDIR /workspace/code
+
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 
 RUN pip install -r requirements.txt
 

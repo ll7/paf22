@@ -61,8 +61,8 @@ class OpenDriveConverter:
         junctions_extracted = list()
         j = 0
         for i in range(max_id + 1):
-            if int(self.roads[j].get("id")) == i:
-                junctions_extracted.append(self.roads[j])
+            if int(self.junctions[j].get("id")) == i:
+                junctions_extracted.append(self.junctions[j])
                 j += 1
             else:
                 junctions_extracted.append(None)

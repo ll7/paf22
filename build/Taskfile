@@ -39,6 +39,7 @@ task:install() {
 install:gpu-support() {
     # check if docker-nvidia is installed, to make the project also executable on
     # systems without nvidia GPU.
+
     if [ -z "$(command -v docker-nvidia)" ]
     then
       task:nvidia:enable
@@ -56,6 +57,8 @@ task:update() {
 }
 
 task:nvidia:enable() {
+    # Writes the content of templates/config.nvidia.yml.jinja2 to config.local.yml
+    # This file tells b5 to read docker-compose.nvidia.yml in addition to docker-compose.yml
     template:render --overwrite ask-if-older templates/config.nvidia.yml.jinja2 config.local.yml
 }
 

@@ -43,7 +43,7 @@ RUN apt-get update && apt-get install -y \
 SHELL ["/bin/bash", "-c"]
 
 # Create and apply the non-root user
-RUN groupadd --gid $USER_GID $USERNAME \
+RUN groupadd --gid $USER_GID $USERNAME -f \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && apt-get update \
     && apt-get install -y sudo \

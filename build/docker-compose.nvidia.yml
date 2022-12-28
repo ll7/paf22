@@ -1,5 +1,8 @@
 version: "3"
 
+# This file should contain all nvidia GPU specific configuration.
+# Only loaded of specified in config.local.yml
+
 services:
   carla-simulator:
     deploy:

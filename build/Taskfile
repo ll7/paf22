@@ -37,6 +37,8 @@ task:install() {
 }
 
 install:gpu-support() {
+    # check if docker-nvidia is installed, to make the project also executable on
+    # systems without nvidia GPU.
     if [ -z "$(command -v docker-nvidia)" ]
     then
       task:nvidia:enable

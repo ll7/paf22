@@ -8,6 +8,24 @@ based on https://gist.github.com/govert/1b373696c9a27ff4c72a.
 http://dirsig.cis.rit.edu/docs/new/coordinates.html
 """
 import math
+from enum import Enum
+
+
+# Class to choose a map with a predefined reference point
+class GeoRef(Enum):
+    TOWN01 = 0, 0, 0
+    TOWN02 = 0, 0, 0
+    TOWN03 = 0, 0, 0
+    TOWN04 = 0, 0, 0
+    TOWN05 = 0, 0, 0
+    TOWN06 = 0, 0, 0
+    TOWN07 = 0, 0, 0
+    TOWN08 = 0, 0, 0
+    TOWN09 = 0, 0, 0
+    TOWN10 = 0, 0, 0
+    TOWN11 = 0, 0, 0
+    TOWN12 = 35.25000, -101.87500, 331.00000
+
 
 a = 6378137
 b = 6356752.3142

@@ -10,7 +10,9 @@ import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from nav_msgs.msg import Path
 from sensor_msgs.msg import NavSatFix
-from coordinate_transformation import CoordinateTransformer
+from geometry_msgs.msg import PoseStamped
+from coordinate_transformation import CoordinateTransformer, GeoRef
+import rospy
 
 
 class DummyTrajectorySub(CompatibleNode):
@@ -29,11 +31,13 @@ class DummyTrajectorySub(CompatibleNode):
 
         self.transformer = CoordinateTransformer
         self.transformer.__init__(self)
+        gps_ref = GeoRef.TOWN12
+        lat0 = gps_ref.value[0]
+        lon0 = gps_ref.value[1]
+        h0 = gps_ref.value[2]
+        self.transformer.set_gnss_ref(self, lat0, lon0, h0)
 
-        gps_lat_ref, gps_lon_ref = 35.25000, -101.87500
-        m_h_ref = 331.7265
-
-        self.transformer.set_gnss_ref(self, gps_lat_ref, gps_lon_ref, m_h_ref)
+        self.current_pos = PoseStamped()
 
         # basic info
         self.role_name = self.get_param("role_name", "ego_vehicle")
@@ -44,6 +48,7 @@ class DummyTrajectorySub(CompatibleNode):
         self.target_wp = (100.0, 0.0)
         self.target_trajectory = [self.start_wp, self.target_wp]
 
+        # Subscriber
         self.dummy_trajectory_subscriber = self.new_subscription(
             Path,
             "/carla/" + self.role_name + "/trajectory",
@@ -51,42 +56,67 @@ class DummyTrajectorySub(CompatibleNode):
             qos_profile=1)
 
         self.pos_counter = 0
-        self.pos_list = []
+        self.pos_average = [0, 0, 0]
         self.gnss_subscriber = self.new_subscription(
             NavSatFix,
             "/carla/" + self.role_name + "/GPS",
-            self.output_gps_2_xyz,
+            self.output_average_gps_2_xyz,
+            qos_profile=1)
+
+        # Publisher
+        self.pos_publisher = self.new_publisher(
+            PoseStamped,
+            "/carla/" + self.role_name + "/current_pos",
             qos_profile=1)
 
     def output_gps_2_xyz(self, data: NavSatFix):
-        if self.pos_counter % 20 == 0:
+        """
+        Transforms GPS coordinates into local coordinates
+        using the CoordinateTransformer transformer.
+        The current position is then updated and published
+        in the PoseStamped format.
+        :param data: message according to NavSatFix definition
+        :return:
+        """
+        if self.pos_counter % 4 == 0:
             lat = data.latitude
             lon = data.longitude
             h = data.altitude
             x, y, z = self.transformer.gnss_to_xyz(self, lat, lon, h)
-            self.loginfo(f"x: {x}\t y: {y}\t z:{z}")
-            # self.pos_list.append((x, y, z))
+            self.update_pose(x, y, z)
+            # self.loginfo(f"x: {x}\t y: {y}\t z:{z}")
 
-    '''
-        x, y, z = geodetic_to_ecef(35.20171220851982,
-                                   -101.86417900962616,
-                                   372.98386)
-        self.loginfo("x: ")
-        self.loginfo(x)
-        self.loginfo("y: ")
-        self.loginfo(y)
-        self.loginfo("z: ")
-        self.loginfo(z)
+        self.pos_counter += 1
 
-    '''
+    def output_average_gps_2_xyz(self, data: NavSatFix):
+        """
+        Transforms GPS coordinates into local coordinates
+        using the CoordinateTransformer transformer.
+        The current position is then updated and published
+        in the PoseStamped format.
+        :param data: message according to NavSatFix definition
+        :param average: number of points to be averaged
+        :return:
+        """
 
-    '''
-    def output_xodr_map(self, data: String):
-        self.loginfo("Saving XODR String")
-        text_file = open("xodr_string.txt", "w")
-        text_file.write(data.data)
-        text_file.close()
-    '''
+        lat = data.latitude
+        lon = data.longitude
+        h = data.altitude
+        x, y, z = self.transformer.gnss_to_xyz(self, lat, lon, h)
+
+        self.pos_average[0] += x
+        self.pos_average[1] += y
+        self.pos_average[2] += z
+
+        if self.pos_counter % 4 == 0:
+            x1 = self.pos_average[0] / 4
+            y1 = self.pos_average[1] / 4
+            z1 = self.pos_average[2] / 4
+            self.pos_average = [0, 0, 0]
+            self.update_pose(x1, y1, z1)
+            self.loginfo(f"x: {x1}\t y: {y1}\t z:{z1}")
+
+        self.pos_counter += 1
 
     def update_trajectory(self, dummy_trajectory):
         """
@@ -106,14 +136,38 @@ class DummyTrajectorySub(CompatibleNode):
             temp_wp = (x, y)
             self.target_trajectory.append(temp_wp)
 
+    def update_pose(self, x, y, z):
+        """
+        Update the current position and publishes the new position.
+        :param x:
+        :param y:
+        :param z:
+        :return:
+        """
+
+        temp_pose = PoseStamped()
+
+        temp_pose.header.stamp = rospy.Time.now()
+        temp_pose.header.frame_id = "Local Coordinate Frame"
+
+        temp_pose.pose.position.x = x
+        temp_pose.pose.position.y = y
+        temp_pose.pose.position.z = z
+
+        temp_pose.pose.orientation.x = 0.0
+        temp_pose.pose.orientation.y = 0.0
+        temp_pose.pose.orientation.z = 0.0
+        temp_pose.pose.orientation.w = 0.0
+
+        self.current_pos = temp_pose
+        self.pos_publisher.publish(self.current_pos)
+
     def run(self):
         """
         Control loop
 
         :return:
         """
-
-        # self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
 

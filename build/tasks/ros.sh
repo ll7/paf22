@@ -1,117 +1,99 @@
 #!/usr/bin/env bash
 # b5 Taskfile, see https://git.team23.de/build/b5 for details
 
+task:roscommand() {
+   docker:container_run agent /bin/bash -c "source /opt/ros/noetic/setup.bash && ${@}"
+}
+
 task:rosbag() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosbag" ${additionalArguments:-}
+ task:roscommand "rosbag ${@}"
 }
 
 task:ros_readbagfile() {
-  additionalArguments="${@:1}"
-  task:shell agent "ros_readbagfile" ${additionalArguments:-}
+ task:roscommand "ros_readbagfile ${@}"
 }
 
 task:rosbash() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosbash" ${additionalArguments:-}
+ task:roscommand "rosbash ${@}"
 }
 
 task:roscd() {
-  additionalArguments="${@:1}"
-  task:shell agent "roscd" ${additionalArguments:-}
+ task:roscommand "roscd ${@}"
 }
 
 task:rosclean() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosclean" ${additionalArguments:-}
+ task:roscommand "rosclean ${@}"
 }
 
 task:roscore() {
-  additionalArguments="${@:1}"
-  task:shell agent "roscore" ${additionalArguments:-}
+ task:roscommand "roscore ${@}"
 }
 
 task:rosdep() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosdep" ${additionalArguments:-}
+ task:roscommand "rosdep ${@}"
 }
 
 task:rosed() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosed" ${additionalArguments:-}
+ task:roscommand "rosed ${@}"
 }
 
 task:roscreate-pkg() {
-  additionalArguments="${@:1}"
-  task:shell agent "roscreate-pkg" ${additionalArguments:-}
+ task:roscommand "roscreate-pkg ${@}"
 }
 
 task:roscreate-stack() {
-  additionalArguments="${@:1}"
-  task:shell agent "roscreate-stack" ${additionalArguments:-}
+ task:roscommand "roscreate-stack ${@}"
 }
 
 task:rosrun() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosrun" ${additionalArguments:-}
+ task:roscommand "rosrun ${@}"
 }
 
 task:roslaunch() {
-  additionalArguments="${@:1}"
-  task:shell agent "roslaunch" ${additionalArguments:-}
+ task:roscommand "roslaunch ${@}"
 }
 
 task:roslocate() {
-  additionalArguments="${@:1}"
-  task:shell agent "roslocate" ${additionalArguments:-}
+ task:roscommand "roslocate ${@}"
 }
 
 task:rosmake() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosmake" ${additionalArguments:-}
+ task:roscommand "rosmake ${@}"
 }
 
 task:rosmsg() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosmsg" ${additionalArguments:-}
+ task:roscommand "rosmsg ${@}"
 }
 
 task:rosnode() {
   additionalArguments="${@:1}"
-  task:shell agent "rosnode" ${additionalArguments:-}
+ task:roscommand "rosnode ${@}"
 }
 
 task:rospack() {
-  additionalArguments="${@:1}"
-  task:shell agent "rospack" ${additionalArguments:-}
+ task:roscommand "rospack ${@}"
 }
 
 task:rosparam() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosparam" ${additionalArguments:-}
+ task:roscommand "rosparam ${@}"
 }
 
 task:rossrv() {
-  additionalArguments="${@:1}"
-  task:shell agent "rossrv" ${additionalArguments:-}
+ task:roscommand "rossrv ${@}"
 }
 
 task:rosservice() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosservice" ${additionalArguments:-}
+ task:roscommand "rosservice ${@}"
 }
 
 task:rosstack() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosstack" ${additionalArguments:-}
+ task:roscommand "rosstack ${@}"
 }
 
 task:rostopic() {
-  additionalArguments="${@:1}"
-  task:shell agent "rostopic" ${additionalArguments:-}
+ task:roscommand "rostopic ${@}"
 }
 
 task:rosversion() {
-  additionalArguments="${@:1}"
-  task:shell agent "rosversion" ${additionalArguments:-}
+ task:roscommand "rosversion ${@}"
 }

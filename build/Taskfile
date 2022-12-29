@@ -27,6 +27,11 @@ task:shell() {
     docker:container_run "${container:-agent}" "${command:-/bin/bash}" ${additionalArguments:-}
 }
 
+task:cmd() {
+  command="$1"
+  task:shell agent "${command:-/bin/bash}"
+}
+
 ##########################################
 # Project setup / maintenance
 ##########################################

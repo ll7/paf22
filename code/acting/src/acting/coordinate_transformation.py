@@ -5,6 +5,7 @@ ECEF -> ENU and Geodetic -> ENU
 Running the script by itself runs tests.
 based on https://gist.github.com/govert/1b373696c9a27ff4c72a.
 
+A good source to read up on the different reference frames is:
 http://dirsig.cis.rit.edu/docs/new/coordinates.html
 """
 import math

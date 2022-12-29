@@ -27,11 +27,6 @@ task:shell() {
     docker:container_run "${container:-agent}" "${command:-/bin/bash}" ${additionalArguments:-}
 }
 
-task:cmd() {
-  command="$1"
-  task:shell agent "${command:-/bin/bash}"
-}
-
 ##########################################
 # Project setup / maintenance
 ##########################################
@@ -74,3 +69,5 @@ task:install:git_hooks() {
     test -L ../.git/hooks/commit-msg || ln -s ../../build/hooks/commit-msg ../.git/hooks/
     chmod +x ./hooks/*
 }
+
+source ./tasks/ros.sh

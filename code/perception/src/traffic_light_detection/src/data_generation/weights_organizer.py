@@ -14,8 +14,9 @@ class WeightsOrganizer:
         self.cfg = cfg
         self.model = model
         self.best = []
+        print(self.cfg.WEIGHTS_PATH)
         try:
-            os.mkdir(self.cfg.WEIGHTS_PATH)
+            os.makedirs(self.cfg.WEIGHTS_PATH, exist_ok=True)
         except FileExistsError:
             sys.exit(f"The directory {self.cfg.WEIGHTS_PATH} already exists."
                      f"Cannot create weights-directory for training."

@@ -135,6 +135,15 @@ with dvc.api.open(
 
 More information can be found [here](https://dvc.org/doc/api-reference).
 
+### Experiments
+
+> "In machine learning projects, the number of experiments grows rapidly DVC can track experiments,
+list and compare their most relevant metrics, parameters, and dependencies,
+navigate among them and commit only the ones that we need to Git." [(Source)](https://dvc.org/doc/start/experiment-management/experiments)
+
+Detailed documentation with a [good example](https://github.com/iterative/example-dvc-experiments)
+can be found [here](https://dvc.org/doc/start/experiment-management/experiments).
+
 ## Example
 
 This example should give a short overview how to work with DVC. In this case it stores a dateset with DVC.

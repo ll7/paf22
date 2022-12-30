@@ -5,4 +5,3 @@ xmltodict==0.13.0
 py-trees==2.1.6
 torch==1.13.1
 torchvision==0.14.1
-torchvision==0.14.1

@@ -58,8 +58,11 @@ Runs the python linter. More documentation about linting can be found [here](../
 Runs the markdown linter. More documentation about linting can be found [here](../02_development/02_linting.md).
 
 ## Shortcuts for ROS
-Shortcuts to run the ROS commands directly in the container. Detailed documentation 
+
+Shortcuts to run the ROS commands directly in the container. Detailed documentation
 about this commands can be found [here](http://wiki.ros.org/ROS/CommandLineTools#Common_user_tools).
+
+For more complex tasks it's easier to just get a shell into the container with `b5 shell` and run the commands there.
 
 `b5 rosbag`
 `b5 ros_readbagfile`

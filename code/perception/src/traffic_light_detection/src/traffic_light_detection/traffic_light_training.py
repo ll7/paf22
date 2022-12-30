@@ -6,15 +6,16 @@ from torch.optim.adam import Adam
 from torch.optim.lr_scheduler import ExponentialLR
 from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
-from traffic_light_detection.classification_model import ClassificationModel
 from torchvision.transforms import ToTensor
-from traffic_light_config import TrafficLightConfig
 import sys
 import os
 sys.path.append(os.path.abspath(sys.path[0] + '/..'))
 from data_generation.transforms import Normalize, ResizeAndPadToSquare, \
     load_image  # noqa: E402
 from data_generation.weights_organizer import WeightsOrganizer  # noqa: E402
+from traffic_light_detection.classification_model import ClassificationModel \
+    # noqa: E402
+from traffic_light_config import TrafficLightConfig  # noqa: E402
 
 
 def parse_args():

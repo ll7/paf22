@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 from pathlib import Path
 import torch
@@ -15,8 +14,7 @@ class TrafficLightConfig:
         self.NUM_SAVES = 3  # Amount of models to save in the current training
         self.ROOT_PATH = str(Path(__file__).resolve().parents[1].resolve())
         self.DATASET_PATH = self.ROOT_PATH + "/dataset"
-        self.WEIGHTS_PATH = self.ROOT_PATH + "/model_weights/"
-        self.WEIGHTS_PATH = os.path.join(self.WEIGHTS_PATH, self.TIME + "/")
+        self.WEIGHTS_PATH = self.ROOT_PATH + "/models/"
         # Amount of epochs to train
         # One epoch: Training with all images from training dataset once
         self.EPOCHS = 100

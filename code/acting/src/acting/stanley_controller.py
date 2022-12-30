@@ -50,8 +50,8 @@ class StanleyController(CompatibleNode):
             qos_profile=1)
 
         self.position_sub: Subscriber = self.new_subscription(
-            NavSatFix,
-            f"/carla/{self.role_name}/GPS",
+            PoseStamped,
+            f"/carla/{self.role_name}/current_pos",
             self.__set_position,
             qos_profile=1)
 
@@ -74,7 +74,7 @@ class StanleyController(CompatibleNode):
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
-        self.__position: (float, float) = None  # latitude, longitude in deg
+        self.__position: PoseStamped = None  # latitude, longitude in deg
         self.__path: Path = None
         self.__heading: float = None
         self.__velocity: float = None
@@ -96,24 +96,25 @@ class StanleyController(CompatibleNode):
             :return:
             """
             if self.__path is None:
-                self.logerr("StanleyController hasn't received a path yet "
-                            "and can therefore not publish steering")
+                self.loginfo("StanleyController hasn't received a path yet "
+                             "and can therefore not publish steering")
                 return
             if self.__position is None:
-                self.logerr("StanleyController hasn't received the"
-                            "position of the vehicle yet "
-                            "and can therefore not publish steering")
+                self.loginfo("StanleyController hasn't received the"
+                             "position of the vehicle yet "
+                             "and can therefore not publish steering")
                 return
+
             if self.__heading is None:
-                self.logerr("StanleyController hasn't received the heading"
-                            "of the vehicle yet and can therefore "
-                            "not publish steering")
+                self.loginfo("StanleyController hasn't received the heading"
+                             "of the vehicle yet and can therefore "
+                             "not publish steering")
                 return
 
             if self.__velocity is None:
-                self.logerr("StanleyController hasn't received the "
-                            "velocity of the vehicle yet "
-                            "and can therefore not publish steering")
+                self.loginfo("StanleyController hasn't received the "
+                             "velocity of the vehicle yet "
+                             "and can therefore not publish steering")
                 return
             self.stanley_steer_pub.publish(
                 self.run_step(
@@ -125,14 +126,17 @@ class StanleyController(CompatibleNode):
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
-    def __set_position(self, data: NavSatFix):
-        self.__position = (data.latitude, data.longitude)
-        position = Point(data.latitude, data.longitude, data.altitude)
+    def __set_position(self, data: PoseStamped):
+        position = data
+
         heading = self.__heading
         quat = heading2quaternion(heading)
-        orientation = Quaternion(quat[0], quat[1], quat[2], quat[3])
-        # todo: header missing
-        self.__position = PoseStamped(None, Pose(position, orientation))
+        position.pose.orientation.x = quat[0]
+        position.pose.orientation.y = quat[1]
+        position.pose.orientation.z = quat[2]
+        position.pose.orientation.w = quat[3]
+
+        self.__position = position
 
     def __set_trajectory(self, data: Path):
         self.__path = data
@@ -261,14 +265,13 @@ class StanleyController(CompatibleNode):
         # error of the front axle to disired path
         # the disired speed of the path that we look at
         # distance to the point we want to drive to
-        return target_idx, error_front_axle, msg.target_speed[
-            min([target_idx, len(msg.target_speed) - 1])],
+        return target_idx, error_front_axle, 0, distance
 
 
 def main(args=None):
     """
-      main function starts the acting node
-      :param args:
+    Main function starts the node
+    :param args:
     """
     roscomp.init('stanley_controller', args=args)
 

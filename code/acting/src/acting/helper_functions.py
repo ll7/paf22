@@ -36,13 +36,17 @@ def calc_path_yaw(path: Path, idx: int) -> float:
     Returns:
         float: [description]
     """
-    if idx >= len(path) - 1:
+    if idx >= len(path.poses) - 1:
         raise RuntimeError("no target found")
 
-    point_current = path[idx]
-    point_next = path[idx + 1]
-    angle = math.atan2(point_next.y - point_current.y, point_next.x -
-                       point_current.x)
+    point_current: PoseStamped
+    point_current = path.poses[idx]
+    point_next: PoseStamped
+    point_next = path.poses[idx + 1]
+    angle = math.atan2(point_next.pose.position.y
+                       - point_current.pose.position.y,
+                       point_next.pose.position.x
+                       - point_current.pose.position.x)
     return normalize_angle(angle)
 
 
@@ -75,7 +79,7 @@ def calc_egocar_yaw(pose: PoseStamped) -> float:
     Returns:
         float: The normalized yaw
     """
-    quaternion = (pose.orientation.x, pose.orientation.y,
-                  pose.orientation.z, pose.orientation.w)
+    quaternion = (pose.pose.orientation.x, pose.pose.orientation.y,
+                  pose.pose.orientation.z, pose.pose.orientation.w)
     _, _, yaw = euler_from_quaternion(quaternion)
     return normalize_angle(yaw)

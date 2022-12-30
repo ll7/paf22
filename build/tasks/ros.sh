@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # b5 Taskfile, see https://git.team23.de/build/b5 for details
 
+# shortcuts for commands documented here
+# http://wiki.ros.org/ROS/CommandLineTools#Common_user_tools
+
 task:roscommand() {
-   docker:container_run agent /bin/bash -c "source /opt/ros/noetic/setup.bash && ${@}"
+ # seems necessary to source the setup file on every call
+ docker:container_run agent /bin/bash -c "source /opt/ros/noetic/setup.bash && ${@}"
 }
 
 task:rosbag() {

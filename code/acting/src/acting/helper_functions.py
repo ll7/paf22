@@ -12,6 +12,16 @@ from scipy.spatial.transform import Rotation
 
 
 # todo: docs
+def vectors2angle(x1: float, y1: float, x2: float, y2: float) -> float:
+    v1 = [x1, y1]
+    v2 = [x2, y2]
+
+    cos_angle = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+    alpha = np.arccos(cos_angle)
+
+    return math.degrees(alpha)
+
+
 def quaternion2heading(x: float, y: float, z: float, w: float) -> float:
     quaternion = (x, y, z, w)
     rot = Rotation.from_quat(quaternion)

@@ -38,9 +38,10 @@ class DummyTrajectoryPub(CompatibleNode):
         initial_trajectory = [
             (985.0, -5373.2),
             (985.0, -5473.2),
-            (990.0, -5474.2),
-            (990.0, -5524.2),
-            (990.0, -5574.2)
+            (990.0, -5493.2),
+            (985.0, -5513.2),
+            (990.0, -5533.2),
+            (985.0, -5574.2)
         ]
         self.updated_trajectory(initial_trajectory)
 

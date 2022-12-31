@@ -12,7 +12,7 @@ from rospy import Publisher, Subscriber
 from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32, Bool
 
-from helper_functions import quaternion2heading
+from helper_functions import vectors2angle
 
 
 # todo: docs
@@ -62,9 +62,10 @@ class PurePursuitController(CompatibleNode):
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
-        self.__position: (float, float) = None  # latitude, longitude in deg
+        self.__position: (float, float) = None  # x, y
+        self.__last_pos: (float, float) = None
         self.__path: Path = None
-        self.__heading: float = None
+        self.__heading: float = None  # currently unusable as x,y are to big
         self.__velocity: float = None
 
     def run(self):
@@ -110,19 +111,30 @@ class PurePursuitController(CompatibleNode):
         self.spin()
 
     def __set_position(self, data: PoseStamped):
-        x = data.pose.position.x
-        y = data.pose.position.y
-        self.__position = (x, y)
+        if self.__position is not None:
+            old_x = self.__position[0]
+            old_y = self.__position[1]
+            self.__last_pos = (old_x, old_y)
+
+        new_x = data.pose.position.x
+        new_y = data.pose.position.y
+        self.__position = (new_x, new_y)
 
     def __set_path(self, data: Path):
         self.__path = data
 
     def __set_heading(self, data: Imu):  # todo: test
-        self.__heading = quaternion2heading(
-            data.orientation.x,
-            data.orientation.y,
-            data.orientation.z,
-            data.orientation.w)
+        if self.__position is None:
+            self.logerr("__get_heading: Current Position not set")
+            self.__heading = 0
+            return
+        if self.__last_pos is None:
+            self.logerr("__get_heading: Last Position not set")
+            self.__heading = 0
+            return
+        x1, y1 = self.__last_pos[0], self.__last_pos[1]
+        x2, y2 = self.__position[0], self.__position[1]
+        self.__heading = self.__get_vector_direction(x1, y1, x2, y2)
 
     def __set_velocity(self, data):
         self.__velocity = data.speed
@@ -130,24 +142,77 @@ class PurePursuitController(CompatibleNode):
     def __calculate_steer(self) -> float:
         L = 2  # dist between front and rear wheels todo: measure
         K = 10  # todo: tune
-        alpha = self.__get_heading_error()
-        self.loginfo(f"Heading error: {alpha}")
+
+        # self.loginfo(f"Heading error: {alpha}")
         # offset speed +1 km/h to avoid division by 0
         look_ahead_dist = K * (self.__velocity + 0.2777)
+
+        target_wp_idx = self.__get_target_point_index(look_ahead_dist)
+
+        target_wp: PoseStamped = self.__path.poses[target_wp_idx]
+        target_v_x = target_wp.pose.position.x - self.__position[0]
+        target_v_y = target_wp.pose.position.y - self.__position[1]
+        cur_v_x = self.__position[0] - self.__last_pos[0]
+        cur_v_y = self.__position[1] - self.__last_pos[1]
+
+        alpha = vectors2angle(target_v_x, target_v_y,
+                              cur_v_x, cur_v_y)
         steering_angle = atan((2 * L * sin(alpha)) / look_ahead_dist)
+        self.loginfo(f"Target Steering angle: {round(steering_angle, 6)} \t"
+                     f"Current alpha: {round(alpha, 6)} \t"
+                     f"Current heading: {round(self.__heading, 6)}"
+                     f"Target WP idx: {target_wp_idx}")
         return steering_angle
+
+    def __get_target_point_index(self, ld: float) -> int:
+        """
+        Get the index of the target point on the current trajectory based on the
+        look ahead distance.
+        :param ld: look ahead distance
+        :return:
+        """
+        if len(self.__path.poses) < 2:
+            return -1
+
+        min_dist = 10e1000
+        min_dist_idx = -1
+        for i in range(0, len(self.__path.poses)):
+            pose: PoseStamped = self.__path.poses[i]
+            dist = self.__dist_to(pose.pose.position)
+            dist2ld = dist - ld
+            if min_dist > dist2ld > 0:
+                min_dist = dist2ld
+                min_dist_idx = i
+        return min_dist_idx
 
     def __get_heading_error(self) -> float:
         # todo: the calculation of the angle could be done
         #  before every point before publishing a path
         my_heading = self.__heading
         target_idx = self.__get_closest_point_on_path_index()
+
+        # for debbuging only:
+        target_pose: PoseStamped = self.__path.poses[target_idx]
+        tp_x, tp_y = target_pose.pose.position.x, target_pose.pose.position.y
+        self.loginfo(f"Target position: \t x: {tp_x} \t y: {tp_y} |"
+                     f"| Current position: x: {self.__position[0]} "
+                     f"\t y: {self.__position[1]}")
+
+        target_heading = self.__get_pose_heading(target_idx)
+        self.loginfo(f"target heading: {target_heading} "
+                     f"\t current_heading: {my_heading}")
+        return target_heading - my_heading
+
+    def __get_pose_heading(self, pose_idx: int) -> float:
+        """
+        Given the index of a pose this method returns the angle
+        relative to the x-axis.
+        :param pose_idx: Index of the pose
+        :return: average angle of the pose
+        """
+        target_idx = pose_idx
         target_point: PoseStamped
         target_point = self.__path.poses[target_idx]
-
-        # todo: move this calculation to a separate function and use it to
-        #  calculate w for every point on the path.
-        #  __get_omega(Pose_-1, Pose, Pose_+1) -> check for identical points...
 
         # get the previous and next point on the path
         path_len = len(self.__path.poses)
@@ -177,9 +242,7 @@ class PurePursuitController(CompatibleNode):
             avg_heading_args += 1
         if avg_heading_args == 0:
             raise Exception()
-
-        target_heading = avg_heading / avg_heading_args
-        return target_heading - my_heading
+        return avg_heading / avg_heading_args
 
     def __get_vector_direction(self, x1, y1, x2, y2) -> float:
         theta = math.atan(x2 - x1 / y2 - y1)

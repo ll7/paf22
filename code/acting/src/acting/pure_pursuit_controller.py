@@ -12,7 +12,7 @@ from rospy import Publisher, Subscriber
 from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32, Bool
 
-from helper_functions import vectors2angle
+from helper_functions import vectors2angle, get_vector_direction
 
 
 # todo: docs
@@ -74,9 +74,8 @@ class PurePursuitController(CompatibleNode):
         :return:
         """
         self.loginfo('PurePursuitController node running')
-        self.status_pub.publish(True)  # todo: delete (this is only
-
-        # necessary if vehicle controller isn't running)
+        self.status_pub.publish(True)  # todo: delete this is only
+        # necessary if vehicle controller isn't running
 
         def loop(timer_event=None):
             """
@@ -132,36 +131,52 @@ class PurePursuitController(CompatibleNode):
             self.logerr("__get_heading: Last Position not set")
             self.__heading = 0
             return
-        x1, y1 = self.__last_pos[0], self.__last_pos[1]
-        x2, y2 = self.__position[0], self.__position[1]
-        self.__heading = self.__get_vector_direction(x1, y1, x2, y2)
+        cur_x = self.__position[0] - self.__last_pos[0]
+        cur_y = self.__position[1] - self.__last_pos[1]
+        self.__heading = vectors2angle(cur_x, cur_y, 1, 0)
 
     def __set_velocity(self, data):
         self.__velocity = data.speed
 
     def __calculate_steer(self) -> float:
-        L = 2  # dist between front and rear wheels todo: measure
-        K = 10  # todo: tune
+        l = 2  # dist between front and rear wheels todo: measure
+        k = 10  # todo: tune
 
-        # self.loginfo(f"Heading error: {alpha}")
-        # offset speed +1 km/h to avoid division by 0
-        look_ahead_dist = K * (self.__velocity + 0.2777)
+        current_velocity: float
+        if self.__velocity == 0:
+            current_velocity = k * 0.1
+        else:
+            current_velocity = self.__velocity
 
+        look_ahead_dist = k * current_velocity
         target_wp_idx = self.__get_target_point_index(look_ahead_dist)
 
         target_wp: PoseStamped = self.__path.poses[target_wp_idx]
-        target_v_x = target_wp.pose.position.x - self.__position[0]
-        target_v_y = target_wp.pose.position.y - self.__position[1]
+        target_v_x = target_wp.pose.position.x - self.__last_pos[0]
+        target_v_y = target_wp.pose.position.y - self.__last_pos[1]
         cur_v_x = self.__position[0] - self.__last_pos[0]
         cur_v_y = self.__position[1] - self.__last_pos[1]
 
         alpha = vectors2angle(target_v_x, target_v_y,
                               cur_v_x, cur_v_y)
-        steering_angle = atan((2 * L * sin(alpha)) / look_ahead_dist)
-        self.loginfo(f"Target Steering angle: {round(steering_angle, 6)} \t"
-                     f"Current alpha: {round(alpha, 6)} \t"
-                     f"Current heading: {round(self.__heading, 6)}"
-                     f"Target WP idx: {target_wp_idx}")
+        steering_angle = atan((2 * l * sin(alpha)) / look_ahead_dist)
+
+        # for debugging only ->
+        t_x = target_wp.pose.position.x
+        t_y = target_wp.pose.position.y
+        c_x = self.__position[0]
+        c_y = self.__position[1]
+        self.loginfo(
+                    f"T_V: ({round(target_v_x, 3)},{round(target_v_y, 3)}) \t"
+                    # f"T_WP: ({round(t_x,3)},{round(t_y,3)}) \t"
+                    # f"C_WP: ({round(c_x,3)},{round(c_y,3)}) \t"
+                    f"Target Steering angle: {round(steering_angle, 4)} \t"
+                    # f"Current alpha: {round(alpha, 6)} \t"
+                    # f"Target WP idx: {target_wp_idx}"
+                    f"Current heading: {round(self.__heading, 4)}"
+                    )
+        # <- for debugging only
+
         return steering_angle
 
     def __get_target_point_index(self, ld: float) -> int:
@@ -186,17 +201,16 @@ class PurePursuitController(CompatibleNode):
         return min_dist_idx
 
     def __get_heading_error(self) -> float:
-        # todo: the calculation of the angle could be done
-        #  before every point before publishing a path
         my_heading = self.__heading
         target_idx = self.__get_closest_point_on_path_index()
 
-        # for debbuging only:
+        # for debugging only ->
         target_pose: PoseStamped = self.__path.poses[target_idx]
         tp_x, tp_y = target_pose.pose.position.x, target_pose.pose.position.y
         self.loginfo(f"Target position: \t x: {tp_x} \t y: {tp_y} |"
                      f"| Current position: x: {self.__position[0]} "
                      f"\t y: {self.__position[1]}")
+        # <- for debugging only
 
         target_heading = self.__get_pose_heading(target_idx)
         self.loginfo(f"target heading: {target_heading} "
@@ -231,22 +245,18 @@ class PurePursuitController(CompatibleNode):
         if tp_prev is not target_point:
             tp_prev_x = tp_prev.pose.position.x
             tp_prev_y = tp_prev.pose.position.y
-            avg_heading += self.__get_vector_direction(tp_prev_x, tp_prev_y,
-                                                       tp_x, tp_y)
+            avg_heading += get_vector_direction(tp_prev_x, tp_prev_y,
+                                                tp_x, tp_y)
             avg_heading_args += 1
         if tp_after is not target_point:
             tp_after_x = tp_after.pose.position.x
             tp_after_y = tp_after.pose.position.y
-            avg_heading += self.__get_vector_direction(tp_x, tp_y,
-                                                       tp_after_x, tp_after_y)
+            avg_heading += get_vector_direction(tp_x, tp_y,
+                                                tp_after_x, tp_after_y)
             avg_heading_args += 1
         if avg_heading_args == 0:
             raise Exception()
         return avg_heading / avg_heading_args
-
-    def __get_vector_direction(self, x1, y1, x2, y2) -> float:
-        theta = math.atan(x2 - x1 / y2 - y1)
-        return math.degrees(theta)
 
     def __get_closest_point_on_path_index(self) -> int:
         min_dist: float = 10e1000

@@ -25,8 +25,8 @@ class VelocityPublisherDummy(CompatibleNode):
             qos_profile=1)
         self.velocity = 2
         self.delta_velocity = 0.1
-        self.max_velocity = 3.1
-        self.min_velocity = 3
+        self.max_velocity = 7.1
+        self.min_velocity = 7
         self.__dv = self.delta_velocity
 
     def run(self):

@@ -22,6 +22,11 @@ def vectors2angle(x1: float, y1: float, x2: float, y2: float) -> float:
     return math.degrees(alpha)
 
 
+def get_vector_direction(x1, y1, x2, y2) -> float:
+    theta = math.atan(x2 - x1 / y2 - y1)
+    return math.degrees(theta)
+
+
 def quaternion2heading(x: float, y: float, z: float, w: float) -> float:
     quaternion = (x, y, z, w)
     rot = Rotation.from_quat(quaternion)

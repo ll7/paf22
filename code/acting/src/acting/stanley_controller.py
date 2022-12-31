@@ -4,12 +4,12 @@ from typing import List
 import numpy as np
 import ros_compatibility as roscomp
 from carla_msgs.msg import CarlaSpeedometer
-from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
+from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Path
 from ros_compatibility.node import CompatibleNode
 from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from rospy import Publisher, Subscriber
-from sensor_msgs.msg import NavSatFix, Imu
+from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32, Bool
 
 from helper_functions import calc_egocar_yaw, normalize_angle, calc_path_yaw, \

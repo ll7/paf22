@@ -2,7 +2,6 @@
 import math
 from math import atan, sin
 
-import numpy
 import ros_compatibility as roscomp
 from carla_msgs.msg import CarlaSpeedometer
 from geometry_msgs.msg import Point, Pose, PoseStamped
@@ -12,7 +11,6 @@ from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from rospy import Publisher, Subscriber
 from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32, Bool
-from tf.transformations import euler_from_quaternion
 
 from helper_functions import quaternion2heading
 
@@ -177,7 +175,7 @@ class PurePursuitController(CompatibleNode):
             avg_heading += self.__get_vector_direction(tp_x, tp_y,
                                                        tp_after_x, tp_after_y)
             avg_heading_args += 1
-        if avg_heading_args is 0:
+        if avg_heading_args == 0:
             raise Exception()
 
         target_heading = avg_heading / avg_heading_args

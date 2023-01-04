@@ -28,6 +28,16 @@ RUN wget https://github.com/libgit2/libgit2/archive/refs/tags/v1.5.0.tar.gz -O l
     && make \
     && make install
 
+# CUDA installation
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin \
+    && mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600 \
+    && wget https://developer.download.nvidia.com/compute/cuda/11.7.0/local_installers/cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb \
+    && dpkg -i cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb \
+    && cp /var/cuda-repo-ubuntu2004-11-7-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y install cuda
+ENV CUDA_HOME=/usr/local/cuda-11.7/bin
+
 # override python path, carla pip package path didn't exist and was using Python 3.7 instead of 2.7
 ENV PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages
 ENV PYTHONPATH=$PYTHONPATH:/opt/carla/PythonAPI/carla/dist/carla-0.9.13-py3.7-linux-x86_64.egg:/opt/carla/PythonAPI/carla
@@ -132,17 +142,11 @@ ADD ./build/docker/agent/entrypoint.sh /entrypoint.sh
 # set the default working directory to the code
 WORKDIR /workspace/code
 
-RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc \
+    && echo "export CUDA_HOME=/usr/loca/cuda-11.7/bin" >> ~/.bashrc \
+    && echo "export PATH=$PATH:$CUDA_HOME" >> ~/.bashrc \
+RUN source ~/.bashrc
 
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
-RUN sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
-RUN wget https://developer.download.nvidia.com/compute/cuda/11.7.0/local_installers/cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb
-RUN sudo dpkg -i cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb
-RUN sudo cp /var/cuda-repo-ubuntu2004-11-7-local/cuda-*-keyring.gpg /usr/share/keyrings/
-RUN sudo apt-get update
-RUN sudo DEBIAN_FRONTEND=noninteractive apt-get -y install cuda
-RUN export CUDA_HOME=/usr/local/cuda-11.7/bin
-RUN nvcc --version
 RUN cat requirements.txt | xargs -n 1 -L 1 pip install
 
 ENTRYPOINT ["/entrypoint.sh"]

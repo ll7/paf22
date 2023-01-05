@@ -29,13 +29,12 @@ class DummyTrajectorySub(CompatibleNode):
         super(DummyTrajectorySub, self).__init__('dummy_trajectory_sub')
         self.loginfo("DummyTrajectorySub node started")
 
-        self.transformer = CoordinateTransformer
-        self.transformer.__init__(self)
+        self.transformer = CoordinateTransformer()
         gps_ref = GeoRef.TOWN12
         lat0 = gps_ref.value[0]
         lon0 = gps_ref.value[1]
         h0 = gps_ref.value[2]
-        self.transformer.set_gnss_ref(self, lat0, lon0, h0)
+        self.transformer.set_gnss_ref(lat0, lon0, h0)
 
         self.current_pos = PoseStamped()
 
@@ -95,14 +94,13 @@ class DummyTrajectorySub(CompatibleNode):
         The current position is then updated and published
         in the PoseStamped format.
         :param data: message according to NavSatFix definition
-        :param average: number of points to be averaged
         :return:
         """
 
         lat = data.latitude
         lon = data.longitude
         h = data.altitude
-        x, y, z = self.transformer.gnss_to_xyz(self, lat, lon, h)
+        x, y, z = self.transformer.gnss_to_xyz(lat, lon, h)
 
         self.pos_average[0] += x
         self.pos_average[1] += y

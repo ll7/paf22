@@ -13,7 +13,7 @@ from enum import Enum
 
 
 # Class to choose a map with a predefined reference point
-class GeoRef(Enum):
+class GeoRef(Enum):  # todo: add values for other towns
     TOWN01 = 0, 0, 0
     TOWN02 = 0, 0, 0
     TOWN03 = 0, 0, 0

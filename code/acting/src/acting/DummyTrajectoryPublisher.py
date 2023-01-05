@@ -35,7 +35,7 @@ class DummyTrajectoryPub(CompatibleNode):
         self.path_msg.header.frame_id = "Frame ID Path"
 
         # Static trajectory for testing purposes
-        initial_trajectory = [
+        self.initial_trajectory = [
             (985.0, -5373.2),
             (985.0, -5473.2),
             (990.0, -5474.2),
@@ -76,7 +76,7 @@ class DummyTrajectoryPub(CompatibleNode):
 
             pos.pose.position.x = wp[0]
             pos.pose.position.y = wp[1]
-            pos.pose.position.z = 0
+            pos.pose.position.z = 39.7
 
             # currently not used therefore zeros
             pos.pose.position.z = 0

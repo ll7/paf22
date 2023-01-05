@@ -36,7 +36,7 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86
     && cp /var/cuda-repo-ubuntu2004-11-7-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install cuda
-ENV CUDA_HOME=/usr/local/cuda-11.7/bin
+ENV CUDA_HOME=/usr/local/cuda-11.7
 
 # override python path, carla pip package path didn't exist and was using Python 3.7 instead of 2.7
 ENV PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages
@@ -128,6 +128,15 @@ RUN echo /catkin_ws/install/lib/python3/dist-packages >> /home/$USERNAME/.local/
 
 RUN sudo mkdir /workspace && sudo chown $USERNAME:$USERNAME /workspace
 
+RUN echo "export CUDA_HOME=/usr/local/cuda-11" >> ~/.bashrc \
+    && echo "export PATH=$PATH:$CUDA_HOME/bin" >> ~/.bashrc
+
+COPY --chown=$USERNAME:$USERNAME ./code/requirements.txt /workspace/
+ENV TORCH_CUDA_ARCH_LIST="5.2 6.0 6.1 7.0 7.5 8.0 8.6+PTX"
+ENV IABN_FORCE_CUDA=1
+
+RUN source ~/.bashrc && cat /workspace/requirements.txt | xargs -n 1 -L 1 pip install
+
 # Add agent code
 COPY --chown=$USERNAME:$USERNAME ./code /workspace/code/
 
@@ -142,12 +151,7 @@ ADD ./build/docker/agent/entrypoint.sh /entrypoint.sh
 # set the default working directory to the code
 WORKDIR /workspace/code
 
-RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc \
-    && echo "export CUDA_HOME=/usr/loca/cuda-11.7/bin" >> ~/.bashrc \
-    && echo "export PATH=$PATH:$CUDA_HOME" >> ~/.bashrc \
-RUN source ~/.bashrc
-
-RUN cat requirements.txt | xargs -n 1 -L 1 pip install
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash", "-c", "sleep 10 && python3 /opt/leaderboard/leaderboard/leaderboard_evaluator.py --debug=${DEBUG_CHALLENGE} \

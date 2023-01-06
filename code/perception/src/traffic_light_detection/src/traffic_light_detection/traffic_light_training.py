@@ -7,6 +7,7 @@ from torch.optim.lr_scheduler import ExponentialLR
 from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import ToTensor
+from dvclive import Live
 import sys
 import os
 sys.path.append(os.path.abspath(sys.path[0] + '/..'))
@@ -74,6 +75,8 @@ class TrafficLightTraining:
         self.weights_organizer = WeightsOrganizer(cfg=self.cfg,
                                                   model=self.model)
 
+        self.live = Live()
+
     def run(self):
         """
         Trains the model for a given amount of epochs
@@ -81,8 +84,13 @@ class TrafficLightTraining:
         tepoch = tqdm(range(self.cfg.EPOCHS))
         for i in range(self.cfg.EPOCHS):
             epoch_loss, epoch_correct = self.epoch()
+            self.live.log_metric("train/accuracy", epoch_correct)
+            self.live.log_metric("train/loss", epoch_loss)
             loss, correct = self.validate()
+            self.live.log_metric("validation/accuracy", correct)
+            self.live.log_metric("validation/loss", loss)
             self.lr_scheduler.step()
+            self.live.next_step()
             tepoch.set_postfix(loss=epoch_loss, accuracy=epoch_correct,
                                val_loss=loss, val_accuracy=correct)
             tepoch.update(1)

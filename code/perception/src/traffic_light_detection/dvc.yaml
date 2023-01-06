@@ -14,5 +14,3 @@ stages:
     plots:
     - dvclive/plots:
         cache: false
-    - plots:
-        cache: false

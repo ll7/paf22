@@ -144,6 +144,10 @@ navigate among them and commit only the ones that we need to Git." [(Source)](ht
 Detailed documentation with a [good example](https://github.com/iterative/example-dvc-experiments)
 can be found [here](https://dvc.org/doc/start/experiment-management/experiments).
 
+#### Using PyTorch
+
+<https://dvc.org/doc/dvclive/api-reference/ml-frameworks/pytorch>
+
 ## Example
 
 This example should give a short overview how to work with DVC. In this case it stores a dateset with DVC.

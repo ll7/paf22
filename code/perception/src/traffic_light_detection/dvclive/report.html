@@ -1,0 +1,2534 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="refresh" content="5">
+    <title>DVC Plot</title>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.2.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.18.2"></script>
+    
+    <style>
+        table {
+            border-spacing: 15px;
+        }
+    </style>
+</head>
+<body>
+    
+        <div id="metrics_json" style="text-align: center; padding: 10x">
+            <p>metrics_json</p>
+            <div style="display: flex;justify-content: center;">
+                <table>
+<thead>
+<tr><th>train                                                        </th><th>validation                                                   </th><th style="text-align: right;">  step</th></tr>
+</thead>
+<tbody>
+<tr><td>{&#x27;accuracy&#x27;: 98.93162393162393, &#x27;loss&#x27;: 0.023871168901777675}</td><td>{&#x27;accuracy&#x27;: 98.95287958115183, &#x27;loss&#x27;: 0.023652448236006093}</td><td style="text-align: right;">    99</td></tr>
+</tbody>
+</table>
+            </div>
+        </div>
+
+    <div id = "static_train_accuracy">
+        <script type = "text/javascript">
+            var spec = {
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "data": {
+        "values": [
+    {
+        "rev": "workspace",
+        "step": "0",
+        "train/accuracy": "30.897435897435898"
+    },
+    {
+        "rev": "workspace",
+        "step": "1",
+        "train/accuracy": "75.38461538461539"
+    },
+    {
+        "rev": "workspace",
+        "step": "2",
+        "train/accuracy": "94.61538461538461"
+    },
+    {
+        "rev": "workspace",
+        "step": "3",
+        "train/accuracy": "96.11111111111111"
+    },
+    {
+        "rev": "workspace",
+        "step": "4",
+        "train/accuracy": "96.4957264957265"
+    },
+    {
+        "rev": "workspace",
+        "step": "5",
+        "train/accuracy": "95.8974358974359"
+    },
+    {
+        "rev": "workspace",
+        "step": "6",
+        "train/accuracy": "97.22222222222221"
+    },
+    {
+        "rev": "workspace",
+        "step": "7",
+        "train/accuracy": "97.26495726495726"
+    },
+    {
+        "rev": "workspace",
+        "step": "8",
+        "train/accuracy": "97.64957264957265"
+    },
+    {
+        "rev": "workspace",
+        "step": "9",
+        "train/accuracy": "97.64957264957265"
+    },
+    {
+        "rev": "workspace",
+        "step": "10",
+        "train/accuracy": "97.17948717948718"
+    },
+    {
+        "rev": "workspace",
+        "step": "11",
+        "train/accuracy": "97.94871794871794"
+    },
+    {
+        "rev": "workspace",
+        "step": "12",
+        "train/accuracy": "97.64957264957265"
+    },
+    {
+        "rev": "workspace",
+        "step": "13",
+        "train/accuracy": "98.67521367521368"
+    },
+    {
+        "rev": "workspace",
+        "step": "14",
+        "train/accuracy": "97.77777777777777"
+    },
+    {
+        "rev": "workspace",
+        "step": "15",
+        "train/accuracy": "98.46153846153847"
+    },
+    {
+        "rev": "workspace",
+        "step": "16",
+        "train/accuracy": "98.37606837606837"
+    },
+    {
+        "rev": "workspace",
+        "step": "17",
+        "train/accuracy": "98.16239316239316"
+    },
+    {
+        "rev": "workspace",
+        "step": "18",
+        "train/accuracy": "98.46153846153847"
+    },
+    {
+        "rev": "workspace",
+        "step": "19",
+        "train/accuracy": "98.71794871794873"
+    },
+    {
+        "rev": "workspace",
+        "step": "20",
+        "train/accuracy": "98.58974358974359"
+    },
+    {
+        "rev": "workspace",
+        "step": "21",
+        "train/accuracy": "98.76068376068376"
+    },
+    {
+        "rev": "workspace",
+        "step": "22",
+        "train/accuracy": "98.11965811965811"
+    },
+    {
+        "rev": "workspace",
+        "step": "23",
+        "train/accuracy": "98.33333333333333"
+    },
+    {
+        "rev": "workspace",
+        "step": "24",
+        "train/accuracy": "98.2051282051282"
+    },
+    {
+        "rev": "workspace",
+        "step": "25",
+        "train/accuracy": "98.63247863247864"
+    },
+    {
+        "rev": "workspace",
+        "step": "26",
+        "train/accuracy": "98.4188034188034"
+    },
+    {
+        "rev": "workspace",
+        "step": "27",
+        "train/accuracy": "98.50427350427351"
+    },
+    {
+        "rev": "workspace",
+        "step": "28",
+        "train/accuracy": "98.71794871794873"
+    },
+    {
+        "rev": "workspace",
+        "step": "29",
+        "train/accuracy": "98.58974358974359"
+    },
+    {
+        "rev": "workspace",
+        "step": "30",
+        "train/accuracy": "98.24786324786324"
+    },
+    {
+        "rev": "workspace",
+        "step": "31",
+        "train/accuracy": "98.84615384615385"
+    },
+    {
+        "rev": "workspace",
+        "step": "32",
+        "train/accuracy": "98.76068376068376"
+    },
+    {
+        "rev": "workspace",
+        "step": "33",
+        "train/accuracy": "98.54700854700855"
+    },
+    {
+        "rev": "workspace",
+        "step": "34",
+        "train/accuracy": "98.84615384615385"
+    },
+    {
+        "rev": "workspace",
+        "step": "35",
+        "train/accuracy": "98.58974358974359"
+    },
+    {
+        "rev": "workspace",
+        "step": "36",
+        "train/accuracy": "98.84615384615385"
+    },
+    {
+        "rev": "workspace",
+        "step": "37",
+        "train/accuracy": "98.58974358974359"
+    },
+    {
+        "rev": "workspace",
+        "step": "38",
+        "train/accuracy": "98.2051282051282"
+    },
+    {
+        "rev": "workspace",
+        "step": "39",
+        "train/accuracy": "98.58974358974359"
+    },
+    {
+        "rev": "workspace",
+        "step": "40",
+        "train/accuracy": "98.33333333333333"
+    },
+    {
+        "rev": "workspace",
+        "step": "41",
+        "train/accuracy": "98.93162393162393"
+    },
+    {
+        "rev": "workspace",
+        "step": "42",
+        "train/accuracy": "98.88888888888889"
+    },
+    {
+        "rev": "workspace",
+        "step": "43",
+        "train/accuracy": "99.05982905982907"
+    },
+    {
+        "rev": "workspace",
+        "step": "44",
+        "train/accuracy": "98.76068376068376"
+    },
+    {
+        "rev": "workspace",
+        "step": "45",
+        "train/accuracy": "98.4188034188034"
+    },
+    {
+        "rev": "workspace",
+        "step": "46",
+        "train/accuracy": "98.71794871794873"
+    },
+    {
+        "rev": "workspace",
+        "step": "47",
+        "train/accuracy": "98.97435897435898"
+    },
+    {
+        "rev": "workspace",
+        "step": "48",
+        "train/accuracy": "98.88888888888889"
+    },
+    {
+        "rev": "workspace",
+        "step": "49",
+        "train/accuracy": "98.80341880341881"
+    },
+    {
+        "rev": "workspace",
+        "step": "50",
+        "train/accuracy": "98.58974358974359"
+    },
+    {
+        "rev": "workspace",
+        "step": "51",
+        "train/accuracy": "99.23076923076923"
+    },
+    {
+        "rev": "workspace",
+        "step": "52",
+        "train/accuracy": "98.76068376068376"
+    },
+    {
+        "rev": "workspace",
+        "step": "53",
+        "train/accuracy": "98.63247863247864"
+    },
+    {
+        "rev": "workspace",
+        "step": "54",
+        "train/accuracy": "99.23076923076923"
+    },
+    {
+        "rev": "workspace",
+        "step": "55",
+        "train/accuracy": "99.05982905982907"
+    },
+    {
+        "rev": "workspace",
+        "step": "56",
+        "train/accuracy": "98.80341880341881"
+    },
+    {
+        "rev": "workspace",
+        "step": "57",
+        "train/accuracy": "98.50427350427351"
+    },
+    {
+        "rev": "workspace",
+        "step": "58",
+        "train/accuracy": "98.76068376068376"
+    },
+    {
+        "rev": "workspace",
+        "step": "59",
+        "train/accuracy": "99.05982905982907"
+    },
+    {
+        "rev": "workspace",
+        "step": "60",
+        "train/accuracy": "98.71794871794873"
+    },
+    {
+        "rev": "workspace",
+        "step": "61",
+        "train/accuracy": "98.97435897435898"
+    },
+    {
+        "rev": "workspace",
+        "step": "62",
+        "train/accuracy": "98.71794871794873"
+    },
+    {
+        "rev": "workspace",
+        "step": "63",
+        "train/accuracy": "98.80341880341881"
+    },
+    {
+        "rev": "workspace",
+        "step": "64",
+        "train/accuracy": "98.80341880341881"
+    },
+    {
+        "rev": "workspace",
+        "step": "65",
+        "train/accuracy": "98.88888888888889"
+    },
+    {
+        "rev": "workspace",
+        "step": "66",
+        "train/accuracy": "98.80341880341881"
+    },
+    {
+        "rev": "workspace",
+        "step": "67",
+        "train/accuracy": "98.80341880341881"
+    },
+    {
+        "rev": "workspace",
+        "step": "68",
+        "train/accuracy": "98.84615384615385"
+    },
+    {
+        "rev": "workspace",
+        "step": "69",
+        "train/accuracy": "98.84615384615385"
+    },
+    {
+        "rev": "workspace",
+        "step": "70",
+        "train/accuracy": "98.84615384615385"
+    },
+    {
+        "rev": "workspace",
+        "step": "71",
+        "train/accuracy": "98.71794871794873"
+    },
+    {
+        "rev": "workspace",
+        "step": "72",
+        "train/accuracy": "99.01709401709402"
+    },
+    {
+        "rev": "workspace",
+        "step": "73",
+        "train/accuracy": "99.05982905982907"
+    },
+    {
+        "rev": "workspace",
+        "step": "74",
+        "train/accuracy": "98.76068376068376"
+    },
+    {
+        "rev": "workspace",
+        "step": "75",
+        "train/accuracy": "98.93162393162393"
+    },
+    {
+        "rev": "workspace",
+        "step": "76",
+        "train/accuracy": "99.01709401709402"
+    },
+    {
+        "rev": "workspace",
+        "step": "77",
+        "train/accuracy": "98.97435897435898"
+    },
+    {
+        "rev": "workspace",
+        "step": "78",
+        "train/accuracy": "98.88888888888889"
+    },
+    {
+        "rev": "workspace",
+        "step": "79",
+        "train/accuracy": "98.80341880341881"
+    },
+    {
+        "rev": "workspace",
+        "step": "80",
+        "train/accuracy": "98.93162393162393"
+    },
+    {
+        "rev": "workspace",
+        "step": "81",
+        "train/accuracy": "98.93162393162393"
+    },
+    {
+        "rev": "workspace",
+        "step": "82",
+        "train/accuracy": "99.1880341880342"
+    },
+    {
+        "rev": "workspace",
+        "step": "83",
+        "train/accuracy": "99.1025641025641"
+    },
+    {
+        "rev": "workspace",
+        "step": "84",
+        "train/accuracy": "98.80341880341881"
+    },
+    {
+        "rev": "workspace",
+        "step": "85",
+        "train/accuracy": "99.14529914529915"
+    },
+    {
+        "rev": "workspace",
+        "step": "86",
+        "train/accuracy": "99.01709401709402"
+    },
+    {
+        "rev": "workspace",
+        "step": "87",
+        "train/accuracy": "98.76068376068376"
+    },
+    {
+        "rev": "workspace",
+        "step": "88",
+        "train/accuracy": "98.80341880341881"
+    },
+    {
+        "rev": "workspace",
+        "step": "89",
+        "train/accuracy": "98.93162393162393"
+    },
+    {
+        "rev": "workspace",
+        "step": "90",
+        "train/accuracy": "98.80341880341881"
+    },
+    {
+        "rev": "workspace",
+        "step": "91",
+        "train/accuracy": "98.97435897435898"
+    },
+    {
+        "rev": "workspace",
+        "step": "92",
+        "train/accuracy": "98.97435897435898"
+    },
+    {
+        "rev": "workspace",
+        "step": "93",
+        "train/accuracy": "98.67521367521368"
+    },
+    {
+        "rev": "workspace",
+        "step": "94",
+        "train/accuracy": "99.01709401709402"
+    },
+    {
+        "rev": "workspace",
+        "step": "95",
+        "train/accuracy": "98.71794871794873"
+    },
+    {
+        "rev": "workspace",
+        "step": "96",
+        "train/accuracy": "98.76068376068376"
+    },
+    {
+        "rev": "workspace",
+        "step": "97",
+        "train/accuracy": "99.05982905982907"
+    },
+    {
+        "rev": "workspace",
+        "step": "98",
+        "train/accuracy": "98.58974358974359"
+    },
+    {
+        "rev": "workspace",
+        "step": "99",
+        "train/accuracy": "98.93162393162393"
+    }
+]
+    },
+    "title": "",
+    "width": 300,
+    "height": 300,
+    "layer": [
+        {
+            "encoding": {
+                "x": {
+                    "field": "step",
+                    "type": "quantitative",
+                    "title": "step"
+                },
+                "y": {
+                    "field": "train/accuracy",
+                    "type": "quantitative",
+                    "title": "train/accuracy",
+                    "scale": {
+                        "zero": false
+                    }
+                },
+                "color": {
+                    "field": "rev",
+                    "type": "nominal"
+                }
+            },
+            "layer": [
+                {
+                    "mark": "line"
+                },
+                {
+                    "selection": {
+                        "label": {
+                            "type": "single",
+                            "nearest": true,
+                            "on": "mouseover",
+                            "encodings": [
+                                "x"
+                            ],
+                            "empty": "none",
+                            "clear": "mouseout"
+                        }
+                    },
+                    "mark": "point",
+                    "encoding": {
+                        "opacity": {
+                            "condition": {
+                                "selection": "label",
+                                "value": 1
+                            },
+                            "value": 0
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "label"
+                    }
+                }
+            ],
+            "layer": [
+                {
+                    "mark": {
+                        "type": "rule",
+                        "color": "gray"
+                    },
+                    "encoding": {
+                        "x": {
+                            "field": "step",
+                            "type": "quantitative"
+                        }
+                    }
+                },
+                {
+                    "encoding": {
+                        "text": {
+                            "type": "quantitative",
+                            "field": "train/accuracy"
+                        },
+                        "x": {
+                            "field": "step",
+                            "type": "quantitative"
+                        },
+                        "y": {
+                            "field": "train/accuracy",
+                            "type": "quantitative"
+                        }
+                    },
+                    "layer": [
+                        {
+                            "mark": {
+                                "type": "text",
+                                "align": "left",
+                                "dx": 5,
+                                "dy": -5
+                            },
+                            "encoding": {
+                                "color": {
+                                    "type": "nominal",
+                                    "field": "rev"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+;
+            vegaEmbed('#static_train_accuracy', spec);
+        </script>
+    </div>
+    
+
+    <div id = "static_train_loss">
+        <script type = "text/javascript">
+            var spec = {
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "data": {
+        "values": [
+    {
+        "rev": "workspace",
+        "step": "0",
+        "train/loss": "0.0427037933952788"
+    },
+    {
+        "rev": "workspace",
+        "step": "1",
+        "train/loss": "0.03137714990183838"
+    },
+    {
+        "rev": "workspace",
+        "step": "2",
+        "train/loss": "0.025554309237716545"
+    },
+    {
+        "rev": "workspace",
+        "step": "3",
+        "train/loss": "0.024961443894948716"
+    },
+    {
+        "rev": "workspace",
+        "step": "4",
+        "train/loss": "0.02474971810976664"
+    },
+    {
+        "rev": "workspace",
+        "step": "5",
+        "train/loss": "0.02491667988972786"
+    },
+    {
+        "rev": "workspace",
+        "step": "6",
+        "train/loss": "0.02443282476857177"
+    },
+    {
+        "rev": "workspace",
+        "step": "7",
+        "train/loss": "0.024411536103639848"
+    },
+    {
+        "rev": "workspace",
+        "step": "8",
+        "train/loss": "0.024308929789779533"
+    },
+    {
+        "rev": "workspace",
+        "step": "9",
+        "train/loss": "0.024344205525186326"
+    },
+    {
+        "rev": "workspace",
+        "step": "10",
+        "train/loss": "0.02447612318727705"
+    },
+    {
+        "rev": "workspace",
+        "step": "11",
+        "train/loss": "0.024227713621579685"
+    },
+    {
+        "rev": "workspace",
+        "step": "12",
+        "train/loss": "0.024317890482071117"
+    },
+    {
+        "rev": "workspace",
+        "step": "13",
+        "train/loss": "0.023990425875044276"
+    },
+    {
+        "rev": "workspace",
+        "step": "14",
+        "train/loss": "0.024201309782827002"
+    },
+    {
+        "rev": "workspace",
+        "step": "15",
+        "train/loss": "0.024056847711913607"
+    },
+    {
+        "rev": "workspace",
+        "step": "16",
+        "train/loss": "0.024080891385037675"
+    },
+    {
+        "rev": "workspace",
+        "step": "17",
+        "train/loss": "0.024110170307322445"
+    },
+    {
+        "rev": "workspace",
+        "step": "18",
+        "train/loss": "0.02403161563934424"
+    },
+    {
+        "rev": "workspace",
+        "step": "19",
+        "train/loss": "0.023945754358911105"
+    },
+    {
+        "rev": "workspace",
+        "step": "20",
+        "train/loss": "0.023977527506331094"
+    },
+    {
+        "rev": "workspace",
+        "step": "21",
+        "train/loss": "0.02392049169438517"
+    },
+    {
+        "rev": "workspace",
+        "step": "22",
+        "train/loss": "0.02412674679205968"
+    },
+    {
+        "rev": "workspace",
+        "step": "23",
+        "train/loss": "0.024081179372265806"
+    },
+    {
+        "rev": "workspace",
+        "step": "24",
+        "train/loss": "0.024125073353449503"
+    },
+    {
+        "rev": "workspace",
+        "step": "25",
+        "train/loss": "0.023962602579695548"
+    },
+    {
+        "rev": "workspace",
+        "step": "26",
+        "train/loss": "0.02403702995715997"
+    },
+    {
+        "rev": "workspace",
+        "step": "27",
+        "train/loss": "0.023985942816122985"
+    },
+    {
+        "rev": "workspace",
+        "step": "28",
+        "train/loss": "0.023949552932356157"
+    },
+    {
+        "rev": "workspace",
+        "step": "29",
+        "train/loss": "0.023982755419535515"
+    },
+    {
+        "rev": "workspace",
+        "step": "30",
+        "train/loss": "0.024047342757893424"
+    },
+    {
+        "rev": "workspace",
+        "step": "31",
+        "train/loss": "0.023909735806986816"
+    },
+    {
+        "rev": "workspace",
+        "step": "32",
+        "train/loss": "0.023950624058389255"
+    },
+    {
+        "rev": "workspace",
+        "step": "33",
+        "train/loss": "0.02397022784775139"
+    },
+    {
+        "rev": "workspace",
+        "step": "34",
+        "train/loss": "0.023905863288121346"
+    },
+    {
+        "rev": "workspace",
+        "step": "35",
+        "train/loss": "0.023960534425882193"
+    },
+    {
+        "rev": "workspace",
+        "step": "36",
+        "train/loss": "0.02390872894698738"
+    },
+    {
+        "rev": "workspace",
+        "step": "37",
+        "train/loss": "0.02398485360491989"
+    },
+    {
+        "rev": "workspace",
+        "step": "38",
+        "train/loss": "0.02408071758910122"
+    },
+    {
+        "rev": "workspace",
+        "step": "39",
+        "train/loss": "0.023989491584973457"
+    },
+    {
+        "rev": "workspace",
+        "step": "40",
+        "train/loss": "0.024013849889111316"
+    },
+    {
+        "rev": "workspace",
+        "step": "41",
+        "train/loss": "0.02388118408684038"
+    },
+    {
+        "rev": "workspace",
+        "step": "42",
+        "train/loss": "0.023889556883746742"
+    },
+    {
+        "rev": "workspace",
+        "step": "43",
+        "train/loss": "0.02383786437348423"
+    },
+    {
+        "rev": "workspace",
+        "step": "44",
+        "train/loss": "0.023926990103517842"
+    },
+    {
+        "rev": "workspace",
+        "step": "45",
+        "train/loss": "0.023997304251051357"
+    },
+    {
+        "rev": "workspace",
+        "step": "46",
+        "train/loss": "0.02391775831198081"
+    },
+    {
+        "rev": "workspace",
+        "step": "47",
+        "train/loss": "0.02386206169413705"
+    },
+    {
+        "rev": "workspace",
+        "step": "48",
+        "train/loss": "0.023891745469509028"
+    },
+    {
+        "rev": "workspace",
+        "step": "49",
+        "train/loss": "0.023904037399169725"
+    },
+    {
+        "rev": "workspace",
+        "step": "50",
+        "train/loss": "0.023975936902893916"
+    },
+    {
+        "rev": "workspace",
+        "step": "51",
+        "train/loss": "0.02379145252908397"
+    },
+    {
+        "rev": "workspace",
+        "step": "52",
+        "train/loss": "0.023902392107197364"
+    },
+    {
+        "rev": "workspace",
+        "step": "53",
+        "train/loss": "0.023946697818927276"
+    },
+    {
+        "rev": "workspace",
+        "step": "54",
+        "train/loss": "0.023783289902230612"
+    },
+    {
+        "rev": "workspace",
+        "step": "55",
+        "train/loss": "0.02384183900988"
+    },
+    {
+        "rev": "workspace",
+        "step": "56",
+        "train/loss": "0.02392557528283861"
+    },
+    {
+        "rev": "workspace",
+        "step": "57",
+        "train/loss": "0.02399833286419893"
+    },
+    {
+        "rev": "workspace",
+        "step": "58",
+        "train/loss": "0.02400450540913476"
+    },
+    {
+        "rev": "workspace",
+        "step": "59",
+        "train/loss": "0.02384234300026527"
+    },
+    {
+        "rev": "workspace",
+        "step": "60",
+        "train/loss": "0.02393955756456424"
+    },
+    {
+        "rev": "workspace",
+        "step": "61",
+        "train/loss": "0.023876912547991826"
+    },
+    {
+        "rev": "workspace",
+        "step": "62",
+        "train/loss": "0.0239252500809156"
+    },
+    {
+        "rev": "workspace",
+        "step": "63",
+        "train/loss": "0.023884409971726247"
+    },
+    {
+        "rev": "workspace",
+        "step": "64",
+        "train/loss": "0.02392074794341356"
+    },
+    {
+        "rev": "workspace",
+        "step": "65",
+        "train/loss": "0.02387931802843371"
+    },
+    {
+        "rev": "workspace",
+        "step": "66",
+        "train/loss": "0.023907074306765173"
+    },
+    {
+        "rev": "workspace",
+        "step": "67",
+        "train/loss": "0.02390709664577093"
+    },
+    {
+        "rev": "workspace",
+        "step": "68",
+        "train/loss": "0.023883329395555025"
+    },
+    {
+        "rev": "workspace",
+        "step": "69",
+        "train/loss": "0.023882779046001598"
+    },
+    {
+        "rev": "workspace",
+        "step": "70",
+        "train/loss": "0.02389418696745848"
+    },
+    {
+        "rev": "workspace",
+        "step": "71",
+        "train/loss": "0.02391427322330638"
+    },
+    {
+        "rev": "workspace",
+        "step": "72",
+        "train/loss": "0.023841606857430222"
+    },
+    {
+        "rev": "workspace",
+        "step": "73",
+        "train/loss": "0.023838961761221928"
+    },
+    {
+        "rev": "workspace",
+        "step": "74",
+        "train/loss": "0.024023671027941583"
+    },
+    {
+        "rev": "workspace",
+        "step": "75",
+        "train/loss": "0.023866978083920274"
+    },
+    {
+        "rev": "workspace",
+        "step": "76",
+        "train/loss": "0.023833995522596896"
+    },
+    {
+        "rev": "workspace",
+        "step": "77",
+        "train/loss": "0.02386143217738877"
+    },
+    {
+        "rev": "workspace",
+        "step": "78",
+        "train/loss": "0.02386803125214373"
+    },
+    {
+        "rev": "workspace",
+        "step": "79",
+        "train/loss": "0.023910317589075136"
+    },
+    {
+        "rev": "workspace",
+        "step": "80",
+        "train/loss": "0.02386731566526951"
+    },
+    {
+        "rev": "workspace",
+        "step": "81",
+        "train/loss": "0.023866258803595844"
+    },
+    {
+        "rev": "workspace",
+        "step": "82",
+        "train/loss": "0.023800558437649"
+    },
+    {
+        "rev": "workspace",
+        "step": "83",
+        "train/loss": "0.0239139781293706"
+    },
+    {
+        "rev": "workspace",
+        "step": "84",
+        "train/loss": "0.023924015449662495"
+    },
+    {
+        "rev": "workspace",
+        "step": "85",
+        "train/loss": "0.023799199349859843"
+    },
+    {
+        "rev": "workspace",
+        "step": "86",
+        "train/loss": "0.023849182837029807"
+    },
+    {
+        "rev": "workspace",
+        "step": "87",
+        "train/loss": "0.024017928859107515"
+    },
+    {
+        "rev": "workspace",
+        "step": "88",
+        "train/loss": "0.023921895129048926"
+    },
+    {
+        "rev": "workspace",
+        "step": "89",
+        "train/loss": "0.023862139893393232"
+    },
+    {
+        "rev": "workspace",
+        "step": "90",
+        "train/loss": "0.023902346970688583"
+    },
+    {
+        "rev": "workspace",
+        "step": "91",
+        "train/loss": "0.023855116173752352"
+    },
+    {
+        "rev": "workspace",
+        "step": "92",
+        "train/loss": "0.023898339398905764"
+    },
+    {
+        "rev": "workspace",
+        "step": "93",
+        "train/loss": "0.02395549454750159"
+    },
+    {
+        "rev": "workspace",
+        "step": "94",
+        "train/loss": "0.023928769837077868"
+    },
+    {
+        "rev": "workspace",
+        "step": "95",
+        "train/loss": "0.02393385841805711"
+    },
+    {
+        "rev": "workspace",
+        "step": "96",
+        "train/loss": "0.0239143582745495"
+    },
+    {
+        "rev": "workspace",
+        "step": "97",
+        "train/loss": "0.023822435787600328"
+    },
+    {
+        "rev": "workspace",
+        "step": "98",
+        "train/loss": "0.02399986539131556"
+    },
+    {
+        "rev": "workspace",
+        "step": "99",
+        "train/loss": "0.023871168901777675"
+    }
+]
+    },
+    "title": "",
+    "width": 300,
+    "height": 300,
+    "layer": [
+        {
+            "encoding": {
+                "x": {
+                    "field": "step",
+                    "type": "quantitative",
+                    "title": "step"
+                },
+                "y": {
+                    "field": "train/loss",
+                    "type": "quantitative",
+                    "title": "train/loss",
+                    "scale": {
+                        "zero": false
+                    }
+                },
+                "color": {
+                    "field": "rev",
+                    "type": "nominal"
+                }
+            },
+            "layer": [
+                {
+                    "mark": "line"
+                },
+                {
+                    "selection": {
+                        "label": {
+                            "type": "single",
+                            "nearest": true,
+                            "on": "mouseover",
+                            "encodings": [
+                                "x"
+                            ],
+                            "empty": "none",
+                            "clear": "mouseout"
+                        }
+                    },
+                    "mark": "point",
+                    "encoding": {
+                        "opacity": {
+                            "condition": {
+                                "selection": "label",
+                                "value": 1
+                            },
+                            "value": 0
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "label"
+                    }
+                }
+            ],
+            "layer": [
+                {
+                    "mark": {
+                        "type": "rule",
+                        "color": "gray"
+                    },
+                    "encoding": {
+                        "x": {
+                            "field": "step",
+                            "type": "quantitative"
+                        }
+                    }
+                },
+                {
+                    "encoding": {
+                        "text": {
+                            "type": "quantitative",
+                            "field": "train/loss"
+                        },
+                        "x": {
+                            "field": "step",
+                            "type": "quantitative"
+                        },
+                        "y": {
+                            "field": "train/loss",
+                            "type": "quantitative"
+                        }
+                    },
+                    "layer": [
+                        {
+                            "mark": {
+                                "type": "text",
+                                "align": "left",
+                                "dx": 5,
+                                "dy": -5
+                            },
+                            "encoding": {
+                                "color": {
+                                    "type": "nominal",
+                                    "field": "rev"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+;
+            vegaEmbed('#static_train_loss', spec);
+        </script>
+    </div>
+    
+
+    <div id = "static_validation_accuracy">
+        <script type = "text/javascript">
+            var spec = {
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "data": {
+        "values": [
+    {
+        "rev": "workspace",
+        "step": "0",
+        "validation/accuracy": "61.25654450261781"
+    },
+    {
+        "rev": "workspace",
+        "step": "1",
+        "validation/accuracy": "97.12041884816755"
+    },
+    {
+        "rev": "workspace",
+        "step": "2",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "3",
+        "validation/accuracy": "98.1675392670157"
+    },
+    {
+        "rev": "workspace",
+        "step": "4",
+        "validation/accuracy": "98.1675392670157"
+    },
+    {
+        "rev": "workspace",
+        "step": "5",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "6",
+        "validation/accuracy": "97.90575916230367"
+    },
+    {
+        "rev": "workspace",
+        "step": "7",
+        "validation/accuracy": "99.73821989528795"
+    },
+    {
+        "rev": "workspace",
+        "step": "8",
+        "validation/accuracy": "98.1675392670157"
+    },
+    {
+        "rev": "workspace",
+        "step": "9",
+        "validation/accuracy": "98.1675392670157"
+    },
+    {
+        "rev": "workspace",
+        "step": "10",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "11",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "12",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "13",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "14",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "15",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "16",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "17",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "18",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "19",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "20",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "21",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "22",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "23",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "24",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "25",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "26",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "27",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "28",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "29",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "30",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "31",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "32",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "33",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "34",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "35",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "36",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "37",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "38",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "39",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "40",
+        "validation/accuracy": "98.42931937172776"
+    },
+    {
+        "rev": "workspace",
+        "step": "41",
+        "validation/accuracy": "98.69109947643979"
+    },
+    {
+        "rev": "workspace",
+        "step": "42",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "43",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "44",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "45",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "46",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "47",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "48",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "49",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "50",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "51",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "52",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "53",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "54",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "55",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "56",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "57",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "58",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "59",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "60",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "61",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "62",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "63",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "64",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "65",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "66",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "67",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "68",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "69",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "70",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "71",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "72",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "73",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "74",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "75",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "76",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "77",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "78",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "79",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "80",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "81",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "82",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "83",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "84",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "85",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "86",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "87",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "88",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "89",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "90",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "91",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "92",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "93",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "94",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "95",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "96",
+        "validation/accuracy": "99.21465968586386"
+    },
+    {
+        "rev": "workspace",
+        "step": "97",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "98",
+        "validation/accuracy": "98.95287958115183"
+    },
+    {
+        "rev": "workspace",
+        "step": "99",
+        "validation/accuracy": "98.95287958115183"
+    }
+]
+    },
+    "title": "",
+    "width": 300,
+    "height": 300,
+    "layer": [
+        {
+            "encoding": {
+                "x": {
+                    "field": "step",
+                    "type": "quantitative",
+                    "title": "step"
+                },
+                "y": {
+                    "field": "validation/accuracy",
+                    "type": "quantitative",
+                    "title": "validation/accuracy",
+                    "scale": {
+                        "zero": false
+                    }
+                },
+                "color": {
+                    "field": "rev",
+                    "type": "nominal"
+                }
+            },
+            "layer": [
+                {
+                    "mark": "line"
+                },
+                {
+                    "selection": {
+                        "label": {
+                            "type": "single",
+                            "nearest": true,
+                            "on": "mouseover",
+                            "encodings": [
+                                "x"
+                            ],
+                            "empty": "none",
+                            "clear": "mouseout"
+                        }
+                    },
+                    "mark": "point",
+                    "encoding": {
+                        "opacity": {
+                            "condition": {
+                                "selection": "label",
+                                "value": 1
+                            },
+                            "value": 0
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "label"
+                    }
+                }
+            ],
+            "layer": [
+                {
+                    "mark": {
+                        "type": "rule",
+                        "color": "gray"
+                    },
+                    "encoding": {
+                        "x": {
+                            "field": "step",
+                            "type": "quantitative"
+                        }
+                    }
+                },
+                {
+                    "encoding": {
+                        "text": {
+                            "type": "quantitative",
+                            "field": "validation/accuracy"
+                        },
+                        "x": {
+                            "field": "step",
+                            "type": "quantitative"
+                        },
+                        "y": {
+                            "field": "validation/accuracy",
+                            "type": "quantitative"
+                        }
+                    },
+                    "layer": [
+                        {
+                            "mark": {
+                                "type": "text",
+                                "align": "left",
+                                "dx": 5,
+                                "dy": -5
+                            },
+                            "encoding": {
+                                "color": {
+                                    "type": "nominal",
+                                    "field": "rev"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+;
+            vegaEmbed('#static_validation_accuracy', spec);
+        </script>
+    </div>
+    
+
+    <div id = "static_validation_loss">
+        <script type = "text/javascript">
+            var spec = {
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "data": {
+        "values": [
+    {
+        "rev": "workspace",
+        "step": "0",
+        "validation/loss": "0.0370843064098458"
+    },
+    {
+        "rev": "workspace",
+        "step": "1",
+        "validation/loss": "0.024714383623362837"
+    },
+    {
+        "rev": "workspace",
+        "step": "2",
+        "validation/loss": "0.02423219609010906"
+    },
+    {
+        "rev": "workspace",
+        "step": "3",
+        "validation/loss": "0.024085874800906754"
+    },
+    {
+        "rev": "workspace",
+        "step": "4",
+        "validation/loss": "0.024019429508928228"
+    },
+    {
+        "rev": "workspace",
+        "step": "5",
+        "validation/loss": "0.023873179058754006"
+    },
+    {
+        "rev": "workspace",
+        "step": "6",
+        "validation/loss": "0.023992848021821826"
+    },
+    {
+        "rev": "workspace",
+        "step": "7",
+        "validation/loss": "0.023593585684661467"
+    },
+    {
+        "rev": "workspace",
+        "step": "8",
+        "validation/loss": "0.02399313231413277"
+    },
+    {
+        "rev": "workspace",
+        "step": "9",
+        "validation/loss": "0.024157255731952126"
+    },
+    {
+        "rev": "workspace",
+        "step": "10",
+        "validation/loss": "0.02377403032093148"
+    },
+    {
+        "rev": "workspace",
+        "step": "11",
+        "validation/loss": "0.0238955017783879"
+    },
+    {
+        "rev": "workspace",
+        "step": "12",
+        "validation/loss": "0.02376280545564222"
+    },
+    {
+        "rev": "workspace",
+        "step": "13",
+        "validation/loss": "0.023754508551502726"
+    },
+    {
+        "rev": "workspace",
+        "step": "14",
+        "validation/loss": "0.02379496278563095"
+    },
+    {
+        "rev": "workspace",
+        "step": "15",
+        "validation/loss": "0.023780406925690736"
+    },
+    {
+        "rev": "workspace",
+        "step": "16",
+        "validation/loss": "0.023762622584847255"
+    },
+    {
+        "rev": "workspace",
+        "step": "17",
+        "validation/loss": "0.023804247067236776"
+    },
+    {
+        "rev": "workspace",
+        "step": "18",
+        "validation/loss": "0.023627670803619306"
+    },
+    {
+        "rev": "workspace",
+        "step": "19",
+        "validation/loss": "0.02384052897623072"
+    },
+    {
+        "rev": "workspace",
+        "step": "20",
+        "validation/loss": "0.023801858356485815"
+    },
+    {
+        "rev": "workspace",
+        "step": "21",
+        "validation/loss": "0.023878689991866108"
+    },
+    {
+        "rev": "workspace",
+        "step": "22",
+        "validation/loss": "0.023823287942646685"
+    },
+    {
+        "rev": "workspace",
+        "step": "23",
+        "validation/loss": "0.023805154399722035"
+    },
+    {
+        "rev": "workspace",
+        "step": "24",
+        "validation/loss": "0.023756073563510834"
+    },
+    {
+        "rev": "workspace",
+        "step": "25",
+        "validation/loss": "0.023760829452444746"
+    },
+    {
+        "rev": "workspace",
+        "step": "26",
+        "validation/loss": "0.023744494659114258"
+    },
+    {
+        "rev": "workspace",
+        "step": "27",
+        "validation/loss": "0.023747831426989968"
+    },
+    {
+        "rev": "workspace",
+        "step": "28",
+        "validation/loss": "0.02363860326287634"
+    },
+    {
+        "rev": "workspace",
+        "step": "29",
+        "validation/loss": "0.02366950624276206"
+    },
+    {
+        "rev": "workspace",
+        "step": "30",
+        "validation/loss": "0.023687335521138775"
+    },
+    {
+        "rev": "workspace",
+        "step": "31",
+        "validation/loss": "0.023773343775284853"
+    },
+    {
+        "rev": "workspace",
+        "step": "32",
+        "validation/loss": "0.023789757053265397"
+    },
+    {
+        "rev": "workspace",
+        "step": "33",
+        "validation/loss": "0.023836375531101725"
+    },
+    {
+        "rev": "workspace",
+        "step": "34",
+        "validation/loss": "0.0237975264094887"
+    },
+    {
+        "rev": "workspace",
+        "step": "35",
+        "validation/loss": "0.02375422082646355"
+    },
+    {
+        "rev": "workspace",
+        "step": "36",
+        "validation/loss": "0.023678388739131508"
+    },
+    {
+        "rev": "workspace",
+        "step": "37",
+        "validation/loss": "0.023776457883924716"
+    },
+    {
+        "rev": "workspace",
+        "step": "38",
+        "validation/loss": "0.0238381856711123"
+    },
+    {
+        "rev": "workspace",
+        "step": "39",
+        "validation/loss": "0.023748656530030735"
+    },
+    {
+        "rev": "workspace",
+        "step": "40",
+        "validation/loss": "0.023744066348250624"
+    },
+    {
+        "rev": "workspace",
+        "step": "41",
+        "validation/loss": "0.023732984097216143"
+    },
+    {
+        "rev": "workspace",
+        "step": "42",
+        "validation/loss": "0.02369159990580294"
+    },
+    {
+        "rev": "workspace",
+        "step": "43",
+        "validation/loss": "0.023650493453310422"
+    },
+    {
+        "rev": "workspace",
+        "step": "44",
+        "validation/loss": "0.023643881394600993"
+    },
+    {
+        "rev": "workspace",
+        "step": "45",
+        "validation/loss": "0.023698992130019903"
+    },
+    {
+        "rev": "workspace",
+        "step": "46",
+        "validation/loss": "0.023710128056441303"
+    },
+    {
+        "rev": "workspace",
+        "step": "47",
+        "validation/loss": "0.02369753540498424"
+    },
+    {
+        "rev": "workspace",
+        "step": "48",
+        "validation/loss": "0.023693648308359516"
+    },
+    {
+        "rev": "workspace",
+        "step": "49",
+        "validation/loss": "0.023695570012037665"
+    },
+    {
+        "rev": "workspace",
+        "step": "50",
+        "validation/loss": "0.023677430539855156"
+    },
+    {
+        "rev": "workspace",
+        "step": "51",
+        "validation/loss": "0.02369508443702578"
+    },
+    {
+        "rev": "workspace",
+        "step": "52",
+        "validation/loss": "0.023650278283663444"
+    },
+    {
+        "rev": "workspace",
+        "step": "53",
+        "validation/loss": "0.023688991188378857"
+    },
+    {
+        "rev": "workspace",
+        "step": "54",
+        "validation/loss": "0.023666696398670136"
+    },
+    {
+        "rev": "workspace",
+        "step": "55",
+        "validation/loss": "0.023679871677728222"
+    },
+    {
+        "rev": "workspace",
+        "step": "56",
+        "validation/loss": "0.023632752957768465"
+    },
+    {
+        "rev": "workspace",
+        "step": "57",
+        "validation/loss": "0.023654925417525605"
+    },
+    {
+        "rev": "workspace",
+        "step": "58",
+        "validation/loss": "0.02367646937594988"
+    },
+    {
+        "rev": "workspace",
+        "step": "59",
+        "validation/loss": "0.023684863020612307"
+    },
+    {
+        "rev": "workspace",
+        "step": "60",
+        "validation/loss": "0.023663616617312606"
+    },
+    {
+        "rev": "workspace",
+        "step": "61",
+        "validation/loss": "0.023683190501797263"
+    },
+    {
+        "rev": "workspace",
+        "step": "62",
+        "validation/loss": "0.023701364145229"
+    },
+    {
+        "rev": "workspace",
+        "step": "63",
+        "validation/loss": "0.02369648202551597"
+    },
+    {
+        "rev": "workspace",
+        "step": "64",
+        "validation/loss": "0.02369669672706364"
+    },
+    {
+        "rev": "workspace",
+        "step": "65",
+        "validation/loss": "0.02368085936726076"
+    },
+    {
+        "rev": "workspace",
+        "step": "66",
+        "validation/loss": "0.023663976117578478"
+    },
+    {
+        "rev": "workspace",
+        "step": "67",
+        "validation/loss": "0.023686782227760834"
+    },
+    {
+        "rev": "workspace",
+        "step": "68",
+        "validation/loss": "0.023625266333525092"
+    },
+    {
+        "rev": "workspace",
+        "step": "69",
+        "validation/loss": "0.023635888911042537"
+    },
+    {
+        "rev": "workspace",
+        "step": "70",
+        "validation/loss": "0.02365370352230771"
+    },
+    {
+        "rev": "workspace",
+        "step": "71",
+        "validation/loss": "0.023639247991651766"
+    },
+    {
+        "rev": "workspace",
+        "step": "72",
+        "validation/loss": "0.023624153661478253"
+    },
+    {
+        "rev": "workspace",
+        "step": "73",
+        "validation/loss": "0.02366577689560296"
+    },
+    {
+        "rev": "workspace",
+        "step": "74",
+        "validation/loss": "0.023655692944351915"
+    },
+    {
+        "rev": "workspace",
+        "step": "75",
+        "validation/loss": "0.02366876134073547"
+    },
+    {
+        "rev": "workspace",
+        "step": "76",
+        "validation/loss": "0.023672193132769997"
+    },
+    {
+        "rev": "workspace",
+        "step": "77",
+        "validation/loss": "0.02367956444855136"
+    },
+    {
+        "rev": "workspace",
+        "step": "78",
+        "validation/loss": "0.023631127716983176"
+    },
+    {
+        "rev": "workspace",
+        "step": "79",
+        "validation/loss": "0.023646809355750757"
+    },
+    {
+        "rev": "workspace",
+        "step": "80",
+        "validation/loss": "0.0236384024482747"
+    },
+    {
+        "rev": "workspace",
+        "step": "81",
+        "validation/loss": "0.023687772725889195"
+    },
+    {
+        "rev": "workspace",
+        "step": "82",
+        "validation/loss": "0.023609356106263805"
+    },
+    {
+        "rev": "workspace",
+        "step": "83",
+        "validation/loss": "0.02369203789071887"
+    },
+    {
+        "rev": "workspace",
+        "step": "84",
+        "validation/loss": "0.02367094065506421"
+    },
+    {
+        "rev": "workspace",
+        "step": "85",
+        "validation/loss": "0.02368756910269173"
+    },
+    {
+        "rev": "workspace",
+        "step": "86",
+        "validation/loss": "0.02366340488039386"
+    },
+    {
+        "rev": "workspace",
+        "step": "87",
+        "validation/loss": "0.02362701952145362"
+    },
+    {
+        "rev": "workspace",
+        "step": "88",
+        "validation/loss": "0.023608281662326834"
+    },
+    {
+        "rev": "workspace",
+        "step": "89",
+        "validation/loss": "0.02365391775575608"
+    },
+    {
+        "rev": "workspace",
+        "step": "90",
+        "validation/loss": "0.023642948004587782"
+    },
+    {
+        "rev": "workspace",
+        "step": "91",
+        "validation/loss": "0.02363445215824387"
+    },
+    {
+        "rev": "workspace",
+        "step": "92",
+        "validation/loss": "0.02365526354125657"
+    },
+    {
+        "rev": "workspace",
+        "step": "93",
+        "validation/loss": "0.023676508228192155"
+    },
+    {
+        "rev": "workspace",
+        "step": "94",
+        "validation/loss": "0.02367598036820976"
+    },
+    {
+        "rev": "workspace",
+        "step": "95",
+        "validation/loss": "0.023669558981950372"
+    },
+    {
+        "rev": "workspace",
+        "step": "96",
+        "validation/loss": "0.023635343887418978"
+    },
+    {
+        "rev": "workspace",
+        "step": "97",
+        "validation/loss": "0.023665231559913198"
+    },
+    {
+        "rev": "workspace",
+        "step": "98",
+        "validation/loss": "0.02367998932668676"
+    },
+    {
+        "rev": "workspace",
+        "step": "99",
+        "validation/loss": "0.023652448236006093"
+    }
+]
+    },
+    "title": "",
+    "width": 300,
+    "height": 300,
+    "layer": [
+        {
+            "encoding": {
+                "x": {
+                    "field": "step",
+                    "type": "quantitative",
+                    "title": "step"
+                },
+                "y": {
+                    "field": "validation/loss",
+                    "type": "quantitative",
+                    "title": "validation/loss",
+                    "scale": {
+                        "zero": false
+                    }
+                },
+                "color": {
+                    "field": "rev",
+                    "type": "nominal"
+                }
+            },
+            "layer": [
+                {
+                    "mark": "line"
+                },
+                {
+                    "selection": {
+                        "label": {
+                            "type": "single",
+                            "nearest": true,
+                            "on": "mouseover",
+                            "encodings": [
+                                "x"
+                            ],
+                            "empty": "none",
+                            "clear": "mouseout"
+                        }
+                    },
+                    "mark": "point",
+                    "encoding": {
+                        "opacity": {
+                            "condition": {
+                                "selection": "label",
+                                "value": 1
+                            },
+                            "value": 0
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "label"
+                    }
+                }
+            ],
+            "layer": [
+                {
+                    "mark": {
+                        "type": "rule",
+                        "color": "gray"
+                    },
+                    "encoding": {
+                        "x": {
+                            "field": "step",
+                            "type": "quantitative"
+                        }
+                    }
+                },
+                {
+                    "encoding": {
+                        "text": {
+                            "type": "quantitative",
+                            "field": "validation/loss"
+                        },
+                        "x": {
+                            "field": "step",
+                            "type": "quantitative"
+                        },
+                        "y": {
+                            "field": "validation/loss",
+                            "type": "quantitative"
+                        }
+                    },
+                    "layer": [
+                        {
+                            "mark": {
+                                "type": "text",
+                                "align": "left",
+                                "dx": 5,
+                                "dy": -5
+                            },
+                            "encoding": {
+                                "color": {
+                                    "type": "nominal",
+                                    "field": "rev"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+;
+            vegaEmbed('#static_validation_loss', spec);
+        </script>
+    </div>
+    
+</body>
+</html>

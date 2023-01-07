@@ -81,7 +81,7 @@ class DummyTrajectorySub(CompatibleNode):
             lat = data.latitude
             lon = data.longitude
             h = data.altitude
-            x, y, z = self.transformer.gnss_to_xyz(self, lat, lon, h)
+            x, y, z = self.transformer.gnss_to_xyz(lat, lon, h)
             self.update_pose(x, y, z)
             # self.loginfo(f"x: {x}\t y: {y}\t z:{z}")
 

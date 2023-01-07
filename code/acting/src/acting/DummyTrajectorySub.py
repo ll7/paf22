@@ -94,6 +94,7 @@ class DummyTrajectorySub(CompatibleNode):
         The current position is then updated and published
         in the PoseStamped format.
         :param data: message according to NavSatFix definition
+        :param average: number of points to be averaged
         :return:
         """
 
@@ -106,10 +107,10 @@ class DummyTrajectorySub(CompatibleNode):
         self.pos_average[1] += y
         self.pos_average[2] += z
 
-        if self.pos_counter % 5 == 0:
-            x1 = self.pos_average[0] / 5
-            y1 = self.pos_average[1] / 5
-            z1 = self.pos_average[2] / 5
+        if self.pos_counter % 10 == 0:
+            x1 = self.pos_average[0] / 10
+            y1 = self.pos_average[1] / 10
+            z1 = self.pos_average[2] / 10
             self.pos_average = [0, 0, 0]
             self.update_pose(x1, y1, z1)
             # self.loginfo(f"x: {x1}\t y: {y1}\t z:{z1}")
@@ -163,7 +164,6 @@ class DummyTrajectorySub(CompatibleNode):
     def run(self):
         """
         Control loop
-
         :return:
         """
         self.spin()
@@ -172,7 +172,6 @@ class DummyTrajectorySub(CompatibleNode):
 def main(args=None):
     """
     main function
-
     :param args:
     :return:
     """

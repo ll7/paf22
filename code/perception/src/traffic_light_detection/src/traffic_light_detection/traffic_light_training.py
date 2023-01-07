@@ -1,4 +1,3 @@
-import argparse
 import torch.cuda
 import torchvision.transforms as t
 from tqdm import tqdm
@@ -8,6 +7,7 @@ from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import ToTensor
 from dvclive import Live
+from ruamel.yaml import YAML
 import sys
 import os
 sys.path.append(os.path.abspath(sys.path[0] + '/..'))
@@ -17,21 +17,6 @@ from data_generation.weights_organizer import WeightsOrganizer  # noqa: E402
 from traffic_light_detection.classification_model import ClassificationModel \
     # noqa: E402
 from traffic_light_config import TrafficLightConfig  # noqa: E402
-
-
-def parse_args():
-    """
-    Parses arguments for execution given by the command line.
-    @return: Parsed arguments
-    """
-    parser = argparse.ArgumentParser(description='Train traffic light network')
-    parser.add_argument('--epochs',
-                        help='number of epochs',
-                        type=int)
-    parser.add_argument('--num_saves',
-                        help='number of model-weights to be saved',
-                        type=int)
-    return parser.parse_args()
 
 
 class TrafficLightTraining:
@@ -149,12 +134,12 @@ class TrafficLightTraining:
 
 
 if __name__ == '__main__':
-    args = parse_args()
+    yaml = YAML(typ="safe")
+    with open("params.yaml") as f:
+        params = yaml.load(f)
+
     cfg = TrafficLightConfig()
-    if args.epochs is not None and args.epochs > 0:
-        cfg.EPOCHS = args.epochs
-    if args.num_saves is not None and args.num_saves > 0:
-        cfg.NUM_SAVES = args.num_saves
+    cfg.EPOCHS = params['train']['epochs']
     print(f"Computation device: {cfg.DEVICE}\n")
     tr = TrafficLightTraining(cfg)
     tr.run()

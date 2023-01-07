@@ -11,7 +11,7 @@ class TrafficLightConfig:
         self.TIME = datetime.now().strftime("%d.%m.%Y_%H.%M")
 
         # Training
-        self.NUM_SAVES = 3  # Amount of models to save in the current training
+        self.NUM_SAVES = 1  # Amount of models to save in the current training
         self.ROOT_PATH = str(Path(__file__).resolve().parents[1].resolve())
         self.DATASET_PATH = self.ROOT_PATH + "/dataset"
         self.WEIGHTS_PATH = self.ROOT_PATH + "/models/"

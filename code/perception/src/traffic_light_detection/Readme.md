@@ -1,6 +1,6 @@
 # Traffic light detection
 
-The training is setup as DVC experiment. More details about this can be found [here](../../../doc/02_development/11_dvc.md)
+The training is setup as DVC experiment. More details about this can be found [here](../../../../doc/02_development/11_dvc.md).
 
 ## Training
 

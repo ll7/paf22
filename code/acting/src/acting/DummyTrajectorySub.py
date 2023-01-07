@@ -107,12 +107,17 @@ class DummyTrajectorySub(CompatibleNode):
         self.pos_average[1] += y
         self.pos_average[2] += z
 
-        if self.pos_counter % 10 == 0:
-            x1 = self.pos_average[0] / 10
-            y1 = self.pos_average[1] / 10
-            z1 = self.pos_average[2] / 10
+        w: float = 0.8  # weight of the new position compared to the old
+
+        if self.pos_counter % 5 == 0:
+            x1 = self.pos_average[0] / 5
+            y1 = self.pos_average[1] / 5
+            z1 = self.pos_average[2] / 5
             self.pos_average = [0, 0, 0]
-            self.update_pose(x1, y1, z1)
+            r_x = w * x1 + (1 - w) * self.current_pos.pose.position.x
+            r_y = w * y1 + (1 - w) * self.current_pos.pose.position.y
+            r_z = w * z1 + (1 - w) * self.current_pos.pose.position.z
+            self.update_pose(r_x, r_y, r_z)
             # self.loginfo(f"x: {x1}\t y: {y1}\t z:{z1}")
 
         self.pos_counter += 1

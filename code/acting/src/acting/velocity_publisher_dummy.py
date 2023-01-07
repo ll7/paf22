@@ -23,10 +23,10 @@ class VelocityPublisherDummy(CompatibleNode):
             Float32,
             f"/carla/{self.role_name}/max_velocity",
             qos_profile=1)
-        self.velocity = 2
+        self.velocity = 0
         self.delta_velocity = 0.1
-        self.max_velocity = 7.1
-        self.min_velocity = 7
+        self.max_velocity = 0
+        self.min_velocity = 0
         self.__dv = self.delta_velocity
 
     def run(self):

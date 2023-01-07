@@ -31,12 +31,6 @@ class PurePursuitController(CompatibleNode):
             self.__set_path,
             qos_profile=1)
 
-        self.heading_sub: Subscriber = self.new_subscription(
-            Imu,
-            f"/carla/{self.role_name}/IMU",
-            self.__set_heading,
-            qos_profile=1)
-
         self.path_sub: Subscriber = self.new_subscription(
             PoseStamped,
             f"/carla/{self.role_name}/current_pos",
@@ -65,7 +59,7 @@ class PurePursuitController(CompatibleNode):
         self.__position: (float, float) = None  # x, y
         self.__last_pos: (float, float) = None
         self.__path: Path = None
-        self.__heading: float = None  # currently unusable as x,y are to big
+        self.__heading: float = None
         self.__velocity: float = None
 
     def run(self):
@@ -109,31 +103,67 @@ class PurePursuitController(CompatibleNode):
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
-    def __set_position(self, data: PoseStamped):
-        if self.__position is not None:
-            old_x = self.__position[0]
-            old_y = self.__position[1]
-            self.__last_pos = (old_x, old_y)
+    def __set_position(self, data: PoseStamped, min_diff=0.35):
+        """
+        Updates the current position of the vehicle
+        To avoid problems when the car is stationary, new positions will only
+        be accepted, if they are a certain distance from the current one
+        :param data: new position as PoseStamped
+        :param min_diff: minium difference between new and current point for
+        the new point to be accepted
+        :return:
+        """
 
+        if self.__position is None:
+            x0 = data.pose.position.x
+            y0 = data.pose.position.y
+            self.__position = (x0, y0)
+            return
+
+        # check if the new position is valid
+        dist = self.__dist_to(data.pose.position)
+        # debugging
+        self.loginfo(f"Distance to new point: {round(dist, 4)}")
+        if dist < min_diff:
+            # for debugging purposes:
+            self.logwarn("New position disregarded, "
+                         f"as dist ({round(dist, 3)}) to current pos "
+                         f"< min_diff ({round(min_diff, 3)})")
+            return
+
+        old_x = self.__position[0]
+        old_y = self.__position[1]
+        self.__last_pos = (old_x, old_y)
         new_x = data.pose.position.x
         new_y = data.pose.position.y
         self.__position = (new_x, new_y)
+        self.__set_heading()
 
     def __set_path(self, data: Path):
         self.__path = data
 
-    def __set_heading(self, data: Imu):  # todo: test
+    def __set_heading(self):
         if self.__position is None:
-            self.logerr("__get_heading: Current Position not set")
+            self.logwarn("__get_heading: Current Position not set")
             self.__heading = 0
             return
         if self.__last_pos is None:
-            self.logerr("__get_heading: Last Position not set")
+            self.logwarn("__get_heading: Last Position not set")
             self.__heading = 0
             return
         cur_x = self.__position[0] - self.__last_pos[0]
         cur_y = self.__position[1] - self.__last_pos[1]
-        self.__heading = vectors2angle(cur_x, cur_y, 1, 0)
+
+        # todo: remove weight if it doesn't help with noise
+        # code without weight:
+        # self.__heading = vectors2angle(cur_x, cur_y, 1, 0)
+        #
+        if self.__heading is not None:
+            old_heading: float = self.__heading
+            new_heading: float = vectors2angle(cur_x, cur_y, 1, 0)
+            self.__heading = (2 * new_heading + 1 * old_heading) / 3
+        else:
+            self.__heading = vectors2angle(cur_x, cur_y, 1, 0)
 
     def __set_velocity(self, data):
         self.__velocity = data.speed
@@ -162,15 +192,15 @@ class PurePursuitController(CompatibleNode):
         steering_angle = atan((2 * l_vehicle * sin(alpha)) / look_ahead_dist)
 
         # for debugging only ->
-        # t_x = target_wp.pose.position.x
-        # t_y = target_wp.pose.position.y
-        # c_x = self.__position[0]
-        # c_y = self.__position[1]
+        t_x = target_wp.pose.position.x
+        t_y = target_wp.pose.position.y
+        c_x = self.__position[0]
+        c_y = self.__position[1]
         self.loginfo(
-                    f"T_V: ({round(target_v_x, 3)},{round(target_v_y, 3)}) \t"
-                    # f"T_WP: ({round(t_x,3)},{round(t_y,3)}) \t"
-                    # f"C_WP: ({round(c_x,3)},{round(c_y,3)}) \t"
-                    f"Target Steering angle: {round(steering_angle, 4)} \t"
+                    # f"T_V: ({round(target_v_x, 3)},{round(target_v_y, 3)}) \t"
+                    f"T_WP: ({round(t_x,3)},{round(t_y,3)}) \t"
+                    f"C_WP: ({round(c_x,3)},{round(c_y,3)}) \t"
+                    # f"Target Steering angle: {round(steering_angle, 4)} \t"
                     # f"Current alpha: {round(alpha, 6)} \t"
                     # f"Target WP idx: {target_wp_idx}"
                     f"Current heading: {round(self.__heading, 4)}"

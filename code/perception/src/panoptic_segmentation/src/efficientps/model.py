@@ -7,8 +7,8 @@ from backbone.modify_efficientnet import generate_backbone_EfficientPS, \
     output_feature_size
 from semantic_head.semantic_head import SemanticHead
 from instance_head.instance_head import InstanceHead
-from .panoptic_segmentation_module import panoptic_segmentation_module
-from .panoptic_metrics import generate_pred_panoptic
+from panoptic_segmentation_module import panoptic_segmentation_module
+from panoptic_metrics import generate_pred_panoptic
 from panopticapi.evaluation import pq_compute
 
 

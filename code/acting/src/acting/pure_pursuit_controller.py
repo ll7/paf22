@@ -9,7 +9,7 @@ from nav_msgs.msg import Path
 from ros_compatibility.node import CompatibleNode
 from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from rospy import Publisher, Subscriber
-from sensor_msgs.msg import Imu
+# from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32, Bool
 
 from helper_functions import vectors2angle, get_vector_direction
@@ -197,7 +197,7 @@ class PurePursuitController(CompatibleNode):
         c_x = self.__position[0]
         c_y = self.__position[1]
         self.loginfo(
-                    # f"T_V: ({round(target_v_x, 3)},{round(target_v_y, 3)}) \t"
+                    # f"T_V: ({round(target_v_x, 3)},{round(target_v_y, 3)})\t"
                     f"T_WP: ({round(t_x,3)},{round(t_y,3)}) \t"
                     f"C_WP: ({round(c_x,3)},{round(c_y,3)}) \t"
                     # f"Target Steering angle: {round(steering_angle, 4)} \t"

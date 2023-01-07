@@ -144,6 +144,49 @@ navigate among them and commit only the ones that we need to Git." [(Source)](ht
 Detailed documentation with a [good example](https://github.com/iterative/example-dvc-experiments)
 can be found [here](https://dvc.org/doc/start/experiment-management/experiments).
 
+A working experiment in this project can be found [here](../../code/perception/src/traffic_light_detection/Readme.md)
+
+#### Common commands
+
+##### 1. Run training
+
+Trains a new model.
+
+```shell
+# e.g. in /workspace/code/perception/src/traffic_light_detection run
+dvc exp run
+```
+
+##### 2. Show all experiments
+
+```shell
+# e.g. in /workspace/code/perception/src/traffic_light_detection run
+dvc exp show
+```
+
+Outputs all available experiments:
+
+```shell
+  Experiment                                                         Created        train.accuracy   train.loss   validation.accuracy   validation.loss   step   train.epochs   code/perception/src/traffic_lig>
+ ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────>
+  workspace                                                          -                      99.402     0.023711                98.429           0.02385     23   24             3a55939                        >
+  130-feature-implement-dvc-experiment-for-traffic-light-detection   Jan 06, 2023           98.932     0.023871                98.953          0.023652     99   -              3a55939                        >
+  ├── 35331c2 [exp-d30c9]                                            12:12 PM               99.402     0.023711                98.429           0.02385     23   24             3a55939                        >
+  └── e4bdd28 [exp-5b049]                                            12:02 PM               99.316     0.023731                98.953          0.023753     99   100            3a55939                        >
+ ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────>
+```
+
+##### 3. Commit an experiment
+
+```shell
+# commit changes in git
+git add .
+
+# push changes in dvc
+git commit -m "feat(#xx): xxx"
+dvc push
+```
+
 #### Using PyTorch
 
 <https://dvc.org/doc/dvclive/api-reference/ml-frameworks/pytorch>

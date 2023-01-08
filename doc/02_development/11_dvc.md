@@ -137,20 +137,20 @@ More information can be found [here](https://dvc.org/doc/api-reference).
 
 ### Experiments
 
-> "In machine learning projects, the number of experiments grows rapidly DVC can track experiments,
+> "In machine learning projects, the number of experiments grows rapidly. DVC can track experiments,
 list and compare their most relevant metrics, parameters, and dependencies,
 navigate among them and commit only the ones that we need to Git." [(Source)](https://dvc.org/doc/start/experiment-management/experiments)
 
 Detailed documentation with a [good example](https://github.com/iterative/example-dvc-experiments)
 can be found [here](https://dvc.org/doc/start/experiment-management/experiments).
 
-A working experiment in this project can be found [here](../../code/perception/src/traffic_light_detection/Readme.md)
+A working experiment in this project can be found [here](../../code/perception/src/traffic_light_detection/Readme.md).
 
 #### Common commands
 
 ##### 1. Run training
 
-Trains a new model.
+Runs an experiment (as defined in dvc.yaml).
 
 ```shell
 # e.g. in /workspace/code/perception/src/traffic_light_detection run
@@ -159,12 +159,14 @@ dvc exp run
 
 ##### 2. Show all experiments
 
+Show existing experiments (including it metrics and parameters).
+
 ```shell
 # e.g. in /workspace/code/perception/src/traffic_light_detection run
 dvc exp show
 ```
 
-Outputs all available experiments:
+Generates output like this:
 
 ```shell
   Experiment                                                         Created        train.accuracy   train.loss   validation.accuracy   validation.loss   step   train.epochs   code/perception/src/traffic_lig>
@@ -187,9 +189,18 @@ git commit -m "feat(#xx): xxx"
 dvc push
 ```
 
-#### Using PyTorch
+#### Dvclive
 
-<https://dvc.org/doc/dvclive/api-reference/ml-frameworks/pytorch>
+> DVCLive is a Python library for logging machine learning metrics and other metadata in simple file formats,
+> which is fully compatible with DVC, the VS Code Extension, and Iterative Studio.
+> You can install it with pip. [(Source)](https://dvc.org/doc/dvclive)
+
+Dvclive basicaly logs the metrics to simple formats.
+The generated files are then used by e.g. dvc to compare the metrics of experiments
+with `dvc exp show`.
+
+There is support for almost every ML framework [here](https://dvc.org/doc/dvclive/api-reference/ml-frameworks),
+e.g. [here for pytorch](https://dvc.org/doc/dvclive/api-reference/ml-frameworks/pytorch).
 
 ## Example
 

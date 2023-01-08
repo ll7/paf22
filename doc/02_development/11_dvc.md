@@ -25,7 +25,15 @@ Tim Dreier
     * [Add file or folder to DVC](#add-file-or-folder-to-dvc)
     * [Pull / push](#pull--push)
       * [Authentication](#authentication)
-    * [Python API](#python-api)
+    * [Using data with the python API](#using-data-with-the-python-api)
+    * [Data pipelines](#data-pipelines)
+    * [Experiments](#experiments)
+      * [Setup a new experiment](#setup-a-new-experiment)
+      * [Common commands](#common-commands)
+        * [Run training](#run-training)
+        * [Show all experiments](#show-all-experiments)
+        * [Commit an experiment](#commit-an-experiment)
+      * [Dvclive](#dvclive)
   * [Example](#example)
 <!-- TOC -->
 
@@ -116,7 +124,7 @@ The authentication flow has completed.
 
 Back in your shell, you should see that the push was successful.
 
-### Python API
+### Using data with the python API
 
 DVC also provides a great Python API, which makes it possible to use models stored in DVC directly.
 This way, the model is automatically loaded during code execution, so developers who do not work directly with the models or datasets do not have to care about DVC.
@@ -135,6 +143,14 @@ with dvc.api.open(
 
 More information can be found [here](https://dvc.org/doc/api-reference).
 
+### Data pipelines
+
+Data pipelines can automate a series of data processes which produces some output in one command.
+More information can be found in the next section "Experiments".
+A simple experiment is just a small data pipeline with one stage (e.g. train).
+
+More information can be found [here](https://dvc.org/doc/start/data-management/data-pipelines).
+
 ### Experiments
 
 > "In machine learning projects, the number of experiments grows rapidly. DVC can track experiments,
@@ -146,9 +162,23 @@ can be found [here](https://dvc.org/doc/start/experiment-management/experiments)
 
 A working experiment in this project can be found [here](../../code/perception/src/traffic_light_detection/Readme.md).
 
+#### Setup a new experiment
+
+1. Navigate to the folder you want to use as root folder for your experiment
+
+   ```shell
+    # e.g. cd /workspace/code/perception/src/traffic_light_detection
+   ```
+
+2. Initialize dvc experiment
+
+   ```shell
+   dvc exp init
+   ```
+
 #### Common commands
 
-##### 1. Run training
+##### Run training
 
 Runs an experiment (as defined in dvc.yaml).
 
@@ -157,9 +187,9 @@ Runs an experiment (as defined in dvc.yaml).
 dvc exp run
 ```
 
-##### 2. Show all experiments
+##### Show all experiments
 
-Show existing experiments (including it metrics and parameters).
+Show existing experiments (including its metrics and parameters).
 
 ```shell
 # e.g. in /workspace/code/perception/src/traffic_light_detection run
@@ -178,7 +208,7 @@ Generates output like this:
  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────>
 ```
 
-##### 3. Commit an experiment
+##### Commit an experiment
 
 ```shell
 # commit changes in git

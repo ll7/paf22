@@ -56,17 +56,17 @@ class DummyTrajectorySub(CompatibleNode):
 
         self.pos_counter = 0
         self.pos_average = [0, 0, 0]
-        self.gnss_subscriber = self.new_subscription(
-            NavSatFix,
-            "/carla/" + self.role_name + "/GPS",
-            self.output_average_gps_2_xyz,
-            qos_profile=1)
+        # self.gnss_subscriber = self.new_subscription(
+        #     NavSatFix,
+        #     "/carla/" + self.role_name + "/GPS",
+        #     self.output_average_gps_2_xyz,
+        #     qos_profile=1)
 
         # Publisher
-        self.pos_publisher = self.new_publisher(
-            PoseStamped,
-            "/carla/" + self.role_name + "/current_pos",
-            qos_profile=1)
+#        self.pos_publisher = self.new_publisher(
+#            PoseStamped,
+#            "/carla/" + self.role_name + "/current_pos",
+#            qos_profile=1)
 
     def output_gps_2_xyz(self, data: NavSatFix):
         """

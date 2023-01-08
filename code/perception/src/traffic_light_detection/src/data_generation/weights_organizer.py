@@ -37,7 +37,7 @@ class WeightsOrganizer:
             (val_accuracy >= self.best[len(self.best) - 1][1] and
              accuracy > self.best[len(self.best) - 1][0]):
 
-            if len(self.best) == self.cfg.NUM_SAVES:
+            if len(self.best) == 1:
                 delete = self.best[0][2]
                 self.best.pop(0)
                 os.remove(delete)

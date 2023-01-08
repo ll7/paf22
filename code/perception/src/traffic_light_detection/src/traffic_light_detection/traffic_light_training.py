@@ -140,6 +140,7 @@ if __name__ == '__main__':
 
     cfg = TrafficLightConfig()
     cfg.EPOCHS = params['train']['epochs']
+    cfg.BATCH_SIZE = params['train']['batch_size']
     print(f"Computation device: {cfg.DEVICE}\n")
     tr = TrafficLightTraining(cfg)
     tr.run()

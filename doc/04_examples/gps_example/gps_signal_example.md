@@ -33,8 +33,8 @@ At first, multiple ($m$) inputs are summed up and divided to take an average.
 Secondly, before updating the current position, the old position is saved.
 The two positions are then added with a weight $w$, to adjust the responsiveness of the output signal.
 
-The number of separate inputs taken into account for the average and the weight of old input can be seen as tweak-able 
-parameters. 
+The number of separate inputs taken into account for the average and the weight of old input can be seen as tweak-able
+parameters.
 The following graphs were taken while the car was stationary, the time on the bottom is therefore irrelevant.
 Shown is the position translated to a local coordinate system, the transformation will be discussed in //TODO add ref.
 
@@ -44,10 +44,10 @@ of the output signal.
 
 ![GPS signal (m=1, w=0,5)](../../00_assets/filter_img/avg_10_w_1_000.png)
 Using a large number of data points ($m = 10$) also improves the magnitude of the noise.
-The main drawback here is the reduced frequency of the output signal, as the frequency of the output signal 
+The main drawback here is the reduced frequency of the output signal, as the frequency of the output signal
 is $\frac{1}{m}$ that of the input signal.
-This can be avoided through the use of a rolling average where for every output 
-the last $m$ inputs are taken into account. 
+This can be avoided through the use of a rolling average where for every output
+the last $m$ inputs are taken into account.
 
 Combining these two parameters can lead to further improve the result.
 ![GPS signal (m=1, w=0,5)](../../00_assets/filter_img/avg_20_w_0_750.png)
@@ -57,9 +57,3 @@ with the weight now being set to $w = 0.75$
 Further improvements can be made by using a rolling average, where the last $m$ points are taken into account
 for the average, however the frequency is not changed, as this average is calculated for every new point received.
 This method is slightly more computationally intensive.
-
-
-
-
-
-

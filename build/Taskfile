@@ -32,7 +32,7 @@ task:shell() {
 ##########################################
 task:install() {
     task:install:git_hooks
-    gitconfig:copy
+    task:gitconfig:copy
     docker:install
 }
 

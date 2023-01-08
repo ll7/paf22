@@ -10,7 +10,7 @@ from pytorch_lightning.callbacks import (
 from detectron2.config import get_cfg, CfgNode
 from detectron2.utils.events import _CURRENT_STORAGE_STACK, EventStorage
 
-from efficientps import EffificientPS
+from efficientps.model import EffificientPS
 from datasets.panoptic_dataset import PanopticDataset, collate_fn
 
 

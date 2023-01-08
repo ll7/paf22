@@ -87,8 +87,8 @@ class PurePursuitController(CompatibleNode):
                 return
 
             if self.__heading is None:
-                self.logwarn("PurePursuitController hasn't received the" 
-                             "heading of the vehicle yet and" 
+                self.logwarn("PurePursuitController hasn't received the"
+                             "heading of the vehicle yet and"
                              "can therefore not publish steering")
                 return
 

@@ -37,6 +37,11 @@ class VelocityController(CompatibleNode):
             f"/carla/{self.role_name}/throttle",
             qos_profile=1)
 
+        self.velocity_pub: Publisher = self.new_publisher(
+            Float32,
+            f"/carla/{self.role_name}/velocity_as_float",
+            qos_profile=1)
+
         self.__current_velocity: float = None
         self.__max_velocity: float = None
 
@@ -80,6 +85,7 @@ class VelocityController(CompatibleNode):
 
     def __get_current_velocity(self, data: CarlaSpeedometer):
         self.__current_velocity = float(data.speed)
+        self.velocity_pub.publish(self.__current_velocity)
 
     def __get_max_velocity(self, data: Float32):
         self.__max_velocity = float(data.data)

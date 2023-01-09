@@ -37,6 +37,8 @@ class VelocityController(CompatibleNode):
             f"/carla/{self.role_name}/throttle",
             qos_profile=1)
 
+        # rqt_plot can't read the speed data provided by the rosbridge
+        # Therefore, the speed is published again as a float value
         self.velocity_pub: Publisher = self.new_publisher(
             Float32,
             f"/carla/{self.role_name}/velocity_as_float",

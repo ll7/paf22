@@ -1,6 +1,6 @@
 # How to test acting components
 
-**Summary:** todo
+**Summary:** This page shows ways to verify that acting components work as expected
 
 ---
 
@@ -10,7 +10,7 @@ Julian Graf
 
 ## Date
 
-08.01.2023
+09.01.2023
 
 <!-- TOC -->
 * [How to test acting components](#how-to-test-acting-components)

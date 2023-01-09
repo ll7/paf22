@@ -12,10 +12,36 @@ def euclid_dist(vector1: Tuple[float, float], vector2: Tuple[float, float]):
     return np.sqrt(sum_sqrt)
 
 
+def unit_vector(vector: Tuple[float, float], size: float)\
+        -> Tuple[float, float]:
+    length = sqrt(vector[0] ** 2 + vector[1] ** 2)
+    return size * (vector[0] / length), size * (vector[1] / length)
+
+
+def perpendicular_vector_right(vector: Tuple[float, float])\
+        -> Tuple[float, float]:
+    x, y = vector
+    perp = (-y, x)
+    return perp
+
+
+def perpendicular_vector_left(vector: Tuple[float, float])\
+        -> Tuple[float, float]:
+    x, y = vector
+    perp = (y, -x)
+    return perp
+
+
 def add_vector(v_1: Tuple[float, float], v_2: Tuple[float, float]) \
         -> Tuple[float, float]:
     """Add the given vectors"""
     return v_1[0] + v_2[0], v_1[1] + v_2[1]
+
+
+def sub_vector(v_1: Tuple[float, float], v_2: Tuple[float, float]) \
+        -> Tuple[float, float]:
+    """Subtract the given vectors"""
+    return v_1[0] - v_2[0], v_1[1] - v_2[1]
 
 
 def rotate_vector(vector: Tuple[float, float], angle_rad: float) \
@@ -25,7 +51,7 @@ def rotate_vector(vector: Tuple[float, float], angle_rad: float) \
             sin(angle_rad) * vector[0] + cos(angle_rad) * vector[1])
 
 
-def unit_vector(angle_rad: float) -> Tuple[float, float]:
+def direction_vector(angle_rad: float) -> Tuple[float, float]:
     """Retrieve the unit vector representing the given direction."""
     return (cos(angle_rad), sin(angle_rad))
 
@@ -57,11 +83,11 @@ def end_of_circular_arc(start_point: Tuple[float, float], angle: float,
     """Compute the end of a circular arc"""
     # determine the length of |start, end|
     alpha = length / radius
-    diff_vec = scale_vector(unit_vector(alpha), radius)
+    diff_vec = scale_vector(direction_vector(alpha), radius)
     dist_start_end = euclid_dist(diff_vec, (radius, 0))
 
     # determine the direction of |start, end| and apply it
-    dir_start_end = unit_vector(alpha / 2 + angle)
+    dir_start_end = direction_vector(alpha / 2 + angle)
 
     # apply vector |start --> end| to the start point to retrieve the end point
     diff_vec = scale_vector(dir_start_end, dist_start_end)
@@ -120,5 +146,5 @@ def linear_interpolation(start: Tuple[float, float], end: Tuple[float, float],
 
     lin_points = [(start[0] + step_vector[0] * i,
                    start[1] + step_vector[1] * i) for i in range(steps)]
-
-    return lin_points[0], lin_points[1]
+    lin_points.append(end)
+    return lin_points

@@ -7,15 +7,13 @@ from carla_msgs.msg import CarlaSpeedometer
 from geometry_msgs.msg import Point, PoseStamped
 from nav_msgs.msg import Path
 from ros_compatibility.node import CompatibleNode
-from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from rospy import Publisher, Subscriber
-from std_msgs.msg import Float32, Bool
+from std_msgs.msg import Float32
 
-from helper_functions import vectors2angle
+from helper_functions import vectors_to_angle
+from trajectory_interpolation import points_to_vector
 
 
-# todo: docs
-# todo: test
 class PurePursuitController(CompatibleNode):
     def __init__(self):
         super(PurePursuitController, self).__init__('pure_pursuit_controller')
@@ -47,14 +45,6 @@ class PurePursuitController(CompatibleNode):
             f"/carla/{self.role_name}/pure_pursuit_steer",
             qos_profile=1)
 
-        self.status_pub = self.new_publisher(  # todo: delete (this is only
-            # necessary if vehicle controller isn't running)
-            Bool, f"/carla/{self.role_name}/status",
-            qos_profile=QoSProfile(
-                depth=1,
-                durability=DurabilityPolicy.TRANSIENT_LOCAL)
-        )
-
         self.__position: (float, float) = None  # x, y
         self.__last_pos: (float, float) = None
         self.__path: Path = None
@@ -67,8 +57,6 @@ class PurePursuitController(CompatibleNode):
         :return:
         """
         self.loginfo('PurePursuitController node running')
-        self.status_pub.publish(True)  # todo: delete this is only
-        # necessary if vehicle controller isn't running
 
         def loop(timer_event=None):
             """
@@ -139,6 +127,10 @@ class PurePursuitController(CompatibleNode):
         self.__path = data
 
     def __set_heading(self):
+        """
+        Updates the current heading
+        :return:
+        """
         if self.__position is None:
             self.logwarn("__get_heading: Current Position not set")
             self.__heading = 0
@@ -147,25 +139,33 @@ class PurePursuitController(CompatibleNode):
             self.logwarn("__get_heading: Last Position not set")
             self.__heading = 0
             return
-        cur_x = self.__position[0] - self.__last_pos[0]
-        cur_y = self.__position[1] - self.__last_pos[1]
 
+        cur_x, cur_y = points_to_vector(
+                                        (self.__last_pos[0],
+                                         self.__last_pos[1]),
+                                        (self.__position[0],
+                                         self.__position[1])
+                                        )
         # maybe remove weight if it doesn't help (after fixing gps signal)
         # code without weight:
         # self.__heading = vectors2angle(cur_x, cur_y, 1, 0)
         # ->
         if self.__heading is not None:
             old_heading: float = self.__heading
-            new_heading: float = vectors2angle(cur_x, cur_y, 1, 0)
+            new_heading: float = vectors_to_angle(cur_x, cur_y, 1, 0)
             self.__heading = (2 * new_heading + 1 * old_heading) / 3
         else:
-            self.__heading = vectors2angle(cur_x, cur_y, 1, 0)
+            self.__heading = vectors_to_angle(cur_x, cur_y, 1, 0)
         # <-
 
-    def __set_velocity(self, data):
+    def __set_velocity(self, data: CarlaSpeedometer):
         self.__velocity = data.speed
 
     def __calculate_steer(self) -> float:
+        """
+        Calculates the steering angle based on the current information
+        :return:
+        """
         l_vehicle = 2  # dist between front and rear wheels todo: measure
         k = 10  # todo: tune
 
@@ -179,13 +179,17 @@ class PurePursuitController(CompatibleNode):
         target_wp_idx = self.__get_target_point_index(look_ahead_dist)
 
         target_wp: PoseStamped = self.__path.poses[target_wp_idx]
-        target_v_x = target_wp.pose.position.x - self.__last_pos[0]
-        target_v_y = target_wp.pose.position.y - self.__last_pos[1]
-        cur_v_x = self.__position[0] - self.__last_pos[0]
-        cur_v_y = self.__position[1] - self.__last_pos[1]
+        target_v_x, target_v_y = points_to_vector((self.__last_pos[0],
+                                                   self.__last_pos[1]),
+                                                  (target_wp.pose.position.x,
+                                                   target_wp.pose.position.y))
+        cur_v_x, cur_v_y = points_to_vector((self.__last_pos[0],
+                                             self.__last_pos[0]),
+                                            (self.__position[0],
+                                             self.__position[1]))
 
-        alpha = vectors2angle(target_v_x, target_v_y,
-                              cur_v_x, cur_v_y)
+        alpha = vectors_to_angle(target_v_x, target_v_y,
+                                 cur_v_x, cur_v_y)
         steering_angle = atan((2 * l_vehicle * sin(alpha)) / look_ahead_dist)
 
         # for debugging only ->
@@ -243,7 +247,7 @@ class PurePursuitController(CompatibleNode):
 
 def main(args=None):
     """
-      main function starts the acting node
+      main function starts the pure pursuit controller node
       :param args:
     """
     roscomp.init('pure_pursuit_controller', args=args)

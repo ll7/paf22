@@ -198,7 +198,7 @@ class VehicleController(CompatibleNode):
     def __set_stanley_steer(self, data):
         self.__stanley_steer = data.data
 
-    def __choose_controller(self) -> int:  # todo: implement
+    def __choose_controller(self) -> int:
         """
         Chooses with steering controller to use
         :return:

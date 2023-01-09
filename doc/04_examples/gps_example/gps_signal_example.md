@@ -13,7 +13,14 @@ Gabriel Schwald
 07.01.2023
 
 ---
-[TOC]
+<!-- TOC -->
+* [GPS sensor](#gps-sensor)
+  * [Authors](#authors)
+    * [Date](#date)
+  * [Raw sensor data](#raw-sensor-data)
+  * [Filters for the sensor data](#filters-for-the-sensor-data)
+    * [Intuitive filter](#intuitive-filter)
+<!-- TOC -->
 
 ## Raw sensor data
 
@@ -36,7 +43,7 @@ The two positions are then added with a weight $w$, to adjust the responsiveness
 The number of separate inputs taken into account for the average and the weight of old input can be seen as tweak-able
 parameters.
 The following graphs were taken while the car was stationary, the time on the bottom is therefore irrelevant.
-Shown is the position translated to a local coordinate system, the transformation will be discussed in //TODO add ref.
+Shown is the position translated to a local coordinate system, the transformation will be discussed later.
 
 ![GPS signal (m=1, w=0,5)](../../00_assets/filter_img/avg_1_w_0_500.png)
 Using $w = 0.5$ clearly reduces the magnitude of the noise, however such a small value reduces the responsiveness

@@ -94,7 +94,6 @@ class DummyTrajectorySub(CompatibleNode):
         The current position is then updated and published
         in the PoseStamped format.
         :param data: message according to NavSatFix definition
-        :param average: number of points to be averaged
         :return:
         """
 

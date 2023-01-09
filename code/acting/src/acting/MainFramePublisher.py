@@ -21,7 +21,7 @@ class MainFramePublisher(CompatibleNode):
 
         self.control_loop_rate = self.get_param('control_loop_rate', 0.05)
         self.role_name = self.get_param('role_name', 'ego_vehicle')
-        self.current_pos: Pose = Pose()
+        self.current_pos: Pose = None
 
         self.current_pos_subscriber = self.new_subscription(
             Pose,
@@ -34,6 +34,9 @@ class MainFramePublisher(CompatibleNode):
         br = tf.TransformBroadcaster()
 
         def loop(timer_event=None):
+            if self.current_pos is None:
+                # conversion only works if pos is known
+                return
             # Invert Translation and Rotation to transform from main
             # to hero frame
             pos = (-self.current_pos.position.x,

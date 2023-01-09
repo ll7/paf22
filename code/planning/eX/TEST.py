@@ -48,7 +48,7 @@ def main():
                                transitions={'outcome2': 'FOO'})
 
     # Create and start the introspection server
-    sis = smach_ros.IntrospectionServer('my_smach_introspection_server',
+    sis = smach_ros.IntrospectionServer('my__server',
                                         sm, '/SM_ROOT')
     sis.start()
 

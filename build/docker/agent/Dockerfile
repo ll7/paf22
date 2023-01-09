@@ -139,6 +139,10 @@ RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 
 RUN pip install -r requirements.txt
 
+RUN pip install -U \
+    -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-20.04 \
+    wxPython
+
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash", "-c", "sleep 10 && python3 /opt/leaderboard/leaderboard/leaderboard_evaluator.py --debug=${DEBUG_CHALLENGE} \
 --repetitions=${REPETITIONS} \

@@ -36,7 +36,7 @@ Right now there are multiple types of filters implemented.
 ### Intuitive filter
 
 The first way combines the two most intuitive methods of smoothing the input.
-At first, multiple ($m$) inputs are summed up and divided to take an average.
+At first, multiple ( $m$ ) inputs are summed up and divided to take an average.
 Secondly, before updating the current position, the old position is saved.
 The two positions are then added with a weight $w$, to adjust the responsiveness of the output signal.
 
@@ -50,7 +50,7 @@ Using $w = 0.5$ clearly reduces the magnitude of the noise, however such a small
 of the output signal.
 
 ![GPS signal (m=1, w=0,5)](../../00_assets/filter_img/avg_10_w_1_000.png)
-Using a large number of data points ($m = 10$) also improves the magnitude of the noise.
+Using a large number of data points ( $m = 10$ ) also improves the magnitude of the noise.
 The main drawback here is the reduced frequency of the output signal, as the frequency of the output signal
 is $\frac{1}{m}$ that of the input signal.
 This can be avoided through the use of a rolling average where for every output

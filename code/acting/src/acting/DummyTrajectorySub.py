@@ -106,8 +106,8 @@ class DummyTrajectorySub(CompatibleNode):
         self.pos_average[1] += y
         self.pos_average[2] += z
 
-        w: float = 0.75  # weight of the new position compared to the old
-        avg: int = 10
+        w: float = 1.0  # weight of the new position compared to the old
+        avg: int = 1
         if self.pos_counter % avg == 0:
             x1 = self.pos_average[0] / avg
             y1 = self.pos_average[1] / avg

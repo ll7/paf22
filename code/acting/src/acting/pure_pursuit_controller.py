@@ -4,7 +4,7 @@ from math import atan, sin
 
 import ros_compatibility as roscomp
 from carla_msgs.msg import CarlaSpeedometer
-from geometry_msgs.msg import Point, PoseStamped
+from geometry_msgs.msg import Point, PoseStamped, Pose
 from nav_msgs.msg import Path
 from ros_compatibility.node import CompatibleNode
 from rospy import Publisher, Subscriber
@@ -45,11 +45,18 @@ class PurePursuitController(CompatibleNode):
             f"/carla/{self.role_name}/pure_pursuit_steer",
             qos_profile=1)
 
+        self.pure_pursuit_steer_target_pub: Publisher = self.new_publisher(
+            Pose,
+            f"/carla/{self.role_name}/pure_pursuit_steer_target_wp",
+            qos_profile=1)
+
         self.__position: (float, float) = None  # x, y
         self.__last_pos: (float, float) = None
         self.__path: Path = None
         self.__heading: float = None
         self.__velocity: float = None
+        self.__tp_idx: int = 0  # target waypoint index
+        # error when there are no targets
 
     def run(self):
         """
@@ -90,7 +97,7 @@ class PurePursuitController(CompatibleNode):
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
-    def __set_position(self, data: PoseStamped, min_diff=0.35):
+    def __set_position(self, data: PoseStamped, min_diff=0.05):
         """
         Updates the current position of the vehicle
         To avoid problems when the car is stationary, new positions will only
@@ -176,9 +183,10 @@ class PurePursuitController(CompatibleNode):
             current_velocity = self.__velocity
 
         look_ahead_dist = k * current_velocity
-        target_wp_idx = self.__get_target_point_index(look_ahead_dist)
+        self.__tp_idx = self.__get_target_point_index(look_ahead_dist)
 
-        target_wp: PoseStamped = self.__path.poses[target_wp_idx]
+        target_wp: PoseStamped = self.__path.poses[self.__tp_idx]
+
         target_v_x, target_v_y = points_to_vector((self.__last_pos[0],
                                                    self.__last_pos[1]),
                                                   (target_wp.pose.position.x,
@@ -191,21 +199,31 @@ class PurePursuitController(CompatibleNode):
         alpha = vectors_to_angle(target_v_x, target_v_y,
                                  cur_v_x, cur_v_y)
         steering_angle = atan((2 * l_vehicle * sin(alpha)) / look_ahead_dist)
+        target_wp.pose.orientation.x = alpha
+        target_wp.pose.orientation.y = steering_angle
+        self.pure_pursuit_steer_target_pub.publish(target_wp.pose)
 
         # for debugging only ->
+        # rqt_plot /carla/hero/current_pos/pose/position/x
+        # /carla/hero/pure_pursuit_steer_target_wp/position/x
+        # rqt_plot /carla/hero/current_pos/pose/position/y
+        # /carla/hero/pure_pursuit_steer_target_wp/position/y
+
+        # rqt_plot /carla/hero/pure_pursuit_steer_target_wp/orientation/x:y
+
         # t_x = target_wp.pose.position.x
         # t_y = target_wp.pose.position.y
         # c_x = self.__position[0]
         # c_y = self.__position[1]
-        # self.loginfo(
-        # f"T_V: ({round(target_v_x, 3)},{round(target_v_y, 3)})\t"
-        # f"T_WP: ({round(t_x,3)},{round(t_y,3)}) \t"
-        # f"C_WP: ({round(c_x,3)},{round(c_y,3)}) \t"
-        # f"Target Steering angle: {round(steering_angle, 4)} \t"
-        # f"Current alpha: {round(alpha, 6)} \t"
-        # f"Target WP idx: {target_wp_idx}"
-        # f"Current heading: {round(self.__heading, 4)}"
-        # )
+        self.loginfo(
+                    # f"T_V: ({round(target_v_x, 3)},{round(target_v_y, 3)})\t"
+                    # f"T_WP: ({round(t_x,3)},{round(t_y,3)}) \t"
+                    # f"C_WP: ({round(c_x,3)},{round(c_y,3)}) \t"
+                    # f"Target Steering angle: {round(steering_angle, 4)} \t"
+                    f"Current alpha: {round(alpha, 3)} \t"
+                    # f"Target WP idx: {self.__tp_idx} \t"
+                    f"Current heading: {round(self.__heading, 3)}"
+        )
         # <-
 
         return steering_angle
@@ -222,10 +240,13 @@ class PurePursuitController(CompatibleNode):
 
         min_dist = 10e1000
         min_dist_idx = -1
-        for i in range(0, len(self.__path.poses)):
+        # might be more elegant to only look at points
+        # _ahead_ of the closest point on the trajectory
+        for i in range(self.__tp_idx, len(self.__path.poses)):
             pose: PoseStamped = self.__path.poses[i]
             dist = self.__dist_to(pose.pose.position)
             dist2ld = dist - ld
+            # can be optimized
             if min_dist > dist2ld > 0:
                 min_dist = dist2ld
                 min_dist_idx = i

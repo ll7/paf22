@@ -56,3 +56,13 @@ Runs the python linter. More documentation about linting can be found [here](../
 ### `b5 markdown:lint`
 
 Runs the markdown linter. More documentation about linting can be found [here](../02_development/02_linting.md).
+
+## 🚨 Common Problems
+
+`
+REQUIRED process [carla_ros_bridge-1] has died!
+`
+
+If the execution of `b5 run` is stopping because of this error the reason might be a duplicate Carla ROS bridge.
+
+To eliminate this problem, run `b5 halt --remove-orphans`.

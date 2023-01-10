@@ -11,3 +11,4 @@ git+https://github.com/cocodataset/panopticapi.git
 git+https://github.com/facebookresearch/detectron2.git
 inplace-abn==1.1.0
 efficientnet_pytorch==0.7.1
+opencv-python==4.7.0.68

@@ -10,7 +10,7 @@ Simon Erlbacher
 
 ### Date
 
-14.12.2022
+10.01.2023
 
 ---
 
@@ -27,7 +27,8 @@ Simon Erlbacher
     * [Result](#result)
   * [More information about OpenDrive](#more-information-about-opendrive)
     * [Start of the implementation](#start-of-the-implementation)
-  * [Follow up Issues](#follow-up-issues)
+    * [Implementation details](#implementation-details)
+  * [Follow-up Issues](#follow-up-issues)
   * [Sources](#sources)
 <!-- TOC -->
 
@@ -191,20 +192,109 @@ to navigate along the street. If the agent drives on the other side of the stree
 than this reference points have to be calculated different.
 -> The driving direction has to be checked at the beginning and compared to the
 the start points of the reference line
-  
-## Follow up Issues
 
-* Implement the handling of the Leaderboard instructions
-* Check on which side the agent drives and based on that calculate the end points for the road segments.
+### Implementation details
+
+There are two methods to calculate the trajectory. The first method is only needed once
+at the beginning, when the ego-vehicle stays at its start position.
+
+* First we need to find the current road, where the agent is located
+* Take all road start points and calculate the nearest startpoint to the vehicle position
+* Calculate Endpoint for each connecting road and check if the vehicle lays in the interval -> road id
+  * use the predecessor and the successor points to get the correct road
+  * also check if the predecessor or successor is a junction. If do not have a command from the leaderboard we pass
+  the junction straight. For this scenario we first have to filter the correct road id out ouf the junction to
+  get the start and endpoint
+  * check if the ego vehicle lays in the interval -> if yes change the road id (else we chose the correct one)
+* Check the driving direction (following road id)
+  * calculate the distances from one predecessor point and one successor point to the target point
+  * the road with the smaller distance is the next following road
+* Interpolate the current road from start to end (arc and line)
+  * check the point ordering -> possible that we have to reverse them
+  * at the beginning we can be located in the middle of a street
+  * we need to delete the points from the interpolation laying before our ego vehicle position
+* Weakness
+  * The Calculation of the driving direction is based on the distance to the target location
+  * If the course of the road is difficult, this approach could fail
+  * As you can see in the top right corner of the picture. the distance from the lower blue line
+  is shorter to the target than the upper blue line. The method would choose the lower line because of
+  the smaller distance
+  
+![preplanning_start](../../00_assets/preplanning_start.png)
+
+Road Concepts
+
+Further Calculation of the trajectory
+
+* after each interpolation we calculate the midpoint of a lane. Otherwise we would drive on
+the reference line. That is why we have to filter the width information for our lanes.
+  * there can be more than one driving lane on one side of the reference line
+  * filter all width values and decide on which side of the reference line the vehicle drives
+  * after this we have the information which of the two perpendicular vectors we need to compute
+  the points on the correct side of the reference line
+  * we always choose the biggest width value, to take the rightmost lane
+![lane_midpoint](../../00_assets/lane_midpoint.png)
+Scenario and concept to compute the midpoint of a lane
+  
+* the second method takes the target position and the next command from the leaderboard
+* we always calculate the follow road based on the distance to the target and then
+interpolate the current road
+  * here we can also change this approach if there is the same weakness as mentioned before
+  * we can calculate the next road based on the distance to the last trajectory point
+* we have to keep in mind the same aspects as in the starting case
+* after each interpolation of a road we check the distance from the new trajectory points to
+the target position
+  * if the distance is smaller than a set threshold, we reached the target
+  * in this case we may need to calculate this last road again because based on the command
+  from the leaderboard we have to turn to the left side or the rigth side. We need to change
+  the lane before we reach the startpoint of a junction
+  * we calculate the next road to take, based on the heading value of the endpoint of this
+  following road. We compare this value to the yaw value from the leaderboard. The heading value
+  with the smallest distance indicates the correct following road id.
+  * when we know the end point of the following road, we can recompute the last trajectory point
+  with all possible width values for this road. calculate the distance to the following endpoint
+  and chose the width value with the smallest distance.
+  * Now we can interpolate our last road with the new width value (if the width value was updated)
+  * Also we can smooth our first trajectory points with smaller width values, to change the lane smooth
+
+For the next target point and command we need to call this method again (not the starting method)
+and calculate the trajectory.
+
+Weakness
+
+* Offset for restricted areas is not yet calculated (see the picture above)
+* no max speed value for junctions -> default value
+* Check where the target points are located. In the middle of a junction or before?
+At the moment we assume they are before a junction.
+
+In the following test scenario we added a manual start point on road 8.
+The following target points and commandos for the next action also have been added manual.
+
+![roads_vis](../../00_assets/roads_vis.png)
+
+roads to interpolate
+
+![trajectory_roads](../../00_assets/trajectory_roads.png)
+
+roads chosen by the methods
+
+![global_trajectory](../../00_assets/global_trajectory.png)
+
+Global trajectory visualised
+
+![local_trajectory](../../00_assets/local_trajectory.png)
+
+One cutout of the trajectory
+
+## Follow-up Issues
+
 * Check out positioning
   * Compare positioning of signs in Carla and in the OpenDrive Map
   * Compare positioning of traffic lights in Carla and in the OpenDrive Map
 * Visualize Trajectory in Carla
-  * Problem with the Leaderboard -> scenarios change and no view control?
-  * Can we only visualize individual towns from the Leaderboard test scenarios?
 * Implement velocity profile
 * Check if waypoints fit with Simulator
-* Keep the lane limitation
+* Keep the lane limitation -> testing
 * Extract signals information for the state machine
 * Implement local path planner for alternative routes and collision prediction
 
@@ -219,3 +309,5 @@ the start points of the reference line
 <https://github.com/bradyz/leaderboard/tree/master/data/routes_training>
 
 <https://carla.readthedocs.io/en/latest/core_map/>
+
+<https://odrviewer.io/>

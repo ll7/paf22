@@ -29,6 +29,16 @@ RUN wget https://github.com/libgit2/libgit2/archive/refs/tags/v1.5.0.tar.gz -O l
     && make \
     && make install
 
+# CUDA installation
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin \
+    && mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600 \
+    && wget https://developer.download.nvidia.com/compute/cuda/11.7.0/local_installers/cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb \
+    && dpkg -i cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb \
+    && cp /var/cuda-repo-ubuntu2004-11-7-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y install cuda
+ENV CUDA_HOME=/usr/local/cuda-11.7
+
 # override python path, carla pip package path didn't exist and was using Python 3.7 instead of 2.7
 ENV PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages
 ENV PYTHONPATH=$PYTHONPATH:/opt/carla/PythonAPI/carla/dist/carla-0.9.13-py3.7-linux-x86_64.egg:/opt/carla/PythonAPI/carla
@@ -119,6 +129,15 @@ RUN echo /catkin_ws/install/lib/python3/dist-packages >> /home/$USERNAME/.local/
 
 RUN sudo mkdir /workspace && sudo chown $USERNAME:$USERNAME /workspace
 
+RUN echo "export CUDA_HOME=/usr/local/cuda-11" >> ~/.bashrc \
+    && echo "export PATH=$PATH:$CUDA_HOME/bin" >> ~/.bashrc
+
+COPY --chown=$USERNAME:$USERNAME ./code/requirements.txt /workspace/
+ENV TORCH_CUDA_ARCH_LIST="5.2 6.0 6.1 7.0 7.5 8.0 8.6+PTX"
+ENV IABN_FORCE_CUDA=1
+
+RUN source ~/.bashrc && cat /workspace/requirements.txt | xargs -n 1 -L 1 pip install
+
 # Add agent code
 COPY --chown=$USERNAME:$USERNAME ./code /workspace/code/
 
@@ -134,8 +153,6 @@ ADD ./build/docker/agent/entrypoint.sh /entrypoint.sh
 WORKDIR /workspace/code
 
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-
-RUN pip install -r requirements.txt
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash", "-c", "sleep 10 && python3 /opt/leaderboard/leaderboard/leaderboard_evaluator.py --debug=${DEBUG_CHALLENGE} \

@@ -2,5 +2,5 @@
     <arg name="role_name" default="ego_vehicle" />
     <arg name="control_loop_rate" default="0.1" />
 
-    <include file="$(find state_machine)/launch/state_machine.launch"/>
+    <node pkg="state_machine" type="Dummy_target_speed_pub.py" name="talker" output="screen">
 </launch>

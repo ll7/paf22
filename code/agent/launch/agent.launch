@@ -8,6 +8,8 @@
 
     <!-- planning -->
     <include file="$(find planning)/launch/planning.launch">
+        <arg name="control_loop_rate" value="$(arg control_loop_rate)"/>
+        <arg name="role_name" value="$(arg role_name)"/>
     </include>
 
     <!-- acting -->

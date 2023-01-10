@@ -8,12 +8,16 @@ import smach
 class Keep(smach.State):
 
     def __init__(self):
-        smach.State.__init__(self, outcomes=['update', 'change_state_machine'])
+        smach.State.__init__(self,
+                             outcomes=['update', 'change_state_machine'],
+                             output_keys=['new_target_speed'])
+        self.target_speed = 0
+        self.new_target_speed = 0
 
     def execute(self, userdata):
         rospy.loginfo('Executing state Keep')
-        if self.counter < 3:
-            self.counter += 1
+        if self.new_target_speed is not self.target_speed:
+            userdata.new_target_speed = self.new_target_speed
             return 'update'
         else:
             return 'change_state_machine'
@@ -22,14 +26,17 @@ class Keep(smach.State):
 # define state Bar
 class UpdateTargetSpeed(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['target_speed_updated',
-                                             'change_state_machine'])
+        smach.State.__init__(self,
+                             outcomes=['target_speed_updated',
+                                       'change_state_machine'],
+                             input_keys=['new_target_speed'])
 
     def execute(self, userdata):
         rospy.loginfo('Executing state update target speed')
         if "Intersection detected ....":
             return 'change_state_machine'
         else:
+            # publish new target_speed
             return 'target_speed_updated'
 
 

@@ -1,2 +1,4 @@
 dvc==2.36.0
 dvc-gdrive==2.19.1
+torch==1.13.1
+torchvision==0.14.1

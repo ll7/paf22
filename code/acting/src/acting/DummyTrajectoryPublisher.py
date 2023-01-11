@@ -35,15 +35,14 @@ class DummyTrajectoryPub(CompatibleNode):
         self.path_msg.header.frame_id = "Frame ID Path"
 
         # Static trajectory for testing purposes
-        initial_trajectory = [
+        self.initial_trajectory = [
             (985.0, -5373.2),
             (985.0, -5473.2),
             (990.0, -5474.2),
             (990.0, -5524.2),
             (990.0, -5574.2)
         ]
-        self.updated_trajectory(initial_trajectory)
-
+        # self.updated_trajectory(initial_trajectory)
         # request for a new interpolated dummy trajectory
         # self.dummy_trajectory_request_subscriber = self.new_subscription(
         #     DummyTrajectoryRequest,
@@ -65,7 +64,7 @@ class DummyTrajectoryPub(CompatibleNode):
         """
         self.current_trajectory = interpolate_route(target_trajectory, 0.5)
         self.path_msg.header.stamp = rospy.Time.now()
-        self.path_msg.header.frame_id = "Frame ID Path Update"
+        self.path_msg.header.frame_id = "main"
 
         # clear old waypoints
         self.path_msg.poses.clear()
@@ -73,10 +72,11 @@ class DummyTrajectoryPub(CompatibleNode):
         for wp in self.current_trajectory:
             pos = PoseStamped()
             pos.header.stamp = rospy.Time.now()
-            pos.header.frame_id = "Frame ID Pos"
+            pos.header.frame_id = "main"
 
             pos.pose.position.x = wp[0]
             pos.pose.position.y = wp[1]
+            pos.pose.position.z = 39.7
 
             # currently not used therefore zeros
             pos.pose.position.z = 0
@@ -96,6 +96,7 @@ class DummyTrajectoryPub(CompatibleNode):
 
         def loop(timer_event=None):
             # Continuously update path
+            self.updated_trajectory(self.initial_trajectory)
             self.trajectory_publisher.publish(self.path_msg)
 
         self.new_timer(self.control_loop_rate, loop)

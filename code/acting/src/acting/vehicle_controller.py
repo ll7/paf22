@@ -8,6 +8,7 @@ from std_msgs.msg import Bool, Float32
 
 PURE_PURSUIT_CONTROLLER: int = 1
 STANLEY_CONTROLLER: int = 2
+MAX_STEER_ANGLE: float = 0.5
 
 
 class VehicleController(CompatibleNode):
@@ -125,7 +126,10 @@ class VehicleController(CompatibleNode):
 
             message.hand_brake = False
             message.manual_gear_shift = False
-            message.steer = steer
+            if steer >= 0:
+                message.steer = min(MAX_STEER_ANGLE, steer)
+            else:
+                message.steer = max(-MAX_STEER_ANGLE, steer)
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)
@@ -194,12 +198,12 @@ class VehicleController(CompatibleNode):
     def __set_stanley_steer(self, data):
         self.__stanley_steer = data.data
 
-    def __choose_controller(self) -> int:  # todo: implement
+    def __choose_controller(self) -> int:
         """
         Chooses with steering controller to use
         :return:
         """
-        return STANLEY_CONTROLLER
+        return PURE_PURSUIT_CONTROLLER
 
 
 def main(args=None):

@@ -36,11 +36,16 @@ class DummyTrajectoryPub(CompatibleNode):
 
         # Static trajectory for testing purposes
         initial_trajectory = [
-            (985.0, -5373.2),
-            (985.0, -5473.2),
-            (990.0, -5474.2),
-            (990.0, -5524.2),
-            (990.0, -5574.2)
+            (985.5, -5374.2),
+            (988.0, -5394.2),
+            (987.5, -5404.2),
+            (988.0, -5474.2),
+            (987.5, -5494.2),
+            (989.0, -5514.2),
+            (987.0, -5534.2),
+            (986.5, -5575.2),
+            (987.0, -5775.2)
+
         ]
         self.updated_trajectory(initial_trajectory)
 
@@ -90,7 +95,6 @@ class DummyTrajectoryPub(CompatibleNode):
     def run(self):
         """
         Control loop
-
         :return:
         """
 
@@ -105,7 +109,6 @@ class DummyTrajectoryPub(CompatibleNode):
 def main(args=None):
     """
     main function
-
     :param args:
     :return:
     """

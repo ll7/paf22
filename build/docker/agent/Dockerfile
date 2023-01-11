@@ -38,7 +38,7 @@ RUN apt-get update && apt-get install -y \
         mlocate python3-pip wget git python-is-python3 \
         ros-noetic-ackermann-msgs ros-noetic-derived-object-msgs \
         ros-noetic-carla-msgs ros-noetic-pcl-conversions \
-        ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server
+        ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server ros-noetic-ros-numpy
 
 SHELL ["/bin/bash", "-c"]
 

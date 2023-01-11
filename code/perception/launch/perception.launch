@@ -1,4 +1,5 @@
-<!-- TODO: Insert components of component-->
 <launch>
-    
+    <node pkg="perception" type="obstacle_detection.py" name="obstacle_detection" output="screen">
+
+    </node>
 </launch>

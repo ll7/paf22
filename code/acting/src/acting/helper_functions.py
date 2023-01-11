@@ -1,6 +1,6 @@
 """
 Helper functions for calculations
-inspired by: PSAF 2 WS 20/21 (Acting package)
+inspired by: PAF 2 WS 20/21 (Acting package)
 """
 
 import math

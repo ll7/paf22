@@ -12,20 +12,23 @@ from agents.navigation.global_route_planner import GlobalRoutePlanner
 import xmltodict
 
 
-class NavManager(CompatibleNode):
+class DevGlobalRoute(CompatibleNode):
 
-    def __init__(self, routes="/opt/leaderboard/data/routes_devtest.xml"):
-        super(NavManager, self).__init__('Navigation_Data')
+    def __init__(self):
+        super(DevGlobalRoute, self).__init__('DevGlobalRoute')
 
         self.sampling_resolution = self.get_param('sampling_resolution', 100.0)
         self.seq = 0    # consecutively increasing sequence ID for header_msg
 
+        routes = self.get_param('routes',
+                                "/opt/leaderboard/data/routes_devtest.xml")
         with open(routes, 'r', encoding='utf-8') as file:
             my_xml = file.read()
 
         # Use xmltodict to parse and convert the XML document
         self.routes_dict = xmltodict.parse(my_xml)
         route = self.routes_dict['routes']['route'][0]
+        self.town = route['@town']
         self.waypoints = route['waypoints']['position']
 
         self.map_sub = self.new_subscription(
@@ -48,7 +51,7 @@ class NavManager(CompatibleNode):
             callback=self.global_route_callback,
             qos_profile=10)
 
-        self.loginfo('Navigation_Data node started')
+        self.loginfo('DevGlobalRoute-Node started')
 
     def global_route_callback(self, data: CarlaRoute) -> None:
         """
@@ -67,6 +70,12 @@ class NavManager(CompatibleNode):
         :param data: updated CarlaWorldInformation
         """
         self.loginfo("MapUpdate called")
+
+        if self.town not in data.map_name:
+            self.logerr(f"Map '{data.map_name}' doesnt match routes "
+                        f"'{self.town}'")
+            return
+
         # Convert data into a carla.Map
         carla_map = carla.Map(data.map_name, data.opendrive)
         # carla_map.save_to_disk(".\map.xml")
@@ -103,7 +112,7 @@ class NavManager(CompatibleNode):
             poses.append(Pose(position, orientation))
             road_options.append(road_option)
 
-            self.loginfo(f"{location}: {road_option}")
+            # self.loginfo(f"{location}: {road_option}")
 
         self.seq += 1
         header = Header(self.seq, rospy.Time.now(), 'hero')
@@ -115,10 +124,10 @@ if __name__ == "__main__":
           main function starts the NavManager node
           :param args:
         """
-    roscomp.init('NavManager')
+    roscomp.init('DevGlobalRoute')
 
     try:
-        NavManager()
+        DevGlobalRoute()
         while True:
             pass
     except KeyboardInterrupt:

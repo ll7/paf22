@@ -1,5 +1,6 @@
 <!-- TODO: Insert components of component -->
 <launch>
-    <node pkg="planning" type="navigation_data.py" name="navigation" output="screen">   </node>
-    <node pkg="planning" type="map_manager.py" name="map" output="screen">   </node>
+    <node pkg="planning" type="navigation_data.py" name="navigation" output="screen">
+           <param name="sampling_resolution" value="50.0" />
+     </node>
 </launch>

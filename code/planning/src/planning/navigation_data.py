@@ -1,71 +1,124 @@
 #!/usr/bin/env python
 import rospy
+import tf.transformations
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
-from carla_msgs.msg import CarlaRoute
-from std_msgs.msg import Bool
+from carla_msgs.msg import CarlaRoute, CarlaWorldInfo
+from std_msgs.msg import Header
+from geometry_msgs.msg import Pose, Point, Quaternion
 from ros_compatibility.qos import QoSProfile, DurabilityPolicy
+import carla
+from agents.navigation.global_route_planner import GlobalRoutePlanner
+import xmltodict
 
 
 class NavManager(CompatibleNode):
 
-    def __init__(self):
+    def __init__(self, routes="/opt/leaderboard/data/routes_devtest.xml"):
         super(NavManager, self).__init__('Navigation_Data')
-        self.loginfo('Navigation_Data node started')
-        self.new_subscription(msg_type=CarlaRoute,
-                              topic='/carla/hero/global_plan',
-                              callback=nav_update, qos_profile=10)
 
-        rospy.Subscriber(name='/carla/hero/global_plan', data_class=CarlaRoute,
-                         callback=nav_update, queue_size=10)
+        self.sampling_resolution = self.get_param('sampling_resolution', 100.0)
+        self.seq = 0    # consecutively increasing sequence ID for header_msg
 
-        self.status_pub = self.new_publisher(
-            Bool, "/carla/hero/status",
+        with open(routes, 'r', encoding='utf-8') as file:
+            my_xml = file.read()
+
+        # Use xmltodict to parse and convert the XML document
+        self.routes_dict = xmltodict.parse(my_xml)
+        route = self.routes_dict['routes']['route'][0]
+        self.waypoints = route['waypoints']['position']
+
+        self.map_sub = self.new_subscription(
+            msg_type=CarlaWorldInfo,
+            topic="/carla/world_info",
+            callback=self.world_info_callback,
+            qos_profile=10)
+
+        self.global_plan_pub = self.new_publisher(
+            msg_type=CarlaRoute,
+            topic='/carla/hero/global_plan',
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
-    def run(self):
+        self.global_plan_sub = self.new_subscription(
+            msg_type=CarlaRoute,
+            topic='/carla/hero/global_plan',
+            callback=self.global_route_callback,
+            qos_profile=10)
+
+        self.loginfo('Navigation_Data node started')
+
+    def global_route_callback(self, data: CarlaRoute) -> None:
         """
-        Starts the main loop of the node
-        :return:
+        # TODO: do we need to preprocess the global route before we can use it?
+        # TODO: here would be the place to do so
+        :param data: global Route
         """
-        self.loginfo('Navigation node running')
-        self.status_pub.publish(True)
 
-        def loop(timer_event=None):
-            """
-            Main loop of the acting node
-            :param timer_event: Timer event from ROS
-            :return:
-            """
-            pass
-        self.new_timer(0.05, loop)
-        self.spin()
+        # self.loginfo("NavUpdate called")
+        # self.loginfo(f"nav data: {data}")
 
+    def world_info_callback(self, data: CarlaWorldInfo) -> None:
+        """
+        publishes the global_route (with route instructions) according to the
+        given map and waypoints of a file containing the test routes
+        :param data: updated CarlaWorldInformation
+        """
+        self.loginfo("MapUpdate called")
+        # Convert data into a carla.Map
+        carla_map = carla.Map(data.map_name, data.opendrive)
+        # carla_map.save_to_disk(".\map.xml")
+        # Create GlobalRoutePlanner
+        grp = GlobalRoutePlanner(carla_map, self.sampling_resolution)
 
-def nav_update(data):
-    """_summary_
+        # plan the route between given waypoints
+        route_trace = []
+        prepoint = self.waypoints[0]
+        for waypoint in self.waypoints[1:]:
+            start = carla.Location(float(prepoint['@x']),
+                                   float(prepoint['@y']),
+                                   float(prepoint['@z']))
+            origin = carla.Location(float(waypoint['@x']),
+                                    float(waypoint['@y']),
+                                    float(waypoint['@z']))
+            part_route_trace = grp.trace_route(start, origin)
+            route_trace.extend(part_route_trace)
+            prepoint = waypoint
 
-    :param data:
-    :return: _description_
-    """
-    roscomp.loginfo(f"nav data: {data}")
-    print(f"nav data: {data}")
+        # parse the global route into the CarlaRoute format
+        road_options = []
+        poses = []
+        for waypoint, road_option in route_trace:
+            location = waypoint.transform.location
+            position = Point(location.x, location.y, location.z)
+
+            rotation = waypoint.transform.rotation
+            quaternion = tf.transformations.quaternion_from_euler(
+                rotation.roll, rotation.pitch, rotation.yaw)
+            orientation = Quaternion(quaternion[0], quaternion[1],
+                                     quaternion[2], quaternion[3])
+
+            poses.append(Pose(position, orientation))
+            road_options.append(road_option)
+
+            self.loginfo(f"{location}: {road_option}")
+
+        self.seq += 1
+        header = Header(self.seq, rospy.Time.now(), 'hero')
+        self.global_plan_pub.publish(header, road_options, poses)
 
 
 if __name__ == "__main__":
     """
-          main function starts the MapManager node
+          main function starts the NavManager node
           :param args:
         """
-    roscomp.init('MapManager')
+    roscomp.init('NavManager')
 
     try:
-        node = NavManager()
-        # node.run()
-
+        NavManager()
         while True:
             pass
     except KeyboardInterrupt:

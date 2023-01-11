@@ -22,3 +22,5 @@ Julian Graf
 ## velocity_controller
 
 To test the velocity controller, set the parameter ```enabled``` in the acting launch-file true. Now the velocity_publisher_dummy will publish dummy target speeds. Use ```rqt_plot /carla/hero/velocity_as_float /carla/hero/max_velocity``` to visualize target and current speeds.
+
+![image not found](./../00_assets/testing_velocity_pid.png)

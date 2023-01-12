@@ -11,7 +11,8 @@ from ros_compatibility.node import CompatibleNode
 from nav_msgs.msg import Path
 from sensor_msgs.msg import NavSatFix
 from geometry_msgs.msg import PoseStamped
-from coordinate_transformation import CoordinateTransformer, GeoRef
+from code.perception.src.coordinate_transformation import \
+    CoordinateTransformer, GeoRef
 import rospy
 
 

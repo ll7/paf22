@@ -1,4 +1,10 @@
 <!-- TODO: Insert components of component-->
 <launch>
-    
+  <arg name="role_name" default="ego_vehicle" />
+  <arg name="control_loop_rate" default="0.1" />
+
+  <node pkg="perception" type="PositionPublisher.py" name="PositionPublisher" output="screen">
+    <param name="control_loop_rate" value="0.1" />
+    <param name="role_name" value="$(arg role_name)" />
+  </node>
 </launch>

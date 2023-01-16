@@ -17,11 +17,22 @@ DEFAULT_MS = 12
 
 
 class OpenDriveConverter:
-    def __init__(self, path: str):
-        self.roads, self.road_ids = self.list_xodr_properties(path,
-                                                              name="road")
-        self.junctions, self.junction_ids = self.list_xodr_properties(
-            path, name="junction")
+    def __init__(self, path=None, roads=None, road_ids=None,
+                 junctions=None, junction_ids=None):
+
+        if roads is None or road_ids is None:
+            self.roads, self.road_ids = self.list_xodr_properties(
+                path, name="road")
+        else:
+            self.roads = roads
+            self.road_ids = road_ids
+
+        if junctions is None or junction_ids is None:
+            self.junctions, self.junction_ids = self.list_xodr_properties(
+                path, name="junction")
+        else:
+            self.junctions = junctions
+            self.junction_ids = junction_ids
 
         # All x, y coordinates for each road
         self.road_coord = None

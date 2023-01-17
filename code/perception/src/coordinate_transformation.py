@@ -10,6 +10,8 @@ http://dirsig.cis.rit.edu/docs/new/coordinates.html
 """
 import math
 from enum import Enum
+from sensor_msgs.msg import Imu
+from scipy.spatial.transform import Rotation as R
 
 
 # Class to choose a map with a predefined reference point
@@ -120,6 +122,13 @@ def ecef_to_enu(x, y, z, lat0, lon0, h0):
     return xE, yN, zUp
 
 
+def quat2heading(imu: Imu):  # todo: docs
+    quat = [imu.orientation.x, imu.orientation.y,
+            imu.orientation.z, imu.orientation.w]
+    if all(v == 0 for v in quat):
+        return [0.0, 0.0, 0.0]
+    rot = R.from_quat(quat)
+    return rot.as_euler("xyz", degrees=True)
 #
 # if __name__ == '__main__':
 #    def are_close(a, b):

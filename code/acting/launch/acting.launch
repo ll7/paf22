@@ -1,5 +1,5 @@
 <launch>
-    <arg name="role_name" default="ego_vehicle" />
+    <arg name="role_name" default="hero" />
     <arg name="control_loop_rate" default="0.1" />
 
     <node pkg="acting" type="velocity_controller.py" name="velocity_controller" output="screen">
@@ -10,7 +10,7 @@
     <node pkg="acting" type="velocity_publisher_dummy.py" name="velocity_publisher_dummy" output="screen">
         <param name="role_name" value="$(arg role_name)" />
         <param name="control_loop_rate" value="0.2" />
-        <param name="enabled" value="False" /> <!-- set to True to publish dummy velocities for testing-->
+        <param name="enabled" value="True" /> <!-- set to True to publish dummy velocities for testing-->
     </node>
 
      <node pkg="acting" type="vehicle_controller.py" name="vehicle_controller" output="screen">

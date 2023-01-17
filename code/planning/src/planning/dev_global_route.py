@@ -20,6 +20,7 @@ class DevGlobalRoute(CompatibleNode):
         self.sampling_resolution = self.get_param('sampling_resolution', 100.0)
         self.seq = 0    # consecutively increasing sequence ID for header_msg
 
+        self.role_name = self.get_param("role_name", "hero")
         routes = self.get_param('routes',
                                 "/opt/leaderboard/data/routes_devtest.xml")
         with open(routes, 'r', encoding='utf-8') as file:
@@ -39,7 +40,7 @@ class DevGlobalRoute(CompatibleNode):
 
         self.global_plan_pub = self.new_publisher(
             msg_type=CarlaRoute,
-            topic='/carla/hero/global_plan',
+            topic='/carla/' + self.role_name + '/global_plan',
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
@@ -47,7 +48,7 @@ class DevGlobalRoute(CompatibleNode):
 
         self.global_plan_sub = self.new_subscription(
             msg_type=CarlaRoute,
-            topic='/carla/hero/global_plan',
+            topic='/carla/' + self.role_name + '/global_plan',
             callback=self.global_route_callback,
             qos_profile=10)
 
@@ -115,7 +116,7 @@ class DevGlobalRoute(CompatibleNode):
             # self.loginfo(f"{location}: {road_option}")
 
         self.seq += 1
-        header = Header(self.seq, rospy.Time.now(), 'hero')
+        header = Header(self.seq, rospy.Time.now(), self.role_name)
         self.global_plan_pub.publish(header, road_options, poses)
 
 

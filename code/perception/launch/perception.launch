@@ -8,7 +8,7 @@
     <param name="role_name" value="$(arg role_name)" />
   </node>
 
-  <!--node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
     <param name="output_frame" value="odom"/>
     <param name="base_footprint_frame" value="base_link"/>
     <param name="freq" value="30.0"/>
@@ -18,5 +18,5 @@
     <param name="vo_used" value="true"/>
     <param name="debug" value="false"/>
     <param name="self_diagnose" value="false"/>
-  </node-->
+  </node>
 </launch>

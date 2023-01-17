@@ -48,6 +48,7 @@ RUN groupadd --gid $USER_GID $USERNAME -f \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && apt-get update \
     && apt-get install -y sudo \
+    && apt-get install -y ros-noetic-robot-pose-ekf \  # also install robot-pose-ekf
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 USER $USERNAME

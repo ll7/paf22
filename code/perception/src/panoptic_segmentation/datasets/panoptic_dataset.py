@@ -54,7 +54,7 @@ class PanopticDataset(Dataset):
             # TODO Error Message
             assert annotations[i]['image_id'] == images[i]['id']
             self.meta_data[i].update({'labelfile_name':
-                                      annotations[i]['file_name']})
+                                          annotations[i]['file_name']})
             self.meta_data[i].update(annotations[i])
             self.meta_data[i].update(images[i])
 
@@ -108,7 +108,7 @@ class PanopticDataset(Dataset):
         instance = Instances(panoptic.shape)
 
         # Create semantic segmentation target with augmented data
-        semantic = np.zeros_like(panoptic, dtype=np.long)
+        semantic = np.zeros_like(panoptic, dtype=np.longlong)
         rpn_mask = np.zeros_like(panoptic)
         instance_mask = []
         instance_cls = []
@@ -155,7 +155,7 @@ def rgb2id(color):
         if color.dtype == np.uint8:
             color = color.astype(np.int32)
         return color[:, :, 0] + 256 * color[:, :, 1] + 256 * 256 * color[:, :,
-                                                                         2]
+                                                                   2]
     return int(color[0] + 256 * color[1] + 256 * 256 * color[2])
 
 

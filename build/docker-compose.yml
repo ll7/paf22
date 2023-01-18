@@ -60,6 +60,7 @@ services:
       context: ../
     init: true
     tty: true
+    shm_size: 2gb
     #command: bash -c "sleep 10 && python3 /opt/leaderboard/leaderboard/leaderboard_evaluator.py --debug=1 --routes=/opt/leaderboard/data/routes_devtest.xml --agent=/workspace/code/agent/src/agent/agent.py --host=carla-simulator --track=MAP"
     command: bash -c "sleep 10 && roslaunch agent/launch/dev.launch"
     logging:
@@ -82,6 +83,7 @@ services:
       # if you change the volume here also change the copy command
       # in ``build/docker/build/Dockerfile
       - ../code:/workspace/code
+      - /home/imech036/Downloads:/workspace/dataset
     networks:
       - carla
       - ros

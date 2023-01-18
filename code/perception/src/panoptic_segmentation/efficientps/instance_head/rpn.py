@@ -10,17 +10,19 @@ from detectron2.modeling.proposal_generator import (
 
 from efficientps.utils.depthwise_separable_conv import DepthwiseSeparableConv
 
+print("HELLO WORLD")
+
 
 @PROPOSAL_GENERATOR_REGISTRY.register()
 class RPNCustom(RPN):
 
     def forward(
-            self,
-            features,
-            gt_instances
-            # images: ImageList,
-            # features: Dict[str, torch.Tensor],
-            # gt_instances: Optional[List[Instances]] = None,
+        self,
+        features,
+        gt_instances
+        # images: ImageList,
+        # features: Dict[str, torch.Tensor],
+        # gt_instances: Optional[List[Instances]] = None,
     ):
         """
     Create the different input needed for detectron2 forward method

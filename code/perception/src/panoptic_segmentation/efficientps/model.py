@@ -1,16 +1,16 @@
 import os
 import torch
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-from efficientps.fpn.two_way_fpn import TwoWayFpn
+from .fpn.two_way_fpn import TwoWayFpn
 import pytorch_lightning as pl
-from efficientps.backbone.modify_efficientnet import \
+from .backbone.modify_efficientnet import \
     generate_backbone_EfficientPS, \
     output_feature_size
-from efficientps.semantic_head.semantic_head import SemanticHead
-from efficientps.instance_head.instance_head import InstanceHead
-from efficientps.panoptic_segmentation_module import \
+from .semantic_head.semantic_head import SemanticHead
+from .instance_head.instance_head import InstanceHead
+from .panoptic_segmentation_module import \
     panoptic_segmentation_module
-from efficientps.panoptic_metrics import generate_pred_panoptic
+from .panoptic_metrics import generate_pred_panoptic
 from panopticapi.evaluation import pq_compute
 
 

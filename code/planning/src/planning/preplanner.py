@@ -62,6 +62,10 @@ class PrePlanner(CompatibleNode):
         '/carla/ self.role_name /trajectory'
         :param data: global Route
         """
+        if data is None:
+            self.logwarn("global_route_callback got called with None")
+            return
+
         if self.odc is None:
             self.logerr("PrePlanner: global route got updated before map... "
                         "therefore the OpenDriveConverter couldn't be "
@@ -72,21 +76,32 @@ class PrePlanner(CompatibleNode):
         if self.agent_pos is None or self.agent_ori is None:
             self.logerr("PrePlanner: global route got updated before current "
                         "pose... therefore there is no pose to start with")
+            self.global_route_backup = data
             return
-
-        x_start = self.agent_pos.x
-        y_start = self.agent_pos.y
+        self.global_route_backup = None
+        x_start = 983.5  # self.agent_pos.x
+        y_start = 5382.2  # - self.agent_pos.y
         # z_start = self.agent_pos.z
 
-        x_target = data.poses[0].x
-        y_target = data.poses[0].y
-        # z_target = data.poses[0].z
+        self.loginfo(f"x_start = {x_start}")
+        self.loginfo(f"y_start = {y_start}")
+
+        x_target = data.poses[0].position.x
+        y_target = data.poses[0].position.y
+        # z_target = data.poses[0].position.z
+
+        self.loginfo(f"x_target = {x_target}")
+        self.loginfo(f"y_target = {y_target}")
 
         # Trajectory for the starting road segment
         self.odc.initial_road_trajectory(x_start, y_start, x_target, y_target)
 
+        n = len(data.poses)
+        i = 1
         # iterating through global route to create trajectory
         for pose, road_option in zip(data.poses, data.road_options):
+            self.loginfo(f"Preplanner going throug global plan {i}/{n}")
+            i += 1
             x_target = pose.position.x
             y_target = pose.position.y
             # z_target = pose.position.z
@@ -123,6 +138,7 @@ class PrePlanner(CompatibleNode):
         header = Header(self.seq, rospy.Time.now(), self.role_name)
         self.seq += 1
         self.path_pub.publish(Path(header, stamped_poses))
+        self.loginfo("PrePlanner: published trajectory")
 
     def world_info_callback(self, data: CarlaWorldInfo) -> None:
         """
@@ -130,16 +146,16 @@ class PrePlanner(CompatibleNode):
         (needed for the trajectory preplanning)
         :param data: updated CarlaWorldInformation
         """
-        self.loginfo("MapUpdate called")
+        self.loginfo("PrePlanner: MapUpdate called")
         # Convert data into a carla.Map
         # carla_map = carla.Map(data.map_name, data.opendrive)
 
         root = eTree.fromstring(data.opendrive)
 
         roads = root.findall("road")
-        road_ids = [int(road.get("id")) for road in self.roads]
+        road_ids = [int(road.get("id")) for road in roads]
         junctions = root.findall("junction")
-        junction_ids = [int(junction.get("id")) for junction in self.junctions]
+        junction_ids = [int(junction.get("id")) for junction in junctions]
 
         self.odc = OpenDriveConverter(
             roads=roads, road_ids=road_ids,
@@ -149,7 +165,10 @@ class PrePlanner(CompatibleNode):
         self.odc.convert_junctions()
         self.odc.filter_geometry()
 
+        # self.logwarn(self.odc.geometry_data[10878])
         if self.global_route_backup is not None:
+            self.loginfo("PrePlanner: Received a map update retrying "
+                         "route preplanning")
             self.global_route_callback(self.global_route_backup)
 
     def position_callback(self, data: PoseStamped):
@@ -161,6 +180,10 @@ class PrePlanner(CompatibleNode):
         """
         self.agent_pos = data.pose.position
         self.agent_ori = data.pose.orientation
+        if self.global_route_backup is not None:
+            self.loginfo("PrePlanner: Received a pose update retrying "
+                         "route preplanning")
+            self.global_route_callback(self.global_route_backup)
 
 
 if __name__ == "__main__":

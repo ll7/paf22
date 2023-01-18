@@ -53,8 +53,9 @@ class PanopticDataset(Dataset):
             self.meta_data.update({i: {}})
             # TODO Error Message
             assert annotations[i]['image_id'] == images[i]['id']
-            self.meta_data[i].update({'labelfile_name':
-                                          annotations[i]['file_name']})
+            self.meta_data[i].update({
+                'labelfile_name': annotations[i]['file_name']
+            })
             self.meta_data[i].update(annotations[i])
             self.meta_data[i].update(images[i])
 
@@ -154,8 +155,8 @@ def rgb2id(color):
     if isinstance(color, np.ndarray) and len(color.shape) == 3:
         if color.dtype == np.uint8:
             color = color.astype(np.int32)
-        return color[:, :, 0] + 256 * color[:, :, 1] + 256 * 256 * color[:, :,
-                                                                   2]
+        return color[:, :, 0] + 256 * color[:, :, 1] + 256 * 256 * \
+            color[:, :, 2]
     return int(color[0] + 256 * color[1] + 256 * 256 * color[2])
 
 

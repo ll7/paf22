@@ -1,1 +1,1 @@
-from .semantic_head import SemanticHead
+from .semantic_head import SemanticHead  # noqa: F401

@@ -1,1 +1,1 @@
-from .model import EffificientPS
+from .model import EffificientPS  # noqa: F401

@@ -38,7 +38,9 @@ RUN apt-get update && apt-get install -y \
         mlocate python3-pip wget git python-is-python3 \
         ros-noetic-ackermann-msgs ros-noetic-derived-object-msgs \
         ros-noetic-carla-msgs ros-noetic-pcl-conversions \
-        ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server
+        ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server \
+        ros-noetic-robot-pose-ekf
+    ## todo: put it here
 
 SHELL ["/bin/bash", "-c"]
 
@@ -48,7 +50,6 @@ RUN groupadd --gid $USER_GID $USERNAME -f \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && apt-get update \
     && apt-get install -y sudo \
-    && apt-get install -y ros-noetic-robot-pose-ekf \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 USER $USERNAME

@@ -6,15 +6,10 @@ It therefore receives a nav_msgs/Path msg.
 """
 
 import ros_compatibility as roscomp
-# import rospy
 from ros_compatibility.node import CompatibleNode
-# from carla_msgs.msg import CarlaSpeedometer
 from sensor_msgs.msg import NavSatFix, Imu
-# from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Odometry
 from coordinate_transformation import CoordinateTransformer, GeoRef
-
-# import rospy
 
 
 class EKFTranslation(CompatibleNode):
@@ -75,35 +70,37 @@ class EKFTranslation(CompatibleNode):
             qos_profile=1)
 
     def update_imu_data(self, data: Imu):
-        imu_data = Imu()
-
-        imu_data.header.stamp = data.header.stamp
-        imu_data.header.frame_id = "base_footprint"
-
-        imu_data.orientation.x = data.orientation.x
-        imu_data.orientation.y = data.orientation.y
-        imu_data.orientation.z = data.orientation.z
-        imu_data.orientation.w = data.orientation.w
-        imu_data.orientation_covariance = data.orientation_covariance
-
-        imu_data.angular_velocity.x = data.angular_velocity.x
-        imu_data.angular_velocity.y = data.angular_velocity.y
-        imu_data.angular_velocity.z = data.angular_velocity.z
-        imu_data.angular_velocity_covariance = data.angular_velocity_covariance
-
-        imu_data.linear_acceleration.x = data.linear_acceleration.x
-        imu_data.linear_acceleration.y = data.linear_acceleration.y
-        imu_data.linear_acceleration.z = data.linear_acceleration.z
-        data_lac = data.linear_acceleration_covariance
-        imu_data.linear_acceleration_covariance = data_lac
-
-        self.ekf_imu_publisher.publish(imu_data)
+        # imu_data = Imu()
+        #
+        # imu_data.header.stamp = data.header.stamp
+        # imu_data.header.frame_id = "base_footprint"
+        #
+        # imu_data.orientation.x = data.orientation.x
+        # imu_data.orientation.y = data.orientation.y
+        # imu_data.orientation.z = data.orientation.z
+        # imu_data.orientation.w = data.orientation.w
+        # imu_data.orientation_covariance = data.orientation_covariance
+        #
+        # imu_data.angular_velocity.x = data.angular_velocity.x
+        # imu_data.angular_velocity.y = data.angular_velocity.y
+        # imu_data.angular_velocity.z = data.angular_velocity.z
+        # imu_data.angular_velocity_covariance = \
+        #     data.angular_velocity_covariance
+        #
+        # imu_data.linear_acceleration.x = data.linear_acceleration.x
+        # imu_data.linear_acceleration.y = data.linear_acceleration.y
+        # imu_data.linear_acceleration.z = data.linear_acceleration.z
+        # data_lac = data.linear_acceleration_covariance
+        # imu_data.linear_acceleration_covariance = data_lac
+        #
+        # self.ekf_imu_publisher.publish(imu_data)
+        self.ekf_imu_publisher.publish(data)
 
     def update_gps_data(self, data: NavSatFix):
         odom_msg = Odometry()
 
         odom_msg.header.stamp = data.header.stamp
-        odom_msg.header.frame_id = "base_footprint"
+        odom_msg.header.frame_id = "global"
 
         # Covariance todo: needs tweaking
         cov_x = 1
@@ -151,7 +148,7 @@ def main(args=None):
     :return:
     """
 
-    roscomp.init("position_publisher", args=args)
+    roscomp.init("ekf_translation", args=args)
     try:
         node = EKFTranslation()
         node.run()

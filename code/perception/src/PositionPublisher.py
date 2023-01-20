@@ -7,8 +7,7 @@ It therefore receives a nav_msgs/Path msg.
 
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
-from sensor_msgs.msg import NavSatFix, Imu
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from std_msgs.msg import Float32
 
 from coordinate_transformation import CoordinateTransformer, GeoRef, \
@@ -38,11 +37,9 @@ class PositionPublisher(CompatibleNode):
         self.transformer.set_gnss_ref(lat0, lon0, h0)
 
         # current_pos ist the final PoseStamped that will be published
-        self.current_pos: PoseStamped = PoseStamped()
+        self.current_pos_gps: PoseWithCovarianceStamped = \
+            PoseWithCovarianceStamped()
 
-        # most upto date sensor data (GPS converted to global XYZ)
-        self.current_gps_pos: NavSatFix = NavSatFix()
-        self.current_imu: Imu = Imu()
         self.current_heading: float = 0.0
 
         # basic info
@@ -51,16 +48,10 @@ class PositionPublisher(CompatibleNode):
         self.publish_loop_rate = 0.05  # 20Hz rate like the sensors
 
         # Subscriber
-        self.gnss_subscriber = self.new_subscription(
-            NavSatFix,
-            "/carla/" + self.role_name + "/GPS",
-            self.update_gps_data,
-            qos_profile=1)
-
-        self.imu_subscriber = self.new_subscription(
-            Imu,
-            "/carla/" + self.role_name + "/IMU",
-            self.update_imu_data,
+        self.pos_filtered_subscriber = self.new_subscription(
+            PoseWithCovarianceStamped,
+            "/robot_pose_ekf/odom_combined",
+            self.update_pos_filtered_data,
             qos_profile=1)
 
         # Publisher
@@ -74,25 +65,8 @@ class PositionPublisher(CompatibleNode):
             "/carla/" + self.role_name + "/current_heading",
             qos_profile=1)
 
-    def update_imu_data(self, data: Imu):
-        self.current_imu = data
-
-    def update_gps_data(self, data: NavSatFix):
-        # self.loginfo("updating gps data")
-        # lat = data.latitude
-        # lon = data.longitude
-        # alt = data.altitude
-        self.current_gps_pos = data
-        # x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
-        #
-        # self.current_gps_pos.header.stamp = rospy.Time.now()
-        # self.current_gps_pos.header.frame_id = "global"
-        #
-        # self.current_gps_pos.pose.position.x = x
-        # self.current_gps_pos.pose.position.y = y
-        # self.current_gps_pos.pose.position.z = z
-        #
-        # self.current_gps_pos.pose.orientation = self.current_imu.orientation
+    def update_pos_filtered_data(self, data: PoseWithCovarianceStamped):
+        self.current_pos_gps = data
 
     def update_current_pos(self):
         """
@@ -101,26 +75,27 @@ class PositionPublisher(CompatibleNode):
         :return:
         """
         # self.loginfo("updating pos data")
-        lat = self.current_gps_pos.latitude
-        lon = self.current_gps_pos.longitude
-        alt = self.current_gps_pos.altitude
-        x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
-        self.current_heading = quat2heading(self.current_imu)[0]
+        x = self.current_pos_gps.pose.pose.position.x
+        y = self.current_pos_gps.pose.pose.position.y
+        z = self.current_pos_gps.pose.pose.position.z
+        # x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
+
+        orientation_quat = self.current_pos_gps.pose.pose.orientation
+        self.current_heading = quat2heading([orientation_quat.x,
+                                            orientation_quat.y,
+                                            orientation_quat.z,
+                                            orientation_quat.w])[0]
         # self.loginfo(self.current_heading)
 
         temp_pose: PoseStamped = PoseStamped()
-
-        # todo: add filtered position update
-        # -> for testing without filters
-        # temp_pose = self.current_gps_pos.pose
-        # <-
 
         temp_pose.header.stamp = rospy.Time.now()
         temp_pose.header.frame_id = "global"
         temp_pose.pose.position.x = x
         temp_pose.pose.position.y = y
         temp_pose.pose.position.z = z
-        temp_pose.pose.orientation = self.current_imu.orientation
+        temp_pose.pose.orientation = orientation_quat
+
         return temp_pose
 
     def publish_current_pos(self):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import ros_compatibility as roscomp
 import rospy
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import PoseStamped
 from ros_compatibility.node import CompatibleNode
 import tf
 from scipy.spatial.transform import Rotation as R
@@ -21,10 +21,10 @@ class MainFramePublisher(CompatibleNode):
 
         self.control_loop_rate = self.get_param('control_loop_rate', 0.05)
         self.role_name = self.get_param('role_name', 'ego_vehicle')
-        self.current_pos: Pose = None
+        self.current_pos: PoseStamped = PoseStamped()
 
         self.current_pos_subscriber = self.new_subscription(
-            Pose,
+            PoseStamped,
             "/carla/" + self.role_name + "/current_pos",
             self.get_current_pos,
             qos_profile=1)
@@ -39,23 +39,30 @@ class MainFramePublisher(CompatibleNode):
                 return
             # Invert Translation and Rotation to transform from main
             # to hero frame
-            pos = (-self.current_pos.position.x,
-                   -self.current_pos.position.y,
-                   -self.current_pos.position.z)
-            curr_rot = self.current_pos.orientation
+            # pos = (-self.current_pos.pose.position.x,
+            #        -self.current_pos.pose.position.y,
+            #        -self.current_pos.pose.position.z)
+            pos = (self.current_pos.pose.position.x,
+                   self.current_pos.pose.position.y,
+                   40)
+            self.loginfo(str(pos))
+            curr_rot = self.current_pos.pose.orientation
             rot_quat = [curr_rot.x, curr_rot.y, curr_rot.z, curr_rot.w]
-            invert_rot_quat = R.from_quat(rot_quat).inv().as_quat()
+            invert_rot_quat = [1, 0, 0, 0]
+            if not all(v == 0 for v in rot_quat):
+                invert_rot_quat = R.from_quat(rot_quat).inv().as_quat()
+            self.loginfo(str(rot_quat))
             br.sendTransform(pos,
                              invert_rot_quat,
                              rospy.Time.now(),
-                             "main",
+                             "global",
                              "hero",
                              )
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
-    def get_current_pos(self, data: Pose):
+    def get_current_pos(self, data: PoseStamped):
         self.current_pos = data
 
 

@@ -32,7 +32,7 @@ class DummyTrajectoryPub(CompatibleNode):
         self.current_trajectory = []
         self.path_msg = Path()
         self.path_msg.header.stamp = rospy.Time.now()
-        self.path_msg.header.frame_id = "Frame ID Path"
+        self.path_msg.header.frame_id = "global"
 
         # Static trajectory for testing purposes
         self.initial_trajectory = [
@@ -64,7 +64,7 @@ class DummyTrajectoryPub(CompatibleNode):
         """
         self.current_trajectory = interpolate_route(target_trajectory, 0.5)
         self.path_msg.header.stamp = rospy.Time.now()
-        self.path_msg.header.frame_id = "main"
+        self.path_msg.header.frame_id = "global"
 
         # clear old waypoints
         self.path_msg.poses.clear()
@@ -72,14 +72,13 @@ class DummyTrajectoryPub(CompatibleNode):
         for wp in self.current_trajectory:
             pos = PoseStamped()
             pos.header.stamp = rospy.Time.now()
-            pos.header.frame_id = "main"
+            pos.header.frame_id = "global"
 
             pos.pose.position.x = wp[0]
             pos.pose.position.y = wp[1]
-            pos.pose.position.z = 39.7
+            pos.pose.position.z = 0
 
             # currently not used therefore zeros
-            pos.pose.position.z = 0
             pos.pose.orientation.x = 0
             pos.pose.orientation.y = 0
             pos.pose.orientation.z = 0

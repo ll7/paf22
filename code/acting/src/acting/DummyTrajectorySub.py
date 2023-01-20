@@ -70,6 +70,12 @@ class DummyTrajectorySub(CompatibleNode):
             self.update_imu,
             qos_profile=1)
 
+        self.imu_subscriber = self.new_subscription(
+            Imu,
+            "/carla/" + self.role_name + "/IMU",
+            self.update_imu,
+            qos_profile=1)
+
         # Publisher
 #        self.pos_publisher = self.new_publisher(
 #            PoseStamped,

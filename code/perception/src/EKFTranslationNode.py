@@ -63,62 +63,79 @@ class EKFTranslation(CompatibleNode):
             "/imu_data",
             qos_profile=1)
 
-        # 3D Odomoetry (GPS)
+        self.avg_gps = [0, 0, 0]
+        self.avg_gps_counter: int = 1
+        self.avg_gps_n: int = 10  # points taken into account for the avg
+        # 3D Odometry (GPS)
         self.ekf_vo_publisher = self.new_publisher(
             Odometry,
             "/vo",
             qos_profile=1)
 
     def update_imu_data(self, data: Imu):
-        # imu_data = Imu()
-        #
-        # imu_data.header.stamp = data.header.stamp
-        # imu_data.header.frame_id = "base_footprint"
-        #
-        # imu_data.orientation.x = data.orientation.x
-        # imu_data.orientation.y = data.orientation.y
-        # imu_data.orientation.z = data.orientation.z
-        # imu_data.orientation.w = data.orientation.w
-        # imu_data.orientation_covariance = data.orientation_covariance
-        #
-        # imu_data.angular_velocity.x = data.angular_velocity.x
-        # imu_data.angular_velocity.y = data.angular_velocity.y
-        # imu_data.angular_velocity.z = data.angular_velocity.z
-        # imu_data.angular_velocity_covariance = \
-        #     data.angular_velocity_covariance
-        #
-        # imu_data.linear_acceleration.x = data.linear_acceleration.x
-        # imu_data.linear_acceleration.y = data.linear_acceleration.y
-        # imu_data.linear_acceleration.z = data.linear_acceleration.z
-        # data_lac = data.linear_acceleration_covariance
-        # imu_data.linear_acceleration_covariance = data_lac
-        #
-        # self.ekf_imu_publisher.publish(imu_data)
-        self.ekf_imu_publisher.publish(data)
+        imu_data = Imu()
+
+        imu_data.header.stamp = data.header.stamp
+        imu_data.header.frame_id = "hero"
+
+        imu_data.orientation.x = data.orientation.x
+        imu_data.orientation.y = data.orientation.y
+        imu_data.orientation.z = data.orientation.z
+        imu_data.orientation.w = data.orientation.w
+        imu_data.orientation_covariance = [0, 0, 0,
+                                           0, 0, 0,
+                                           0, 0, 0]
+
+        imu_data.angular_velocity.x = data.angular_velocity.x
+        imu_data.angular_velocity.y = data.angular_velocity.y
+        imu_data.angular_velocity.z = data.angular_velocity.z
+        imu_data.angular_velocity_covariance = [0.001, 0,     0,
+                                                0,     0.001, 0,
+                                                0,     0,     0.001]
+
+        imu_data.linear_acceleration.x = data.linear_acceleration.x
+        imu_data.linear_acceleration.y = data.linear_acceleration.y
+        imu_data.linear_acceleration.z = data.linear_acceleration.z
+        imu_data.linear_acceleration_covariance = [0.001, 0,     0,
+                                                   0,     0.001, 0,
+                                                   0,     0,     0.015]
+
+        self.ekf_imu_publisher.publish(imu_data)
 
     def update_gps_data(self, data: NavSatFix):
+        if self.avg_gps_counter % (self.avg_gps_n + 1) != 0:
+            self.avg_gps[0] += data.latitude
+            self.avg_gps[1] += data.longitude
+            self.avg_gps[2] += data.altitude
+            self.avg_gps_counter += 1
+            return
+
+        avg_lat = self.avg_gps[0] / self.avg_gps_n
+        avg_lon = self.avg_gps[1] / self.avg_gps_n
+        avg_alt = self.avg_gps[2] / self.avg_gps_n
+
+        self.avg_gps = [0, 0, 0]
+        self.avg_gps_counter = 1
+
+        x, y, z = self.transformer.gnss_to_xyz(avg_lat, avg_lon, avg_alt)
+
         odom_msg = Odometry()
 
         odom_msg.header.stamp = data.header.stamp
         odom_msg.header.frame_id = "global"
 
         # Covariance todo: needs tweaking
-        cov_x = 1
-        cov_y = 1
-        cov_z = 1
-
-        lat = data.latitude
-        lon = data.longitude
-        alt = data.altitude
-        x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
+        cov_x = 1.0
+        cov_y = 1.0
+        cov_z = 1.0
 
         odom_msg.pose.pose.position.x = x
         odom_msg.pose.pose.position.y = y
         odom_msg.pose.pose.position.z = z
 
-        odom_msg.pose.pose.orientation.x = 1
+        odom_msg.pose.pose.orientation.x = 0
         odom_msg.pose.pose.orientation.y = 0
-        odom_msg.pose.pose.orientation.z = 0
+        odom_msg.pose.pose.orientation.z = 1
         odom_msg.pose.pose.orientation.w = 0
 
         odom_msg.pose.covariance = [cov_x, 0, 0, 0, 0, 0,

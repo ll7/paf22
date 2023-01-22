@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 """
-This node tests the subscription side of the dummy trajectory message.
-It therefore receives a nav_msgs/Path msg.
+This node publishes all relevant topics for the ekf node.
 """
 
 import ros_compatibility as roscomp
@@ -14,7 +13,7 @@ from coordinate_transformation import CoordinateTransformer, GeoRef
 
 class EKFTranslation(CompatibleNode):
     """
-    Translates to the top required by robot_pose_ekf.
+    Translates to the topic required by robot_pose_ekf.
     """
 
     def __init__(self):

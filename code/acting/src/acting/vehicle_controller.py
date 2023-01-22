@@ -192,8 +192,16 @@ class VehicleController(CompatibleNode):
     def __set_throttle(self, data):
         self.__throttle = data.data
 
-    def __set_pure_pursuit_steer(self, data):
-        self.__pure_pursuit_steer = data.data
+    def __set_pure_pursuit_steer(self, data: Float32):
+        # -> testing only
+        old_steering_angle = self.__pure_pursuit_steer
+        new_steering_angle = data.data
+        avg_angle = (old_steering_angle + new_steering_angle) / 2
+        self.__pure_pursuit_steer = avg_angle
+        # <-
+
+        # todo: revert to old setup
+        # self.__pure_pursuit_steer = data.data
 
     def __set_stanley_steer(self, data):
         self.__stanley_steer = data.data

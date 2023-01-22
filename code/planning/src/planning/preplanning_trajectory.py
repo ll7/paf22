@@ -166,6 +166,7 @@ class OpenDriveConverter:
                 diff_index_list.append(j)
             j += 1
         min_diff = min(diff_list)
+        print("minDiff", min_diff)
         min_diff_index = diff_list.index(min_diff)
         selected_road_id = diff_index_list[min_diff_index]
         return selected_road_id
@@ -187,7 +188,10 @@ class OpenDriveConverter:
         """
         self.road_id = self.find_current_road(x_curr=x_curr,
                                               y_curr=y_curr)
+        print("First ID ", self.road_id)
         predecessor, successor = self.get_pred_succ(road_id=self.road_id)
+        print("predecessor", predecessor)
+        print("successor", successor)
         self.follow_id, follow_section_id = self.\
             get_initial_next_road_id(predecessor=predecessor,
                                      successor=successor,

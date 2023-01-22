@@ -196,24 +196,9 @@ class PurePursuitController(CompatibleNode):
                                             (self.__position[0],
                                              self.__position[1]))
 
-        # -> debugging only
-        # e_v_x = 1
-        # e_v_y = 0
-        # tar_v_alpha = vectors_to_angle(e_v_x, e_v_y, target_v_x, target_v_y)
-        # cur_v_alpha = vectors_to_angle(e_v_x, e_v_y, cur_v_x, cur_v_y)
-        # self.loginfo(f"Heading target vector: {round(tar_v_alpha, 4)} \t"
-        #             f"Heading current vector: {round(cur_v_alpha, 4)} \t ||"
-        #             f"|| t_v_x:{target_v_x} \t"
-        #             f"|| t_v_y:{target_v_y} \t"
-        #             f"|| c_v_x:{cur_v_x} \t"
-        #             f"|| c_v_y:{cur_v_y} \t ||")
-        # <-
-
         alpha = vectors_to_angle(target_v_x, target_v_y,
                                  cur_v_x, cur_v_y)
         steering_angle = atan((2 * l_vehicle * sin(alpha)) / look_ahead_dist)
-        # target_wp.pose.orientation.x = alpha
-        # target_wp.pose.orientation.y = steering_angle
         self.pure_pursuit_steer_target_pub.publish(target_wp.pose)
 
         # for debugging only ->

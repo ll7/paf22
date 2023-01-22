@@ -5,6 +5,7 @@ from carla_msgs.msg import CarlaEgoVehicleControl, CarlaSpeedometer
 from rospy import Publisher, Subscriber
 from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from std_msgs.msg import Bool, Float32
+from simple_pid import PID
 
 PURE_PURSUIT_CONTROLLER: int = 1
 STANLEY_CONTROLLER: int = 2
@@ -85,6 +86,7 @@ class VehicleController(CompatibleNode):
         self.__throttle: float = 0
         self.__pure_pursuit_steer: float = 0
         self.__stanley_steer: float = 0
+        self.__current_steer: float = 0  # todo: check emergency behaviour
 
     def run(self):
         """
@@ -93,6 +95,8 @@ class VehicleController(CompatibleNode):
         """
         self.status_pub.publish(True)
         self.loginfo('VehicleController node running')
+        pid = PID(0.25, 0, 0.1, setpoint=0)  # random values -> todo: tune
+        pid.output_limits = (-MAX_STEER_ANGLE, MAX_STEER_ANGLE)
 
         def loop(timer_event=None) -> None:
             """
@@ -126,10 +130,8 @@ class VehicleController(CompatibleNode):
 
             message.hand_brake = False
             message.manual_gear_shift = False
-            if steer >= 0:
-                message.steer = min(MAX_STEER_ANGLE, steer)
-            else:
-                message.steer = max(-MAX_STEER_ANGLE, steer)
+            pid.setpoint = steer
+            message.steer = pid(self.__current_steer)
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)
@@ -193,17 +195,9 @@ class VehicleController(CompatibleNode):
         self.__throttle = data.data
 
     def __set_pure_pursuit_steer(self, data: Float32):
-        # -> testing only
-        old_steering_angle = self.__pure_pursuit_steer
-        new_steering_angle = data.data
-        avg_angle = (old_steering_angle + new_steering_angle) / 2
-        self.__pure_pursuit_steer = avg_angle
-        # <-
+        self.__pure_pursuit_steer = data.data
 
-        # todo: revert to old setup
-        # self.__pure_pursuit_steer = data.data
-
-    def __set_stanley_steer(self, data):
+    def __set_stanley_steer(self, data: Float32):
         self.__stanley_steer = data.data
 
     def __choose_controller(self) -> int:

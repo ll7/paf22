@@ -111,20 +111,20 @@ class DummyTrajectorySub(CompatibleNode):
         lon = data.longitude
         h = data.altitude
         x, y, z = self.transformer.gnss_to_xyz(lat, lon, h)
-
-        self.pos_average[0] += x
-        self.pos_average[1] += y
-        self.pos_average[2] += z
-
-        if self.pos_counter % 5 == 0:
-            x1 = self.pos_average[0] / 5
-            y1 = self.pos_average[1] / 5
-            z1 = self.pos_average[2] / 5
-            self.pos_average = [0, 0, 0]
-            self.update_pose(x1, y1, z1)
-            # self.loginfo(f"x: {x1}\t y: {y1}\t z:{z1}")
-
-        self.pos_counter += 1
+        self.update_pose(x, y, z)
+        # self.pos_average[0] += x
+        # self.pos_average[1] += y
+        # self.pos_average[2] += z
+        #
+        # if self.pos_counter % 5 == 0:
+        #     x1 = self.pos_average[0] / 5
+        #     y1 = self.pos_average[1] / 5
+        #     z1 = self.pos_average[2] / 5
+        #     self.pos_average = [0, 0, 0]
+        #     self.update_pose(x1, y1, z1)
+        #     # self.loginfo(f"x: {x1}\t y: {y1}\t z:{z1}")
+        #
+        # self.pos_counter += 1
 
     def update_trajectory(self, dummy_trajectory):
         """

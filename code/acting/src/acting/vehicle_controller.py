@@ -105,10 +105,10 @@ class VehicleController(CompatibleNode):
             controller = self.__choose_controller()
             if controller == PURE_PURSUIT_CONTROLLER:
                 self.logdebug('Using PURE_PURSUIT_CONTROLLER')
-                steer = self.__pure_pursuit_steer
+                # steer = self.__pure_pursuit_steer
             elif controller == STANLEY_CONTROLLER:
                 self.logdebug('Using STANLEY_CONTROLLER')
-                steer = self.__stanley_steer
+                # steer = self.__stanley_steer
             else:
                 self.logerr("Vehicle Controller couldn't find requested "
                             "controller.")
@@ -123,9 +123,10 @@ class VehicleController(CompatibleNode):
                 message.throttle = 0
                 message.brake = abs(self.__throttle)
 
+            message.throttle = .2
             message.hand_brake = False
             message.manual_gear_shift = False
-            message.steer = steer
+            message.steer = -1  # steer
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)

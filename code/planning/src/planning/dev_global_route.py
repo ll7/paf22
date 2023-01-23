@@ -46,12 +46,6 @@ class DevGlobalRoute(CompatibleNode):
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
-        self.global_plan_sub = self.new_subscription(
-            msg_type=CarlaRoute,
-            topic='/carla/' + self.role_name + '/global_plan',
-            callback=self.global_route_callback,
-            qos_profile=10)
-
         self.loginfo('DevGlobalRoute-Node started')
 
     def world_info_callback(self, data: CarlaWorldInfo) -> None:

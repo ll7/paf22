@@ -79,8 +79,8 @@ class PrePlanner(CompatibleNode):
             self.global_route_backup = data
             return
         self.global_route_backup = None
-        x_start = 983.5  # self.agent_pos.x
-        y_start = -5373.2  # - self.agent_pos.y
+        x_start = self.agent_pos.x
+        y_start = self.agent_pos.y
         # z_start = self.agent_pos.z
 
         self.loginfo(f"x_start = {x_start}")
@@ -137,11 +137,11 @@ class PrePlanner(CompatibleNode):
                                                                   way_yaw)
             orientation = Quaternion(quaternion)
             pose = Pose(position, orientation)
-            header = Header(self.seq, rospy.Time.now(), self.role_name)
+            header = Header(self.seq, rospy.Time.now(), "path_pose")
             self.seq += 1
             stamped_poses.append(PoseStamped(header, pose))
 
-        header = Header(self.seq, rospy.Time.now(), self.role_name)
+        header = Header(self.seq, rospy.Time.now(), "path")
         self.seq += 1
         self.path_pub.publish(Path(header, stamped_poses))
         self.loginfo("PrePlanner: published trajectory")

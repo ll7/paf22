@@ -78,6 +78,15 @@ class PrePlanner(CompatibleNode):
                         "pose... therefore there is no pose to start with")
             self.global_route_backup = data
             return
+
+        # TODO: this isnt clean... replace this
+        if abs(self.agent_pos.x - data.poses[0].position.x) > 100 or \
+           abs(self.agent_pos.y - data.poses[0].position.y) > 100:
+            self.logerr("PrePlanner: current agent-pose doesnt match the "
+                        "given global route")
+            self.global_route_backup = data
+            return
+
         self.global_route_backup = None
         x_start = self.agent_pos.x
         y_start = self.agent_pos.y
@@ -90,13 +99,16 @@ class PrePlanner(CompatibleNode):
         y_target = data.poses[0].position.y
         # z_target = data.poses[0].position.z
 
-        self.loginfo("Road Options {}".format(data.road_options))
-        for i in range(15):
+        self.loginfo(f"x_target = {x_target}")
+        self.loginfo(f"y_target = {y_target}")
+
+        self.loginfo(f"Road Options: {data.road_options}")
+        """for i in range(15):
             x_target = data.poses[i].position.x
             y_target = data.poses[i].position.y
             self.loginfo(f"x_target = {x_target}")
             self.loginfo(f"y_target = {y_target}")
-
+"""
         # Trajectory for the starting road segment
         self.odc.initial_road_trajectory(x_start, y_start, x_target, y_target)
 

@@ -1,4 +1,8 @@
 # Based on https://github.com/ll7/paf21-1/blob/master/components/carla_ros_bridge/Dockerfile
+
+# This is commented out because of the large image download necessary to build this image otherwise.
+# If the PythonAPI/carla version changes, one can comment out the Download Carla PythonAPI line below.
+# Then, uncomment this line and the COPY --from=carla line to build the image.
 # FROM ghcr.io/nylser/carla:leaderboard as carla
 
 # supply the base image with an environment supporting ROS UI via x11
@@ -20,7 +24,8 @@ RUN apt-get update \
 # install dependencies for libgit2 and Carla PythonAPI
 RUN apt-get install wget unzip
 
-# Download Carla PythonAPI
+# Download Carla PythonAPI (alternative to getting it from the Carla-Image, which is commented out above)
+# If the PythonAPI/Carla version changes, either update the link, or refer to the comment at the top of this file.
 RUN wget https://github.com/nylser/carla-leaderboard-PythonAPI/releases/download/v1.0.0/PythonAPI.zip \
   && unzip PythonAPI.zip \
   && rm PythonAPI.zip \

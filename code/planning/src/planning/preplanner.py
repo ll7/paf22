@@ -79,8 +79,8 @@ class PrePlanner(CompatibleNode):
             self.global_route_backup = data
             return
         self.global_route_backup = None
-        x_start = self.agent_pos.x
-        y_start = self.agent_pos.y
+        x_start = 983.5  # self.agent_pos.x
+        y_start = -5373.2  # - self.agent_pos.y
         # z_start = self.agent_pos.z
 
         self.loginfo(f"x_start = {x_start}")
@@ -90,8 +90,12 @@ class PrePlanner(CompatibleNode):
         y_target = data.poses[0].position.y
         # z_target = data.poses[0].position.z
 
-        self.loginfo(f"x_target = {x_target}")
-        self.loginfo(f"y_target = {y_target}")
+        self.loginfo("Road Options {}".format(data.road_options))
+        for i in range(15):
+            x_target = data.poses[i].position.x
+            y_target = data.poses[i].position.y
+            self.loginfo(f"x_target = {x_target}")
+            self.loginfo(f"y_target = {y_target}")
 
         # Trajectory for the starting road segment
         self.odc.initial_road_trajectory(x_start, y_start, x_target, y_target)
@@ -110,6 +114,8 @@ class PrePlanner(CompatibleNode):
                 [pose.orientation.x, pose.orientation.y,
                  pose.orientation.z, pose.orientation.w])
             action = yaw    # TODO: action should be road_option
+            self.loginfo("road option {}".format(road_option))
+            self.loginfo("Yaw {}".format(yaw))
 
             self.odc.target_road_trajectory(x_target, y_target,
                                             self.odc.rad_to_degree(action))

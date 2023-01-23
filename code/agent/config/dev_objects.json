@@ -6,6 +6,10 @@
       "reading_frequency": 1
     },
     {
+      "type": "sensor.pseudo.actor_list",
+      "id": "actor_list"
+    },
+    {
       "type": "vehicle.lincoln.mkz_2020",
       "id": "hero",
       "role_name": "hero",
@@ -22,9 +26,9 @@
           "type": "sensor.camera.rgb",
           "id": "Center",
           "spawn_point": {
-            "x": 0.7,
-            "y": 0.4,
-            "z": 1.60,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.70,
             "roll": 0.0,
             "pitch": 0.0,
             "yaw": 0.0,
@@ -33,23 +37,74 @@
             "chromatic_aberration_intensity": 0.5,
             "chromatic_aberration_offset": 0.0
           },
-          "image_size_x": 300,
-          "image_size_y": 200,
-          "fov": 100,
-          "attached_objects": [
-            {
-              "type": "actor.pseudo.control",
-              "id": "control"
-            }
-          ]
+          "image_size_x": 1920,
+          "image_size_y": 1080,
+          "fov": 120
+        },
+        {
+          "type": "sensor.camera.rgb",
+          "id": "Left",
+          "spawn_point": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.70,
+            "roll": 0.0,
+            "pitch": 0.0,
+            "yaw": 90.0,
+            "lens_circle_multiplier": 3.0,
+            "lens_circle_falloff": 3.0,
+            "chromatic_aberration_intensity": 0.5,
+            "chromatic_aberration_offset": 0.0
+          },
+          "image_size_x": 1920,
+          "image_size_y": 1080,
+          "fov": 120
+        },
+        {
+          "type": "sensor.camera.rgb",
+          "id": "Right",
+          "spawn_point": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.70,
+            "roll": 0.0,
+            "pitch": 0.0,
+            "yaw": -90.0,
+            "lens_circle_multiplier": 3.0,
+            "lens_circle_falloff": 3.0,
+            "chromatic_aberration_intensity": 0.5,
+            "chromatic_aberration_offset": 0.0
+          },
+          "image_size_x": 1920,
+          "image_size_y": 1080,
+          "fov": 120
+        },
+        {
+          "type": "sensor.camera.rgb",
+          "id": "Back",
+          "spawn_point": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.70,
+            "roll": 0.0,
+            "pitch": 0.0,
+            "yaw": 180.0,
+            "lens_circle_multiplier": 3.0,
+            "lens_circle_falloff": 3.0,
+            "chromatic_aberration_intensity": 0.5,
+            "chromatic_aberration_offset": 0.0
+          },
+          "image_size_x": 1920,
+          "image_size_y": 1080,
+          "fov": 120
         },
         {
           "type": "sensor.lidar.ray_cast",
           "id": "LIDAR",
           "spawn_point": {
-            "x": 0.7,
-            "y": 0.4,
-            "z": 1.60,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.70,
             "roll": 0.0,
             "pitch": 0.0,
             "yaw": -45.0
@@ -69,9 +124,9 @@
           "type": "sensor.other.radar",
           "id": "RADAR",
           "spawn_point": {
-            "x": 0.7,
-            "y": 0.4,
-            "z": 1.60,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.70,
             "roll": 0.0,
             "pitch": 0.0,
             "yaw": -45.0

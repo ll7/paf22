@@ -64,7 +64,7 @@ class EKFTranslation(CompatibleNode):
 
         self.avg_gps = [0, 0, 0]
         self.avg_gps_counter: int = 1
-        self.avg_gps_n: int = 10  # points taken into account for the avg
+        self.avg_gps_n: int = 3  # points taken into account for the avg
         # 3D Odometry (GPS)
         self.ekf_vo_publisher = self.new_publisher(
             Odometry,

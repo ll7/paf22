@@ -79,8 +79,8 @@ class PrePlanner(CompatibleNode):
             self.global_route_backup = data
             return
         self.global_route_backup = None
-        x_start = 983.5  # self.agent_pos.x
-        y_start = 5382.2  # - self.agent_pos.y
+        x_start = self.agent_pos.x
+        y_start = self.agent_pos.y
         # z_start = self.agent_pos.z
 
         self.loginfo(f"x_start = {x_start}")

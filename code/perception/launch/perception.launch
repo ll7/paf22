@@ -1,4 +1,5 @@
 <!-- TODO: Insert components of component-->
 <launch>
-    
+  <node pkg="perception" type="lidar_debugger.py" name="lidar_debugger" output="screen">
+  </node>
 </launch>

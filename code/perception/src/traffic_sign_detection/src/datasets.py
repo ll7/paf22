@@ -9,9 +9,10 @@ from albumentations.pytorch import ToTensorV2
 # Required constants.
 ROOT_DIR = 'data/train/'
 VALID_SPLIT = 0.1
-RESIZE_TO = 224 # Image size of resize when applying transforms.
+RESIZE_TO = 224  # Image size of resize when applying transforms.
 BATCH_SIZE = 32
-NUM_WORKERS = 4 # Number of parallel processes for data preparation.
+NUM_WORKERS = 4  # Number of parallel processes for data preparation.
+
 
 # Training transforms.
 class TrainTransforms:
@@ -31,6 +32,7 @@ class TrainTransforms:
     def __call__(self, img):
         return self.transforms(image=np.array(img))['image']
 
+
 # Validation transforms.
 class ValidTransforms:
     def __init__(self, resize_to):
@@ -45,6 +47,7 @@ class ValidTransforms:
 
     def __call__(self, img):
         return self.transforms(image=np.array(img))['image']
+
 
 def get_datasets():
     """
@@ -72,6 +75,7 @@ def get_datasets():
     dataset_valid = Subset(dataset_test, indices[-valid_size:])
 
     return dataset_train, dataset_valid, dataset.classes
+
 
 def get_data_loaders(dataset_train, dataset_valid):
     """

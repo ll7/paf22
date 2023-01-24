@@ -39,6 +39,7 @@ model.load_state_dict(
     )['model_state_dict']
 )
 
+
 # https://github.com/zhoubolei/CAM/blob/master/pytorch_CAM.py
 def returnCAM(feature_conv, weight_softmax, class_idx):
     # Generate the class activation maps upsample to 256x256.
@@ -54,12 +55,17 @@ def returnCAM(feature_conv, weight_softmax, class_idx):
         output_cam.append(cv2.resize(cam_img, size_upsample))
     return output_cam
 
+
 def apply_color_map(CAMs, width, height, orig_image):
     for i, cam in enumerate(CAMs):
-        heatmap = cv2.applyColorMap(cv2.resize(cam,(width, height)), cv2.COLORMAP_JET)
+        heatmap = cv2.applyColorMap(
+            cv2.resize(cam, (width, height)),
+            cv2.COLORMAP_JET
+        )
         result = heatmap * 0.5 + orig_image * 0.5
         result = cv2.resize(result, (224, 224))
         return result
+
 
 def visualize_and_save_map(
     result, orig_image, gt_idx=None, class_idx=None, save_name=None
@@ -89,11 +95,16 @@ def visualize_and_save_map(
     if save_name is not None:
         cv2.imwrite(f"../outputs/test_results/CAM_{save_name}.jpg", img_concat)
 
+
 # Hook the feature extractor.
 # https://github.com/zhoubolei/CAM/blob/master/pytorch_CAM.py
 features_blobs = []
+
+
 def hook_feature(module, input, output):
     features_blobs.append(output.data.cpu().numpy())
+
+
 model._modules.get('features').register_forward_hook(hook_feature)
 # Get the softmax weight.
 params = list(model.parameters())
@@ -113,8 +124,8 @@ counter = 0
 # Run for all the test images.
 all_images = glob.glob('../data/test/*.ppm')
 correct_count = 0
-frame_count = 0 # To count total frames.
-total_fps = 0 # To get the final frames per second.
+frame_count = 0  # To count total frames.
+total_fps = 0  # To get the final frames per second.
 for i, image_path in enumerate(all_images):
     # Read the image.
     image = cv2.imread(image_path)

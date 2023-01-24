@@ -136,6 +136,8 @@ WORKDIR /workspace/code
 
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 
+RUN apt install -y python3-tk
+
 RUN pip install -r requirements.txt
 
 ENTRYPOINT ["/entrypoint.sh"]

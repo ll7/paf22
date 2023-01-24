@@ -41,32 +41,13 @@ class MainFramePublisher(CompatibleNode):
                 return
             # Invert Translation and Rotation to transform from main
             # to hero frame
-            # pos = (-self.current_pos.pose.position.x,
-            #        -self.current_pos.pose.position.y,
-            #        -self.current_pos.pose.position.z)
-            # pos = (self.current_pos.pose.position.y,
-            #        -self.current_pos.pose.position.x,
-            #        self.current_pos.pose.position.z)
-            # self.loginfo(str(pos))
-
             curr_rot = self.current_pos.pose.orientation
             rot_quat = [curr_rot.x, curr_rot.y, curr_rot.z, curr_rot.w]
             if all(v == 0 for v in rot_quat):
                 self.loginfo("Invalid rotation data")
                 rot_quat = [1, 0, 0, 0]
-            # rot_quat = R.from_quat(rot_quat).inv().as_quat()
-            # rot_deg = -R.from_quat(rot_quat).
-            # as_euler("xyz", degrees=True)[0] *pi/4 + 90
             rot_deg = -R.from_quat(rot_quat).as_euler("xyz", degrees=True)[
                 0] + 90
-            # rot_rad = R.from_quat(rot_quat).as_euler("XYZ", degrees=True)
-            # rot_rad =
-            # rot_deg_2 = tf.transformations.euler_from_quaternion(
-            #     [curr_rot.w, curr_rot.x, curr_rot.y, curr_rot.z])
-
-            # self.loginfo(str(radians(rot_deg)))
-            # self.loginfo(str(rot_deg_2))
-
             pos = [0, 0, 0]
             pos[0] = cos(radians(rot_deg)) * \
                 self.current_pos.pose.position.x - \
@@ -79,12 +60,6 @@ class MainFramePublisher(CompatibleNode):
             pos[1] = pos[1] * -1
             rot_quat = R.from_euler("xyz", [0, 0, rot_deg], degrees=True) \
                 .as_quat()
-            # if not all(v == 0 for v in rot_quat):
-            #     invert_rot_quat = R.from_quat(rot_quat).inv().as_quat()
-            # self.loginfo(str(pos))
-            # invert_rot_quat = [1, 0, 0, 0]
-            # invert_rot_quat = R.from_euler("xyz", [0, 0, 0], degrees=True)\
-            #     .as_quat()
             br.sendTransform(pos,
                              rot_quat,
                              rospy.Time.now(),

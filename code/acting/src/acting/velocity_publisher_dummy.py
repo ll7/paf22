@@ -25,8 +25,8 @@ class VelocityPublisherDummy(CompatibleNode):
             qos_profile=1)
         self.velocity = 10
         self.delta_velocity = 0.25
-        self.max_velocity = 2
-        self.min_velocity = 1
+        self.max_velocity = 25
+        self.min_velocity = 5
         self.__dv = self.delta_velocity
 
     def run(self):
@@ -44,7 +44,7 @@ class VelocityPublisherDummy(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-            # self.loginfo('Published dummy velocity: ' + str(self.velocity))
+            self.loginfo('Published dummy velocity: ' + str(self.velocity))
             self.velocity_pub.publish(self.velocity)
             if self.velocity > self.max_velocity:
                 self.__dv = -self.delta_velocity

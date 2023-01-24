@@ -63,7 +63,7 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix
       # if you change the volume here also change the copy command
       # in ``build/docker/build/Dockerfile
-      - ../code:/workspace/code
+      - ../:/workspace
     networks:
       - carla
       - ros

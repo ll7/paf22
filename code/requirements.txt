@@ -1,2 +1,8 @@
 dvc==2.36.0
 dvc-gdrive==2.19.1
+dvclive==1.3.2
+torch==1.13.1
+torchvision==0.14.1
+ruamel.yaml==0.17.21
+albumentations==1.3.0
+opencv-python==4.5.5.64

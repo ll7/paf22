@@ -10,27 +10,13 @@ BASE_OUTPUT_DIR = 'output'
 CARLA_HOST = os.environ.get('CARLA_HOST', 'localhost')
 CARLA_PORT = int(os.environ.get('CARLA_PORT', '2000'))
 
-client = carla.Client(CARLA_HOST, CARLA_PORT)
-client.set_timeout(30)
-world = client.get_world()
-world.wait_for_tick()
-
-# make sure, that we write in a clean output directory
-iteration_id = 0
-while os.path.exists(os.path.join(BASE_OUTPUT_DIR, str(iteration_id))):
-    iteration_id += 1
-
-output_dir = os.path.join(BASE_OUTPUT_DIR, str(iteration_id))
-
-ON_EMPTY_WORLD = True
-
 
 def destroy_actors(actors):
     for actor in actors:
         actor.destroy()
 
 
-if ON_EMPTY_WORLD:
+def setup_empty_world(client):
     # load Town12
     # client.load_world('Town12')
     world = client.get_world()
@@ -41,22 +27,12 @@ if ON_EMPTY_WORLD:
     destroy_actors(world.get_actors().filter('walker.*'))
     destroy_actors(world.get_actors().filter('controller.*'))
 
-if world.get_actors().filter('vehicle.*'):
-    # get ego vehicle with hero role
-    for actor in world.get_actors().filter('vehicle.*'):
-        if actor.attributes['role_name'] == 'hero':
-            ego_vehicle = actor
-            break
-elif ON_EMPTY_WORLD:
     # spawn ego vehicle
     blueprint_library = world.get_blueprint_library()
     bp = blueprint_library.filter('vehicle.*')[0]
     ego_vehicle = world.spawn_actor(bp, world.get_map().get_spawn_points()[0])
     ego_vehicle.set_autopilot(True)
-else:
-    raise RuntimeError('No vehicle found in the world')
 
-if ON_EMPTY_WORLD:
     # get spectator
     spectator = world.get_spectator()
     # set spectator to follow ego vehicle with offset
@@ -95,141 +71,169 @@ if ON_EMPTY_WORLD:
             world.get_random_location_from_navigation())
         ai_controller.set_max_speed(1.0)
 
-camera_init_transform = carla.Transform(
-    carla.Location(z=1.7)
-)
-
-cameras = []
-instance_cameras = []
-directions = ["center", "right", "back", "left"]
-
-camera_queues = {
-    "center": Queue(),
-    "right": Queue(),
-    "back": Queue(),
-    "left": Queue()
-}
-instance_camera_queues = {
-    "center": Queue(),
-    "right": Queue(),
-    "back": Queue(),
-    "left": Queue()
-}
+    return ego_vehicle
 
 
-def save_image(image, dir):
-    camera_queues[dir].put(image)
+class DatasetGenerator:
+    def __init__(self, output_dir):
+        self.output_dir = output_dir
+        self.thread = None
+        self.cameras = []
+        self.instance_cameras = []
+        self.directions = ["center", "right", "back", "left"]
 
+        self.camera_queues = {
+            "center": Queue(),
+            "right": Queue(),
+            "back": Queue(),
+            "left": Queue()
+        }
+        self.instance_camera_queues = {
+            "center": Queue(),
+            "right": Queue(),
+            "back": Queue(),
+            "left": Queue()
+        }
 
-def save_segmented_image(image, dir):
-    instance_camera_queues[dir].put(image)
+    def save_image(self, image, dir):
+        self.camera_queues[dir].put(image)
 
+    def save_segmented_image(self, image, dir):
+        self.instance_camera_queues[dir].put(image)
 
-# get instance segmentation camera blueprint
-instance_camera_bp = world.get_blueprint_library().find(
-    'sensor.camera.instance_segmentation'
-)
-# get camera blueprint
-camera_bp = world.get_blueprint_library().find('sensor.camera.rgb')
-camera_bp.set_attribute('sensor_tick', '1.0')
+    def setup_cameras(self, world, ego_vehicle):
+        # get instance segmentation camera blueprint
+        instance_camera_bp = world.get_blueprint_library().find(
+            'sensor.camera.instance_segmentation'
+        )
+        # get camera blueprint
+        camera_bp = world.get_blueprint_library().find('sensor.camera.rgb')
+        camera_bp.set_attribute('sensor_tick', '1.0')
 
-# set leaderboard attributes
-camera_bp.set_attribute('lens_circle_multiplier', '3.0')
-camera_bp.set_attribute('lens_circle_falloff', '3.0')
-camera_bp.set_attribute('chromatic_aberration_intensity', '0.5')
-camera_bp.set_attribute('chromatic_aberration_offset', '0.0')
+        # set leaderboard attributes
+        camera_bp.set_attribute('lens_circle_multiplier', '3.0')
+        camera_bp.set_attribute('lens_circle_falloff', '3.0')
+        camera_bp.set_attribute('chromatic_aberration_intensity', '0.5')
+        camera_bp.set_attribute('chromatic_aberration_offset', '0.0')
 
-IMAGE_WIDTH = 1280
-IMAGE_HEIGHT = 720
-# set resolution
-camera_bp.set_attribute('image_size_x', str(IMAGE_WIDTH))
-camera_bp.set_attribute('image_size_y', str(IMAGE_HEIGHT))
+        IMAGE_WIDTH = 1280
+        IMAGE_HEIGHT = 720
+        # set resolution
+        camera_bp.set_attribute('image_size_x', str(IMAGE_WIDTH))
+        camera_bp.set_attribute('image_size_y', str(IMAGE_HEIGHT))
 
-instance_camera_bp.set_attribute('sensor_tick', '1.0')
+        instance_camera_bp.set_attribute('sensor_tick', '1.0')
 
-# set resolution
-instance_camera_bp.set_attribute('image_size_x', str(IMAGE_WIDTH))
-instance_camera_bp.set_attribute('image_size_y', str(IMAGE_HEIGHT))
+        # set resolution
+        instance_camera_bp.set_attribute('image_size_x', str(IMAGE_WIDTH))
+        instance_camera_bp.set_attribute('image_size_y', str(IMAGE_HEIGHT))
 
-for i, direction in enumerate(directions):
-    print("Creating camera {}".format(direction))
+        camera_init_transform = carla.Transform(
+            carla.Location(z=1.7)
+        )
 
-    camera_bp.set_attribute('role_name', direction)
-    instance_camera_bp.set_attribute('role_name', direction)
-    # add rotation to camera transform
-    camera_init_transform.rotation.yaw = i * 90
-    # create camera
-    camera = world.spawn_actor(
-        camera_bp,
-        camera_init_transform,
-        attach_to=ego_vehicle,
-        attachment_type=carla.AttachmentType.Rigid
-    )
-    # create instance segmentation camera
-    instance_camera = world.spawn_actor(
-        instance_camera_bp,
-        camera_init_transform,
-        attach_to=ego_vehicle,
-        attachment_type=carla.AttachmentType.Rigid
-    )
-    camera.listen(lambda image, dir=direction: save_image(image, dir))
-    instance_camera.listen(lambda image, dir=direction: save_segmented_image(
-        image, dir))
+        for i, direction in enumerate(self.directions):
+            print("Creating camera {}".format(direction))
 
-    cameras.append(camera)
-    instance_cameras.append(instance_camera)
-
-
-# create separate thread for saving images
-def save_images():
-    image_direction_counter = {
-        "center": 0,
-        "right": 0,
-        "back": 0,
-        "left": 0
-    }
-    while True:
-        for direction in directions:
-            image = camera_queues[direction].get()
-            image.save_to_disk(
-                '{}/rgb/{}/{}.png'.format(
-                    output_dir, direction, image_direction_counter[direction]
-                )
+            camera_bp.set_attribute('role_name', direction)
+            instance_camera_bp.set_attribute('role_name', direction)
+            # add rotation to camera transform
+            camera_init_transform.rotation.yaw = i * 90
+            # create camera
+            camera = world.spawn_actor(
+                camera_bp,
+                camera_init_transform,
+                attach_to=ego_vehicle,
+                attachment_type=carla.AttachmentType.Rigid
             )
-            instance_image = instance_camera_queues[direction].get()
-            instance_image.save_to_disk(
-                '{}/instance/{}/{}.png'.format(
-                    output_dir, direction, image_direction_counter[direction]
-                )
+            # create instance segmentation camera
+            instance_camera = world.spawn_actor(
+                instance_camera_bp,
+                camera_init_transform,
+                attach_to=ego_vehicle,
+                attachment_type=carla.AttachmentType.Rigid
             )
-            image_direction_counter[direction] += 1
+            camera.listen(
+                lambda image, dir=direction: self.save_image(image, dir))
+            instance_camera.listen(
+                lambda image, dir=direction: self.save_segmented_image(
+                    image, dir))
+
+            self.cameras.append(camera)
+            self.instance_cameras.append(instance_camera)
+
+    # separate thread for saving images
+    def save_images_worker(self):
+        image_direction_counter = {
+            "center": 0,
+            "right": 0,
+            "back": 0,
+            "left": 0
+        }
+        while True:
+            for direction in self.directions:
+                image = self.camera_queues[direction].get()
+                image.save_to_disk(
+                    '{}/rgb/{}/{}.png'.format(
+                        output_dir, direction,
+                        image_direction_counter[direction]
+                    )
+                )
+                instance_image = self.instance_camera_queues[direction].get()
+                instance_image.save_to_disk(
+                    '{}/instance/{}/{}.png'.format(
+                        output_dir, direction,
+                        image_direction_counter[direction]
+                    )
+                )
+                image_direction_counter[direction] += 1
+
+    def start_saving_images(self):
+        if not self.thread or not self.thread.is_alive():
+            self.thread = Thread(target=self.save_images_worker)
+            self.thread.start()
+        # start separate thread for saving images
+        self.thread = Thread(target=self.save_images_worker)
+        self.thread.start()
+
+    def stop_saving_images(self):
+        if self.thread and self.thread.is_alive():
+            self.thread.join()
 
 
-thread = Thread(target=save_images)
-thread.start()
+def find_ego_vehicle(world, role_name='hero'):
+    if world.get_actors().filter('vehicle.*'):
+        # get ego vehicle with hero role
+        for actor in world.get_actors().filter('vehicle.*'):
+            if actor.attributes['role_name'] == 'hero':
+                return actor
 
-# keep script running until user presses Ctrl+C
-try:
-    while True:
-        pass
-except KeyboardInterrupt:
-    thread.join()
-    # while not camera_queue.empty():
-    #     image, direction = camera_queue.get()
-    #     image.save_to_disk(
-    #         '{}/rgb/{}/{}.png'.format(
-    #             output_dir, direction, image.frame
-    #         )
-    #     )
-    #     print("Saved image {}".format(image.frame))
-    # camera_queue.task_done()
-    #
-    # while not instance_camera_queue.empty():
-    #     instance_image, instance_direction = instance_camera_queue.get()
-    #     instance_image.save_to_disk(
-    #         '{}/instance_image/{}/{}.png'.format(
-    #             output_dir, instance_direction, instance_image.frame
-    #         )
-    #     )
-    #     print("Saved instance image {}".format(instance_image.frame))
-    # instance_camera_queue.task_done()
+
+if __name__ == '__main__':
+    client = carla.Client(CARLA_HOST, CARLA_PORT)
+    client.set_timeout(30)
+    world = client.get_world()
+    world.wait_for_tick()
+
+    # make sure, that we write in a clean output directory
+    iteration_id = 0
+    while os.path.exists(os.path.join(BASE_OUTPUT_DIR, str(iteration_id))):
+        iteration_id += 1
+
+    output_dir = os.path.join(BASE_OUTPUT_DIR, str(iteration_id))
+
+    ego_vehicle = find_ego_vehicle(world)
+
+    if not ego_vehicle:
+        raise RuntimeError('No vehicle found in the world')
+
+    dataset_generator = DatasetGenerator(output_dir)
+    dataset_generator.setup_cameras(world, ego_vehicle)
+    dataset_generator.start_saving_images()
+
+    # keep script running until user presses Ctrl+C
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        dataset_generator.stop_saving_images()

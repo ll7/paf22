@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
+import threading
+
 import carla
+import argparse
 import os
+from random import choice
 from queue import Queue
 from threading import Thread
-
-BASE_OUTPUT_DIR = 'output'
 
 # get carla host and port from environment variables
 CARLA_HOST = os.environ.get('CARLA_HOST', 'localhost')
@@ -46,8 +48,8 @@ def setup_empty_world(client):
 
     # spawn traffic vehicles
     blueprint_library = world.get_blueprint_library()
-    bp = blueprint_library.filter('vehicle.*')[0]
-    for i in range(10):
+    for i in range(30):
+        bp = choice(blueprint_library.filter('vehicle.*'))
         traffic_vehicle = world.spawn_actor(bp,
                                             world.get_map().get_spawn_points()[
                                                 i + 1])
@@ -56,12 +58,15 @@ def setup_empty_world(client):
         traffic_vehicle.set_autopilot(True)
 
     # spawn traffic pedestrians
-    for i in range(10):
-        bp = blueprint_library.filter('walker.pedestrian.*')[0]
+    count = 0
+    while count < 70:
+        bp = choice(blueprint_library.filter('walker.pedestrian.*'))
         spawn_point = carla.Transform()
         spawn_point.location = world.get_random_location_from_navigation()
         traffic_pedestrian = world.try_spawn_actor(bp,
                                                    spawn_point)
+        if traffic_pedestrian is None:
+            continue
 
         controller_bp = blueprint_library.find('controller.ai.walker')
         ai_controller = world.try_spawn_actor(controller_bp, carla.Transform(),
@@ -71,13 +76,16 @@ def setup_empty_world(client):
             world.get_random_location_from_navigation())
         ai_controller.set_max_speed(1.0)
 
+        count += 1
+
     return ego_vehicle
 
 
 class DatasetGenerator:
     def __init__(self, output_dir):
         self.output_dir = output_dir
-        self.thread = None
+        self.threads = []
+        self.thread_stop_events = []
         self.cameras = []
         self.instance_cameras = []
         self.directions = ["center", "right", "back", "left"]
@@ -163,42 +171,45 @@ class DatasetGenerator:
             self.instance_cameras.append(instance_camera)
 
     # separate thread for saving images
-    def save_images_worker(self):
-        image_direction_counter = {
-            "center": 0,
-            "right": 0,
-            "back": 0,
-            "left": 0
-        }
-        while True:
-            for direction in self.directions:
-                image = self.camera_queues[direction].get()
-                image.save_to_disk(
-                    '{}/rgb/{}/{}.png'.format(
-                        output_dir, direction,
-                        image_direction_counter[direction]
-                    )
+    def save_images_worker(self, direction, stop_event):
+        image_queue = self.camera_queues[direction]
+        instance_image_queue = self.instance_camera_queues[direction]
+        counter = 0
+        while \
+            not stop_event.is_set() \
+                or not (image_queue.empty() and instance_image_queue.empty()):
+            image = image_queue.get()
+            image.save_to_disk(
+                '{}/rgb/{}/{}.png'.format(
+                    output_dir, direction,
+                    counter
                 )
-                instance_image = self.instance_camera_queues[direction].get()
-                instance_image.save_to_disk(
-                    '{}/instance/{}/{}.png'.format(
-                        output_dir, direction,
-                        image_direction_counter[direction]
-                    )
+            )
+            instance_image = instance_image_queue.get()
+            instance_image.save_to_disk(
+                '{}/instance/{}/{}.png'.format(
+                    output_dir, direction,
+                    counter
                 )
-                image_direction_counter[direction] += 1
+            )
+            counter += 1
 
     def start_saving_images(self):
-        if not self.thread or not self.thread.is_alive():
-            self.thread = Thread(target=self.save_images_worker)
-            self.thread.start()
-        # start separate thread for saving images
-        self.thread = Thread(target=self.save_images_worker)
-        self.thread.start()
+        if not self.threads:
+            # start separate threads for saving images
+            for direction in self.directions:
+                thread_stop_event = threading.Event()
+                self.thread_stop_events.append(thread_stop_event)
+                t = Thread(target=self.save_images_worker,
+                           args=(direction, thread_stop_event))
+                self.threads.append(t)
+                t.start()
 
     def stop_saving_images(self):
-        if self.thread and self.thread.is_alive():
-            self.thread.join()
+        for thread_stop_event in self.thread_stop_events:
+            thread_stop_event.set()
+        for t in self.threads:
+            t.join()
 
 
 def find_ego_vehicle(world, role_name='hero'):
@@ -209,20 +220,60 @@ def find_ego_vehicle(world, role_name='hero'):
                 return actor
 
 
+def create_argparse():
+    argparser = argparse.ArgumentParser(
+        description='CARLA Dataset Generator')
+    argparser.add_argument(
+        '--output_dir',
+        metavar='DIR',
+        default='output',
+        help='Path to the output directory')
+    argparser.add_argument(
+        '--host',
+        metavar='H',
+        default='localhost',
+        help='host of the carla server'
+    )
+    argparser.add_argument(
+        '--port',
+        metavar='P',
+        default=2000,
+        type=int,
+        help='port of the carla server'
+    )
+    argparser.add_argument(
+        '--use-empty-world',
+        action='store_true',
+        help='set up an empty world and spawn ego vehicle',
+        default=False
+    )
+    return argparser
+
+
 if __name__ == '__main__':
-    client = carla.Client(CARLA_HOST, CARLA_PORT)
+    argparser = create_argparse()
+    args = argparser.parse_args()
+    output_dir = args.output_dir
+    host = args.host
+    port = args.port
+    use_empty_world = args.use_empty_world
+
+    client = carla.Client(host, port)
     client.set_timeout(30)
     world = client.get_world()
     world.wait_for_tick()
 
     # make sure, that we write in a clean output directory
     iteration_id = 0
-    while os.path.exists(os.path.join(BASE_OUTPUT_DIR, str(iteration_id))):
+    while os.path.exists(os.path.join(output_dir, str(iteration_id))):
         iteration_id += 1
 
-    output_dir = os.path.join(BASE_OUTPUT_DIR, str(iteration_id))
+    output_dir = os.path.join(output_dir, str(iteration_id))
 
-    ego_vehicle = find_ego_vehicle(world)
+    if use_empty_world:
+        ego_vehicle = setup_empty_world(client)
+    else:
+        ego_vehicle = find_ego_vehicle(world)
 
     if not ego_vehicle:
         raise RuntimeError('No vehicle found in the world')
@@ -233,7 +284,14 @@ if __name__ == '__main__':
 
     # keep script running until user presses Ctrl+C
     try:
+        spectator = world.get_spectator()
         while True:
             pass
+            # if use_empty_world:
+            # attach spectator to ego vehicle
+            # spectator.set_transform(
+            #    carla.Transform(
+            #        ego_vehicle.get_location() + carla.Location(z=50),
+            #        carla.Rotation(pitch=-90)))
     except KeyboardInterrupt:
         dataset_generator.stop_saving_images()

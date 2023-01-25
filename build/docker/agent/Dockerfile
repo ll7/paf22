@@ -1,16 +1,21 @@
-
 # Based on https://github.com/ll7/paf21-1/blob/master/components/carla_ros_bridge/Dockerfile
-FROM ghcr.io/nylser/carla:leaderboard as carla
+
+# This is commented out because of the large image download necessary to build this image otherwise.
+# If the PythonAPI/carla version changes, one can comment out the Download Carla PythonAPI line below.
+# Then, uncomment this line and the COPY --from=carla line to build the image.
+# FROM ghcr.io/nylser/carla:leaderboard as carla
+# Use this image to enable instance segmentation cameras
+# FROM carlasim/carla:0.9.14 as carla
 
 # supply the base image with an environment supporting ROS UI via x11
 FROM osrf/ros:noetic-desktop-full-focal
-COPY --from=carla /home/carla/PythonAPI /opt/carla/PythonAPI
+
+# COPY --from=carla /home/carla/PythonAPI /opt/carla/PythonAPI
 
 ARG USERNAME=carla
 ARG USER_UID=999
 ARG USER_GID=$USER_UID
 ARG DEBIAN_FRONTEND=noninteractive
-
 
 # install rendering dependencies for rviz / rqt
 RUN apt-get update \
@@ -18,15 +23,23 @@ RUN apt-get update \
     libxext6 libx11-6 libglvnd0 libgl1 \
     libglx0 libegl1 freeglut3-dev
 
-# install dependecy for building libgit2
-RUN apt-get install wget
+# install dependencies for libgit2 and Carla PythonAPI
+RUN apt-get install wget unzip
+
+# Download Carla PythonAPI (alternative to getting it from the Carla-Image, which is commented out above)
+# If the PythonAPI/Carla version changes, either update the link, or refer to the comment at the top of this file.
+RUN wget https://github.com/nylser/carla-leaderboard-PythonAPI/releases/download/v1.0.0/PythonAPI.zip \
+  && unzip PythonAPI.zip \
+  && rm PythonAPI.zip \
+  && mkdir -p /opt/carla \
+  && mv PythonAPI /opt/carla/PythonAPI
 
 # build libgit2
 RUN wget https://github.com/libgit2/libgit2/archive/refs/tags/v1.5.0.tar.gz -O libgit2-1.5.0.tar.gz \
     && tar xzf libgit2-1.5.0.tar.gz \
     && cd libgit2-1.5.0/ \
     && cmake . \
-    && make \
+    && make -j$(nproc --ignore=2) \
     && make install
 
 # override python path, carla pip package path didn't exist and was using Python 3.7 instead of 2.7
@@ -38,7 +51,9 @@ RUN apt-get update && apt-get install -y \
         mlocate python3-pip wget git python-is-python3 \
         ros-noetic-ackermann-msgs ros-noetic-derived-object-msgs \
         ros-noetic-carla-msgs ros-noetic-pcl-conversions \
-        ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server
+        ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server \
+        ros-noetic-robot-pose-ekf \
+        ros-noetic-smach-ros
 
 SHELL ["/bin/bash", "-c"]
 
@@ -116,7 +131,8 @@ RUN echo /catkin_ws/install/lib/python3/dist-packages >> /home/$USERNAME/.local/
     echo /opt/ros/noetic/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
     echo /opt/ros/noetic/lib/python3/dist-packages >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
     echo /opt/leaderboard-py3 >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
-    echo /opt/carla/PythonAPI/carla/dist/carla-0.9.13-py3.7-linux-x86_64.egg >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth
+    echo /opt/carla/PythonAPI/carla/dist/carla-0.9.14-py3.7-linux-x86_64.egg >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth && \
+    echo /opt/carla/PythonAPI/carla >> /home/$USERNAME/.local/lib/python3.8/site-packages/carla.pth
 
 RUN sudo mkdir /workspace && sudo chown $USERNAME:$USERNAME /workspace
 

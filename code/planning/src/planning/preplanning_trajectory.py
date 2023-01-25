@@ -8,12 +8,19 @@ from math import sin, cos, degrees
 SMALL_DIST = 0.001
 STEP_SIZE = 0.5
 # difference to the target point
-TARGET_DIFF = 5
+TARGET_DIFF = 3
 LINE = 0.0
 # Value to convert mph in m/s
 MPH = 2.24
 # Default speed for passing a junction in m/s
 DEFAULT_MS = 12
+ROAD = -1
+CHANGE_LEFT = 1
+CHANGE_RIGHT = 2
+CHANGE_FOLLOW = 3
+LEFT = 4
+RIGHT = 5
+STRAIGHT = 6
 
 
 class OpenDriveConverter:
@@ -48,7 +55,13 @@ class OpenDriveConverter:
         # id of the following road
         self.follow_id = None
         # id of the predecessor road
+        self.pt = None
+        self.reference_l = None
+        self.follow_section = None
+        self.direction = None
         self.old_id = None
+        self.width = None
+        self.point_size = None
         self.geometry_data = None
         """ A list of geometry data for each road
             format: [[road0], [road1],...]
@@ -160,19 +173,157 @@ class OpenDriveConverter:
                 j += 1
                 continue
             for i in range(len(road[0])):
-                x_diff = abs(road[0][i] - x_curr)
-                y_diff = abs(road[1][i] - y_curr)
-                diff_list.append(x_diff + y_diff)
+                diff = help_functions.euclid_dist((road[0][i], road[1][i]),
+                                                  (x_curr, y_curr))
+                diff_list.append(diff)
                 diff_index_list.append(j)
             j += 1
         min_diff = min(diff_list)
         print("minDiff", min_diff)
         min_diff_index = diff_list.index(min_diff)
         selected_road_id = diff_index_list[min_diff_index]
-        return selected_road_id
+        junction = int(self.roads[selected_road_id].get("junction"))
+        current_id = None
+        agent_position = (x_curr, y_curr)
+
+        predecessor, successor = self.get_pred_succ(selected_road_id)
+        # Successor and predecessor are a junction -> selected road correct
+        if self.geometry_data[predecessor] is None and \
+           self.geometry_data[successor] is None:
+            current_id = selected_road_id
+        # current chosen road is a junction
+        elif junction != ROAD:
+            current_id = self.calculate_intervalls_id(agent_position,
+                                                      selected_road_id,
+                                                      predecessor,
+                                                      successor,
+                                                      junction)
+        # no junction recognized
+        else:
+            current_id = self.calculate_intervalls_id(agent_position,
+                                                      selected_road_id,
+                                                      predecessor,
+                                                      successor,
+                                                      junction)
+        return current_id
+
+    def calculate_intervalls_id(self, agent: Tuple[float, float],
+                                current: int, pred: int, succ: int,
+                                junction: int):
+        id_value = None
+        dist = None
+
+        # current road is a junction -> check pred and succ
+        if junction != ROAD:
+            # print("sssssssss", pred)
+            dist = self.get_dist_list(succ, pred, None, agent)
+            min_dist = self.get_min_dist(dist)
+            ind = dist.index(min_dist)
+            if ind == 0 or ind == 1:
+                id_value = succ
+            else:
+                id_value = pred
+        # Only one possible other road and current road is not a junction
+        elif self.geometry_data[pred] is None or self.geometry_data[succ] \
+                is None:
+            if pred is None:
+                road = succ
+            else:
+                road = pred
+            dist = self.get_dist_list(road, current, None, agent)
+            min_dist = self.get_min_dist(dist)
+            if len(min_dist) == 1:
+                ind = dist.index(min_dist)
+                if ind == 0 or ind == 1:
+                    id_value = road
+                else:
+                    id_value = current
+            else:
+                # calculate special case when two roads are chosen
+                id_value = self.get_special_case_id(road, current, agent)
+        # two possible other roads and current not a junction
+        else:
+            dist = self.get_dist_list(pred, current, succ, agent)
+            print(dist)
+            min_dist = self.get_min_dist(dist)
+            if len(min_dist) == 1:
+                ind = dist.index(min_dist)
+                print(ind)
+                if ind == 0 or ind == 1:
+                    id_value = pred
+                elif ind == 2 or ind == 3:
+                    id_value = current
+                else:
+                    id_value = succ
+            else:
+                # calculate special case
+                ind = [i for i in range(len(dist)) if dist[i] == min_dist[0]]
+                if ind[0] == 0 or ind[0] == 1:
+                    first = pred
+                    if ind[1] == 2 or ind[1] == 3:
+                        second = current
+                    else:
+                        second = succ
+                elif ind[0] == 2 or ind[0] == 3:
+                    first = current
+                    second = succ
+                id_value = self.get_special_case_id(first, second, agent)
+        # print("id value", id_value)
+        return id_value
+
+    def get_special_case_id(self, road: int, current: int,
+                            agent: Tuple[float, float]):
+        final_id = None
+        list_r = self.interpolation(road)
+        list_c = self.interpolation(current)
+
+        dist_r = [help_functions.euclid_dist(
+            agent, (list_r[0][i], list_r[1][i]))
+            for i in range(len(list_r[0]))]
+        dist_c = [help_functions.euclid_dist(
+            agent, (list_c[0][i], list_c[1][i]))
+            for i in range(len(list_r[0]))]
+        value_r = min(dist_r)
+        value_c = min(dist_c)
+        if value_r < value_c:
+            final_id = road
+        else:
+            final_id = current
+        return final_id
+
+    def get_min_dist(self, dist: list):
+        min_v = float("inf")
+        min_dist = list()
+        for d in dist:
+            if d < min_v:
+                min_v = d
+        # check if there are two minimum distances
+        for d in dist:
+            if d == min_v:
+                min_dist.append(d)
+        return min_dist
+
+    def get_dist_list(self, pred, current, succ, agent):
+        options = [pred, current, succ]
+        print(options)
+        dist = list()
+        for opt in options:
+            if opt is None:
+                continue
+            # check shortest distance to start or endpoints
+            start, end = self.get_endpoints(opt)
+            print(start, end)
+            start_d = help_functions.euclid_dist(agent, start)
+            dist.append(start_d)
+            end_d = help_functions.euclid_dist(agent, end)
+            dist.append(end_d)
+            print(dist)
+        return dist
 
     def initial_road_trajectory(self, x_curr: float, y_curr: float,
-                                x_target: float, y_target: float):
+                                x_target: float, y_target: float,
+                                yaw: int, action: float,
+                                command: int):
         """ Create the trajectory on the initial road.
         The agent has to be located on the map. This case has some
         special requirements. We have to define the driving direction
@@ -185,6 +336,7 @@ class OpenDriveConverter:
             :param y_curr: the current global y position of the agent
             :param x_target: x position of the target waypoint
             :param y_target: y position of the target waypoint
+            :param yaw: current yaw value
         """
         self.road_id = self.find_current_road(x_curr=x_curr,
                                               y_curr=y_curr)
@@ -195,59 +347,41 @@ class OpenDriveConverter:
         self.follow_id, follow_section_id = self.\
             get_initial_next_road_id(predecessor=predecessor,
                                      successor=successor,
-                                     x_target=x_target, y_target=y_target)
-        if follow_section_id == predecessor:
-            before_section_id = successor
-        else:
-            before_section_id = predecessor
-        # Check if it is a junction or not
-        # if it is a junction -> then the initial chosen road is correct
-        before_start = None
-        before_end = None
-        if self.geometry_data[before_section_id] is not None:
-            before_start, before_end = self.get_endpoints(before_section_id)
-
-        # Calculate the interval between the agent and the calculated
-        # road points. If x or y coordinate of the agent is in one of
-        # the intervals, the current road is found.
+                                     x_target=x_target, y_target=y_target,
+                                     yaw=yaw)
         agent_position = (x_curr, y_curr)
-
-        # special case when the start point is chosen on the wrong road
-        # start point lay on the road before but is indicated to road
-        # afterwards because of the distance measure
-        if (before_end is not None) and (before_start is not None):
-            if (before_start[0] < agent_position[0] < before_end[0]) or\
-               (before_end[0] < agent_position[0] < before_start[0]) or\
-               (before_start[1] < agent_position[1] < before_end[1]) or\
-               (before_start[1] < agent_position[1] < before_end[1]):
-                # agent is on the road before
-                self.road_id = before_section_id
-                predecessor, successor = self.get_pred_succ(
-                    road_id=self.road_id)
-                self.follow_id, follow_section_id = self. \
-                    get_initial_next_road_id(predecessor=predecessor,
-                                             successor=successor,
-                                             x_target=x_target,
-                                             y_target=y_target)
-
-        follow_start, follow_end = self.get_endpoints(self.follow_id)
-        if (follow_start[0] < agent_position[0] < follow_end[0]) or\
-           (follow_end[0] < agent_position[0] < follow_start[0]) or\
-           (follow_start[1] < agent_position[1] < follow_end[1]) or\
-           (follow_start[1] < agent_position[1] < follow_end[1]):
-            # agent is on the following road
-            self.old_id = self.road_id
-            self.road_id = self.follow_id
-            self.follow_id = None
-
         # Interpolate the road_id
         points = self.interpolation(self.road_id)
         points = self.check_point_order(points=points,
                                         x_target=x_target,
                                         y_target=y_target)
         self.reference = copy.deepcopy(points)
-        points, _a, _b, _c = self.calculate_midpoints(points,
-                                                      x_curr, y_curr)
+        widths = self.lane_widths(self.road_id)
+        self.width = widths[-1]
+        # size = len(widths)
+        points, direction = self.calculate_midpoints(points,
+                                                     x_curr, y_curr)
+        target = (x_target, y_target)
+        # Check if points contain the target point
+        min_dist = float("inf")
+        index = None
+        for i in range(len(points[0])):
+            point = (points[0][i], points[1][i])
+            dist = help_functions.euclid_dist(point, target)
+            if dist < min_dist:
+                min_dist = dist
+                index = i
+        # If min_dist is smaller than 8m, the target point is reached
+        # delete points bigger than the target point and calculate
+        # last points new based on the target lane for the next action
+        if min_dist <= TARGET_DIFF:
+            print(len(points[0]))
+            p = points.copy()
+            points = self.target_reached(action, command,
+                                         index, self.reference,
+                                         follow_section_id, p,
+                                         widths, direction, True)
+            print(len(points[0]))
         # Find and remove the points that are not needed to pass the
         # first road from the agent position to the end of the road
         min_dist = float("inf")
@@ -266,16 +400,7 @@ class OpenDriveConverter:
         del points[3][0:index]
         # agent is on initial road or road before and for the next road
         # is this initial road the old road
-        if self.old_id is None:
-            self.old_id = self.road_id
-        # agent is on follow road -> calculate the following road for it
-        if self.follow_id is None:
-            pred, succ = self.get_pred_succ(self.road_id)
-            if pred == self.old_id:
-                self.follow_id = succ
-            else:
-                self.follow_id = pred
-            self.old_id = follow_section_id
+        self.point_size = len(points[0])
         print("inital road: ", self.road_id)
         print("intial follow ", self.follow_id)
         self.waypoints = points
@@ -294,146 +419,205 @@ class OpenDriveConverter:
             :param x_agent: last x coordinate of the agent
             :param y_agent: last y coordinate of the agent
             :return: points: same format as in the parameter,
-                     widths: list of all lane width values on this road
-                     size: number of width values
                      direction: True or False depending on the side
                                 of the reference line
         """
         # all lane widths in this road
         # first width is for the road next to the reference line
         # and so on
-        widths = self.lane_widths(self.road_id)
-        size = len(widths)
         direction = self.right_or_left(points, x_agent, y_agent,
-                                       widths[size - 1])
+                                       self.width)
         # Calculate points in the middle of the road
-        points = self.update_points(points, direction, widths[size - 1])
-        return points, widths, size, direction
+        points = self.update_points(points, direction, self.width)
+        return points, direction
 
     def target_road_trajectory(self, x_target: float, y_target: float,
-                               action: float):
+                               action: float, command: int):
         """ Calculate the trajectory to the next waypoint
         The waypoints are given by the Carla Leaderboard and the next
         action for the agent
             :param x_target: x position of the target waypoint
             :param y_target: y position of the target waypoint
-            :param action: next action the agent has to take after
-                           he reaches the target point
+            :param action: next yaw value
+            :param command: next progress the agent has to take after he
+                            reaches the target point
         """
         while True:
-            self.road_id = self.follow_id
-            predecessor, successor = self.get_pred_succ(road_id=self.road_id)
-            self.follow_id, follow_section_id = self. \
-                get_initial_next_road_id(predecessor=predecessor,
-                                         successor=successor,
-                                         x_target=x_target, y_target=y_target)
-            # Interpolate the road_id
-            points = self.interpolation(self.road_id)
-            points = self.check_point_order(points=points,
-                                            x_target=x_target,
-                                            y_target=y_target)
-
-            self.reference[0] += copy.deepcopy(points[0])
-            self.reference[1] += copy.deepcopy(points[1])
-            self.reference[2] += copy.deepcopy(points[2])
-            self.reference[3] += copy.deepcopy(points[3])
-            reference_line = points.copy()
-
-            # all lane widths in this road
-            # first width is for the road next to the reference line
-            # and so on
-            points, widths, size, direction = \
-                self.calculate_midpoints(points, self.waypoints[0][-1],
-                                         self.waypoints[1][-1])
             target = (x_target, y_target)
-            # Check if points contain the target point
-            min_dist = float("inf")
-            index = None
-            for i in range(len(points[0])):
-                point = (points[0][i], points[1][i])
-                dist = help_functions.euclid_dist(point, target)
-                if dist < min_dist:
-                    min_dist = dist
-                    index = i
-            # If min_dist is smaller than 8m, the target point is reached
-            # delete points bigger than the target point and calculate
-            # last points new based on the target lane for the next action
-            if min_dist <= TARGET_DIFF:
-                first_widths = []
-                min_width = []
+            still_calculated = False
+            start = 0
+            # if points have been added
+            # if len(self.waypoints[0]) != self.point_size:
+            # start = len(self.waypoints[0]) - 1
+            # check the last added waypoints of the trajectory
+            if self.pt is not None:
+                for i in range(len(self.pt)):
+                    point = (self.pt[0][i], self.pt[1][i])
+                    dist = help_functions.euclid_dist(point, target)
+                    if dist < TARGET_DIFF:
+                        # Trajectory still calculated
+                        print("still calculated")
+                        still_calculated = True
+                        break
+            if still_calculated is True:
+                # command is turn action
+                if command > 3:
+                    break
+                # command is lane action
+                else:
+                    min_dist = float("inf")
+                    index = None
+                    for i in range(len(self.pt[0])):
+                        point = (self.pt[0][i], self.pt[1][i])
+                        dist = help_functions.euclid_dist(point, target)
+                        if dist < min_dist:
+                            min_dist = dist
+                            index = i
+                    widths = self.lane_widths(self.road_id)
+                    points = self.target_reached(action, command,
+                                                 index, self.reference_l,
+                                                 self.follow_section,
+                                                 self.pt,
+                                                 widths, self.direction,
+                                                 False)
+                    start = len(self.waypoints[0]) - len(points)
+                    for i in range(len(points)):
+                        self.waypoints[0][start + i] = points[0][i]
+                        self.waypoints[1][start + i] = points[1][i]
+                        self.waypoints[2][start + i] = points[2][i]
+                        self.waypoints[3][start + i] = points[3][i]
+                    self.point_size = len(points[0])
+                    break
+            else:
+                self.road_id = self.follow_id
+                print("road id", self.road_id)
+                predecessor, successor = self.get_pred_succ(
+                    road_id=self.road_id)
+                self.follow_id, follow_section_id = self. \
+                    get_initial_next_road_id(predecessor=predecessor,
+                                             successor=successor,
+                                             x_target=x_target,
+                                             y_target=y_target,
+                                             yaw=self.waypoints[2][-1])
+                # Interpolate the road_id
+                points = self.interpolation(self.road_id)
+                points = self.check_point_order(points=points,
+                                                x_target=x_target,
+                                                y_target=y_target)
+                self.reference[0] += copy.deepcopy(points[0])
+                self.reference[1] += copy.deepcopy(points[1])
+                self.reference[2] += copy.deepcopy(points[2])
+                self.reference[3] += copy.deepcopy(points[3])
+                reference_line = points.copy()
+                # all lane widths in this road
+                # first width is for the road next to the reference line
+                # and so on
+                widths = self.lane_widths(self.road_id)
+                # self.width = widths[-1]
+                # size = len(widths)
+                points, direction = \
+                    self.calculate_midpoints(points, self.waypoints[0][-1],
+                                             self.waypoints[1][-1])
                 self.follow_id = self.next_action_id(action,
                                                      follow_section_id,
                                                      points)
-                point1_x = reference_line[0][-2]
-                point1_y = reference_line[1][-2]
-                point2_x = reference_line[0][-1]
-                point2_y = reference_line[1][-1]
-                point3_x = reference_line[0][-3]
-                point3_y = reference_line[1][-3]
-                start, end = self.get_endpoints(self.follow_id)
-                # Choose the startpoint of the follow road
-                dist1 = help_functions.euclid_dist(start,
-                                                   (point2_x, point2_y))
-                dist2 = help_functions.euclid_dist(end,
-                                                   (point2_x, point2_y))
-                # choose the point of the follow road which is nearer
-                # to the last trajectory point
-                if dist1 < dist2:
-                    ref_point = start
-                else:
-                    ref_point = end
-                # Iterate over all width values and calculate for each value
-                # the midpoint on the lane -> choose the nearest midpoint
-                # to the follow road start point
-                min_dist = float("inf")
-                for width in widths:
-                    point, v = self.update_one_point(point1_x, point1_y,
-                                                     point2_x, point2_y,
-                                                     point3_x, point3_y,
-                                                     direction, width)
-                    dist = help_functions.euclid_dist(ref_point, point)
-                    # Choose the width value for the correct lane
-                    if dist < min_dist:
-                        min_dist = dist
-                        min_width = width
-                # if we need to change the lane for the next action
-                # we want a smooth change in the trajectory points
-                points = reference_line
-                last_width = widths[size-1]
-                diff = abs(min_width - last_width)
-                step_size = STEP_SIZE
-                i = 0
-                # if diff != 0 we need to change the lane and calculate
-                # a smooth change
-                if diff != 0:
-                    steps = int(diff / step_size)
-                    first_widths = [last_width - step_size * i
-                                    for i in range(steps)]
-                    for i in range(len(first_widths)):
-                        p1_x = points[0][i]
-                        p1_y = points[1][i]
-                        p2_x = points[0][i+1]
-                        p2_y = points[1][i+1]
-                        if i != len((points[0])) - 2:
-                            p3_x = points[0][i + 2]
-                            p3_y = points[1][i + 2]
-                        point, v = self.update_one_point(p1_x, p1_y,
-                                                         p2_x, p2_y,
-                                                         p3_x, p3_y,
-                                                         direction,
-                                                         first_widths[i])
-                        points[0][i] = point[0]
-                        points[1][i] = point[1]
-                    p = [points[0][i+1:], points[1][i+1:], points[2][i+1:],
-                         points[3][i+1:]]
-                    points = self.update_points(p, direction, min_width)
-                del points[0][index+1:]
-                del points[1][index+1:]
-                del points[2][index+1:]
-                del points[3][index+1:]
+                self.pt = points
+                self.reference_l = reference_line
+                self.follow_section = follow_section_id
+                self.direction = direction
+
+                if command < 4:
+                    min_dist = float("inf")
+                    index = None
+                    for i in range(len(points[0])):
+                        point = (points[0][i], points[1][i])
+                        dist = help_functions.euclid_dist(point, target)
+                        if dist < min_dist:
+                            min_dist = dist
+                            index = i
+                    points = self.target_reached(action, command,
+                                                 index, reference_line,
+                                                 follow_section_id, points,
+                                                 widths, direction, False)
+                    self.add_waypoints(points)
+                    self.point_size = len(points[0])
+                    break
                 self.add_waypoints(points)
                 break
-            self.add_waypoints(points)
+
+    def target_reached(self, action: float, command: int, index: int,
+                       reference_line, follow_section_id: int,
+                       points_calc, widths: list,
+                       direction: bool, initial: bool):
+        if command == CHANGE_LEFT or \
+           command == CHANGE_RIGHT or command == CHANGE_FOLLOW:
+            # first_widths = []
+            # min_width = []
+            self.follow_id = self.next_action_id(action,
+                                                 follow_section_id,
+                                                 points_calc)
+            if command == CHANGE_LEFT:
+                points = reference_line
+                last_width = self.width
+                step_size = STEP_SIZE
+                ind = widths.index(last_width)
+                new_width = widths[ind-1]
+                diff = abs(last_width - new_width)
+                steps = int(diff / step_size)
+                first_widths = [last_width - step_size * i
+                                for i in range(steps)]
+                for i in range(len(first_widths)):
+                    p1_x = points[0][index + i]
+                    p1_y = points[1][index + i]
+                    p2_x = points[0][index + i + 1]
+                    p2_y = points[1][index + i + 1]
+                    if i != len((points[0])) - 2:
+                        p3_x = points[0][index + i + 2]
+                        p3_y = points[1][index + i + 2]
+                    point, v = self.update_one_point(p1_x, p1_y,
+                                                     p2_x, p2_y,
+                                                     p3_x, p3_y,
+                                                     direction,
+                                                     first_widths[i])
+                    points_calc[0][index + i] = point[0]
+                    points_calc[1][index + i] = point[1]
+            # change lane right
+            elif command == CHANGE_RIGHT:
+                points = reference_line
+                last_width = self.width
+                step_size = STEP_SIZE
+                ind = widths.index(last_width)
+                new_width = widths[ind + 1]
+                diff = abs(last_width - new_width)
+                steps = int(diff / step_size)
+                first_widths = [last_width - step_size * i
+                                for i in range(steps)]
+                for i in range(len(first_widths)):
+                    p1_x = points[0][index + i]
+                    p1_y = points[1][index + i]
+                    p2_x = points[0][index + i + 1]
+                    p2_y = points[1][index + i + 1]
+                    if i != len((points[0])) - 2:
+                        p3_x = points[0][index + i + 2]
+                        p3_y = points[1][index + i + 2]
+                    point, v = self.update_one_point(p1_x, p1_y,
+                                                     p2_x, p2_y,
+                                                     p3_x, p3_y,
+                                                     direction,
+                                                     first_widths[i])
+                    points_calc[0][index + i] = point[0]
+                    points_calc[1][index + i] = point[1]
+        # passing a junction action
+        else:
+            self.follow_id = self.next_action_id(action,
+                                                 follow_section_id,
+                                                 points_calc)
+            if initial is False:
+                del points_calc[0][index + 1:]
+                del points_calc[1][index + 1:]
+                del points_calc[2][index + 1:]
+                del points_calc[3][index + 1:]
+        return points_calc
 
     def rad_to_degree(self, radians):
         """ Convert radians value to degrees
@@ -787,6 +971,15 @@ class OpenDriveConverter:
         if self.geometry_data[road_id][3][size-1] == LINE:
             xd = length * cos(hdg)
             yd = length * sin(hdg)
+            # subtract a small value due to inaccuracy
+            if xd > 0:
+                xd -= 0.05
+            else:
+                xd += 0.05
+            if yd > 0:
+                yd -= 0.05
+            else:
+                yd += 0.05
             end_point = help_functions.add_vector(last_start, (xd, yd))
         else:
             radius = self.geometry_data[road_id][3][size-1]
@@ -797,7 +990,8 @@ class OpenDriveConverter:
 
     def get_initial_next_road_id(self, predecessor: int,
                                  successor: int,
-                                 x_target: float, y_target: float):
+                                 x_target: float, y_target: float,
+                                 yaw: int):
         """ Find the next road to drive
         When the agent starts driving it is not sure if he has to follow his
         successor or his predecessor. This function calculates the next road
@@ -807,6 +1001,7 @@ class OpenDriveConverter:
             :param successor: id value for successor road value
             :param x_target: x position of the target waypoint
             :param y_target: y position of the target waypoint
+            :param yaw: current yaw value
             :return: final_id: the id value of the chosen road
                      section_id: the id value of the chosen predecessor
                                  or successor
@@ -822,9 +1017,9 @@ class OpenDriveConverter:
             final_id = predecessor
         else:
             x_road_p, y_road_p, pred = self.\
-                get_next_road_point(predecessor)
+                get_next_road_point(predecessor, yaw)
             x_road_s, y_road_s, succ = self.\
-                get_next_road_point(successor)
+                get_next_road_point(successor, yaw)
 
             dist_p = help_functions.\
                 euclid_dist((x_road_p, y_road_p), (x_target, y_target))
@@ -873,7 +1068,7 @@ class OpenDriveConverter:
                             get("elementId"))
         return predecessor, successor
 
-    def get_next_road_point(self, road_id: int):
+    def get_next_road_point(self, road_id: int, yaw: int):
         """ The function returns the x and y coordinate for a given road
             :param road_id: the id value of the preferred road
             :return: x, y, road_id
@@ -881,6 +1076,7 @@ class OpenDriveConverter:
                 y: value of the y coordinate
                 road_id: id of the chosen road
         """
+        line_list = list()
         # check if it is a junction
         if self.geometry_data[road_id] is None:
             connections = self.junctions[road_id].findall("connection")
@@ -897,10 +1093,91 @@ class OpenDriveConverter:
                         line = False
                         break
                 if line is True:
-                    road_id = id
-                    break
+                    line_list.append(id)
+            min_diff = float("inf")
+            for li in line_list:
+                y = self.geometry_data[li][2][0]
+                diff = abs(abs(yaw) - abs(self.rad_to_degree(y)))
+                if diff < min_diff:
+                    min_diff = diff
+                    road_id = li
         # first x value on this road
         x = self.geometry_data[road_id][0][0]
         # first value on this road
         y = self.geometry_data[road_id][1][0]
         return x, y, road_id
+
+
+"""
+first_widths = []
+                min_width = []
+                self.follow_id = self.next_action_id(action,
+                                                     follow_section_id,
+                                                     points)
+                point1_x = reference_line[0][-2]
+                point1_y = reference_line[1][-2]
+                point2_x = reference_line[0][-1]
+                point2_y = reference_line[1][-1]
+                point3_x = reference_line[0][-3]
+                point3_y = reference_line[1][-3]
+                start, end = self.get_endpoints(self.follow_id)
+                # Choose the startpoint of the follow road
+                dist1 = help_functions.euclid_dist(start,
+                                                   (point2_x, point2_y))
+                dist2 = help_functions.euclid_dist(end,
+                                                   (point2_x, point2_y))
+                # choose the point of the follow road which is nearer
+                # to the last trajectory point
+                if dist1 < dist2:
+                    ref_point = start
+                else:
+                    ref_point = end
+                # Iterate over all width values and calculate for each value
+                # the midpoint on the lane -> choose the nearest midpoint
+                # to the follow road start point
+                min_dist = float("inf")
+                for width in widths:
+                    point, v = self.update_one_point(point1_x, point1_y,
+                                                     point2_x, point2_y,
+                                                     point3_x, point3_y,
+                                                     direction, width)
+                    dist = help_functions.euclid_dist(ref_point, point)
+                    # Choose the width value for the correct lane
+                    if dist < min_dist:
+                        min_dist = dist
+                        min_width = width
+                # if we need to change the lane for the next action
+                # we want a smooth change in the trajectory points
+                points = reference_line
+                last_width = widths[size-1]
+                diff = abs(min_width - last_width)
+                step_size = STEP_SIZE
+                i = 0
+                # if diff != 0 we need to change the lane and calculate
+                # a smooth change
+                if diff != 0:
+                    steps = int(diff / step_size)
+                    first_widths = [last_width - step_size * i
+                                    for i in range(steps)]
+                    for i in range(len(first_widths)):
+                        p1_x = points[0][i]
+                        p1_y = points[1][i]
+                        p2_x = points[0][i+1]
+                        p2_y = points[1][i+1]
+                        if i != len((points[0])) - 2:
+                            p3_x = points[0][i + 2]
+                            p3_y = points[1][i + 2]
+                        point, v = self.update_one_point(p1_x, p1_y,
+                                                         p2_x, p2_y,
+                                                         p3_x, p3_y,
+                                                         direction,
+                                                         first_widths[i])
+                        points[0][i] = point[0]
+                        points[1][i] = point[1]
+                    p = [points[0][i+1:], points[1][i+1:], points[2][i+1:],
+                         points[3][i+1:]]
+                    points = self.update_points(p, direction, min_width)
+                del points[0][index+1:]
+                del points[1][index+1:]
+                del points[2][index+1:]
+                del points[3][index+1:]"""

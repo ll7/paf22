@@ -6,6 +6,7 @@ build/config.local.yml
 code/build
 code/log
 code/simulation_results.json
+code/output
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

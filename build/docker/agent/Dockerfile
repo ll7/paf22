@@ -37,7 +37,7 @@ RUN wget https://github.com/libgit2/libgit2/archive/refs/tags/v1.5.0.tar.gz -O l
     && tar xzf libgit2-1.5.0.tar.gz \
     && cd libgit2-1.5.0/ \
     && cmake . \
-    && make \
+    && make -j$(nproc --ignore=2) \
     && make install
 
 # override python path, carla pip package path didn't exist and was using Python 3.7 instead of 2.7

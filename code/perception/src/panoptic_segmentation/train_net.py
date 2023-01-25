@@ -166,4 +166,5 @@ def main():
 
 
 if __name__ == '__main__':
+    CUDA_LAUNCH_BLOCKING = "1"
     main()

@@ -30,6 +30,9 @@ class PanopticDataset(Dataset):
         self.categories = data['categories']
         # TODO Possible problem with VOID label and train_id
         # Add mapper to training id and class id
+        self.categories = sorted(self.categories, key=lambda d: d["isthing"])
+        index = self.categories.index(
+            next(x for x in self.categories if x["isthing"] == 1))
         self.semantic_class_mapper = {cat['id']: {
             'train_id': i,
             'isthing': cat['isthing']
@@ -38,7 +41,7 @@ class PanopticDataset(Dataset):
         self.instance_class_mapper = {cat['id']: {
             'train_id': i
         }
-            for i, cat in enumerate(self.categories[11:])}
+            for i, cat in enumerate(self.categories[index:])}
         self.semantic_class_mapper.update({0: {
             'train_id': len(self.categories) + 1,
             'isthing': 0}})
@@ -68,18 +71,19 @@ class PanopticDataset(Dataset):
 
         # Load image
         path_img = os.path.join(self.root_dir,
-                                'leftImg8bit',
+                                img_data["image_id"].split("_")[1],
                                 self.split,
                                 img_data['file_name'].split('_')[0],
                                 img_data['file_name'].replace('gtFine_', ''))
-        image = np.asarray(Image.open(path_img))
+        image = np.asarray(Image.open(path_img))[:, :, :3]
 
         # Get label info
         path_label = os.path.join(self.root_dir,
-                                  'gtFine',
-                                  'cityscapes_panoptic_' + self.split,
+                                  'groundtruth',
+                                  self.split,
+                                  img_data['file_name'].split('_')[0],
                                   img_data['labelfile_name'])
-        panoptic = np.asarray(Image.open(path_label))
+        panoptic = np.asarray(Image.open(path_label))[:, :, :3]
         panoptic = rgb2id(panoptic)
 
         # Get bbox info

@@ -123,7 +123,6 @@ class VehicleController(CompatibleNode):
                 message.throttle = 0
                 message.brake = abs(self.__throttle)
 
-            message.throttle = .5
             message.hand_brake = False
             message.manual_gear_shift = False
             message.steer = steer

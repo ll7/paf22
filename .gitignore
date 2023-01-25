@@ -1,6 +1,7 @@
 .DS_Store
 .idea
 
+build/config.local.yml
 
 code/build
 code/log

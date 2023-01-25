@@ -1,3 +1,4 @@
 dvc==2.36.0
 dvc-gdrive==2.19.1
 scipy==1.9.3
+xmltodict==0.13.0

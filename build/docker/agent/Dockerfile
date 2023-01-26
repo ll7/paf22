@@ -52,8 +52,7 @@ RUN apt-get update && apt-get install -y \
         ros-noetic-ackermann-msgs ros-noetic-derived-object-msgs \
         ros-noetic-carla-msgs ros-noetic-pcl-conversions \
         ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server \
-        ros-noetic-robot-pose-ekf \
-        ros-noetic-smach-ros
+        ros-noetic-robot-pose-ekf
 
 SHELL ["/bin/bash", "-c"]
 

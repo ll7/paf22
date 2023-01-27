@@ -103,12 +103,19 @@ class PrePlanner(CompatibleNode):
         self.loginfo(f"y_target = {y_target}")
 
         self.loginfo(f"Road Options: {data.road_options}")
-        """for i in range(15):
+        for i in range(15):
             x_target = data.poses[i].position.x
             y_target = data.poses[i].position.y
             self.loginfo(f"x_target = {x_target}")
             self.loginfo(f"y_target = {y_target}")
-"""
+            roll, pitch, yaw = tf.transformations.euler_from_quaternion(
+                [data.poses[i].orientation.x, data.poses[i].orientation.y,
+                 data.poses[i].orientation.z, data.poses[i].orientation.w])
+            self.loginfo(f"yaw = {yaw}")
+            self.loginfo(f"yaw = {roll}")
+            self.loginfo(f"yaw = {pitch}")
+            self.loginfo("\n")
+
         # Trajectory for the starting road segment
         self.odc.initial_road_trajectory(x_start, y_start, x_target, y_target)
 

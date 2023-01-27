@@ -36,15 +36,18 @@ class DummyTrajectoryPub(CompatibleNode):
 
         # Static trajectory for testing purposes
         initial_trajectory = [
-            (985.5, -5374.2),
-            (988.0, -5394.2),
-            (987.5, -5404.2),
-            (988.0, -5474.2),
-            (987.5, -5494.2),
-            (989.0, -5514.2),
-            (987.0, -5534.2),
-            (986.5, -5575.2),
-            (987.0, -5775.2)]
+            (985.0, -5374.2),
+            (985.0, -5394.2),
+            # Turn ->
+            (985.0, -5555.5),
+            (985.0, -5563.2),
+            (985.3, -5565.5),
+            (986.3, -5567.5),
+            (987.5, -5569.0),
+            (990.5, -5569.8),
+            (1000.0, -5570.2),
+            # <-
+            (1164.6, -5571.2)]
         self.updated_trajectory(initial_trajectory)
 
         # request for a new interpolated dummy trajectory

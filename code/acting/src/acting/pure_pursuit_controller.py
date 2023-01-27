@@ -9,6 +9,7 @@ from nav_msgs.msg import Path
 from ros_compatibility.node import CompatibleNode
 from rospy import Publisher, Subscriber
 from std_msgs.msg import Float32
+from acting.msg import Debug
 
 from helper_functions import vectors_to_angle
 from trajectory_interpolation import points_to_vector
@@ -48,6 +49,11 @@ class PurePursuitController(CompatibleNode):
         self.pure_pursuit_steer_target_pub: Publisher = self.new_publisher(
             Pose,
             f"/carla/{self.role_name}/pure_pursuit_steer_target_wp",
+            qos_profile=1)
+
+        self.debug_publisher: Publisher = self.new_publisher(
+            Debug,
+            f"/carla/{self.role_name}/debug",
             qos_profile=1)
 
         self.__position: (float, float) = None  # x, y
@@ -174,15 +180,15 @@ class PurePursuitController(CompatibleNode):
         :return:
         """
         l_vehicle = 2  # dist between front and rear wheels todo: measure
-        k = 10  # todo: tune
+        k_ld = 15  # todo: tune
 
         current_velocity: float
         if self.__velocity == 0:
-            current_velocity = k * 0.1
+            current_velocity = k_ld * 0.1
         else:
             current_velocity = self.__velocity
 
-        look_ahead_dist = k * current_velocity
+        look_ahead_dist = k_ld * current_velocity
         self.__tp_idx = self.__get_target_point_index(look_ahead_dist)
 
         target_wp: PoseStamped = self.__path.poses[self.__tp_idx]
@@ -196,9 +202,30 @@ class PurePursuitController(CompatibleNode):
                                             (self.__position[0],
                                              self.__position[1]))
 
-        alpha = vectors_to_angle(target_v_x, target_v_y,
-                                 cur_v_x, cur_v_y)
-        steering_angle = atan((2 * l_vehicle * sin(alpha)) / look_ahead_dist)
+        # -> debugging only
+        zero_h_v_x, zero_h_v_y = points_to_vector((self.__last_pos[0],
+                                                   self.__last_pos[1]),
+                                                  (self.__last_pos[0] + 1,
+                                                   self.__last_pos[1]))
+
+        target_vector_heading = vectors_to_angle(target_v_x, target_v_y,
+                                                 zero_h_v_x, zero_h_v_y)
+        # <-
+        alpha = self.__heading - target_vector_heading
+        # alpha = vectors_to_angle(target_v_x, target_v_y,
+        #                         cur_v_x, cur_v_y)
+        steering_angle = atan((2 * l_vehicle * sin(math.radians(alpha))) /
+                              look_ahead_dist)
+
+        # for debugging ->
+        debug_msg = Debug()
+        debug_msg.heading = self.__heading
+        debug_msg.target_heading = target_vector_heading
+        debug_msg.l_distance = look_ahead_dist
+        debug_msg.alpha = alpha
+        self.debug_publisher.publish(debug_msg)
+        # <-
+
         self.pure_pursuit_steer_target_pub.publish(target_wp.pose)
 
         # for debugging only ->
@@ -213,15 +240,16 @@ class PurePursuitController(CompatibleNode):
         # t_y = target_wp.pose.position.y
         # c_x = self.__position[0]
         # c_y = self.__position[1]
-        self.loginfo(
-                    # f"T_V: ({round(target_v_x, 3)},{round(target_v_y, 3)})\t"
-                    # f"T_WP: ({round(t_x,3)},{round(t_y,3)}) \t"
-                    # f"C_Pos: ({round(c_x,3)},{round(c_y,3)}) \t"
-                    f"Target Steering angle: {round(steering_angle, 4)} \t"
-                    f"Current alpha: {round(alpha, 3)} \t"
-                    # f"Target WP idx: {self.__tp_idx} \t"
-                    f"Current heading: {round(self.__heading, 3)}"
-        )
+        # self.loginfo(
+        #             f"T_V: ({round(target_v_x, 3)},{round(target_v_y, 3)})\t"
+        #             f"T_WP: ({round(t_x,3)},{round(t_y,3)}) \t"
+        #             f"C_Pos: ({round(c_x,3)},{round(c_y,3)}) \t"
+        #             f"Target Steering angle: {round(steering_angle, 4)} \t"
+        #             f"Current alpha: {round(alpha, 3)} \t"
+        #             f"Target WP idx: {self.__tp_idx} \t"
+        #             f"Current heading: {round(self.__heading, 3)} \t"
+        #             f"Tar V Heading: {round(target_vector_heading, 3)} \t"
+        # )
         # <-
 
         return steering_angle

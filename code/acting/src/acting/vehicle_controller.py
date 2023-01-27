@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import math
+
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from carla_msgs.msg import CarlaEgoVehicleControl, CarlaSpeedometer
@@ -9,7 +11,7 @@ from simple_pid import PID
 
 PURE_PURSUIT_CONTROLLER: int = 1
 STANLEY_CONTROLLER: int = 2
-MAX_STEER_ANGLE: float = 0.5
+MAX_STEER_ANGLE: float = 0.75
 
 
 class VehicleController(CompatibleNode):
@@ -95,7 +97,7 @@ class VehicleController(CompatibleNode):
         """
         self.status_pub.publish(True)
         self.loginfo('VehicleController node running')
-        pid = PID(0.25, 0, 0.1, setpoint=0)  # random values -> todo: tune
+        pid = PID(0.85, 0.1, 0.1, setpoint=0)  # random values -> todo: tune
         pid.output_limits = (-MAX_STEER_ANGLE, MAX_STEER_ANGLE)
 
         def loop(timer_event=None) -> None:
@@ -130,7 +132,7 @@ class VehicleController(CompatibleNode):
 
             message.hand_brake = False
             message.manual_gear_shift = False
-            pid.setpoint = steer
+            pid.setpoint = self.__map_steering(steer)
             message.steer = pid(self.__current_steer)
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
@@ -139,6 +141,18 @@ class VehicleController(CompatibleNode):
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
+
+    def __map_steering(self, steering_angle: float) -> float:
+        """
+        Takes the steering angle calculated by the controller and maps it to
+        the available steering angle
+        :param steering_angle: calculated by a controller in [-pi/2 , pi/2]
+        :return: float for steering in [-1, 1]
+        """
+        tune_k = -5  # factor for tuning todo: tune
+        k = 1 / (math.pi / 2)
+        steering_float = steering_angle * k * tune_k
+        return steering_float
 
     def __emergency_break(self, data) -> None:
         """

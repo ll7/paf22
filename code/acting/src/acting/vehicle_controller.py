@@ -150,8 +150,8 @@ class VehicleController(CompatibleNode):
         :return: float for steering in [-1, 1]
         """
         tune_k = -5  # factor for tuning todo: tune
-        k = 1 / (math.pi / 2)
-        steering_float = steering_angle * k * tune_k
+        r = 1 / (math.pi / 2)
+        steering_float = steering_angle * r * tune_k
         return steering_float
 
     def __emergency_break(self, data) -> None:

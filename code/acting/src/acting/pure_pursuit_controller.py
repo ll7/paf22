@@ -179,8 +179,8 @@ class PurePursuitController(CompatibleNode):
         Calculates the steering angle based on the current information
         :return:
         """
-        l_vehicle = 2  # dist between front and rear wheels todo: measure
-        k_ld = 15  # todo: tune
+        l_vehicle = 2.85  # wheelbase
+        k_ld = 7.5  # todo: tune
 
         current_velocity: float
         if self.__velocity == 0:
@@ -197,12 +197,7 @@ class PurePursuitController(CompatibleNode):
                                                    self.__last_pos[1]),
                                                   (target_wp.pose.position.x,
                                                    target_wp.pose.position.y))
-        cur_v_x, cur_v_y = points_to_vector((self.__last_pos[0],
-                                             self.__last_pos[1]),
-                                            (self.__position[0],
-                                             self.__position[1]))
 
-        # -> debugging only
         zero_h_v_x, zero_h_v_y = points_to_vector((self.__last_pos[0],
                                                    self.__last_pos[1]),
                                                   (self.__last_pos[0] + 1,
@@ -210,10 +205,8 @@ class PurePursuitController(CompatibleNode):
 
         target_vector_heading = vectors_to_angle(target_v_x, target_v_y,
                                                  zero_h_v_x, zero_h_v_y)
-        # <-
+
         alpha = self.__heading - target_vector_heading
-        # alpha = vectors_to_angle(target_v_x, target_v_y,
-        #                         cur_v_x, cur_v_y)
         steering_angle = atan((2 * l_vehicle * sin(math.radians(alpha))) /
                               look_ahead_dist)
 

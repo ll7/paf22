@@ -91,6 +91,10 @@ class PrePlanner(CompatibleNode):
         x_start = self.agent_pos.x
         y_start = self.agent_pos.y
         # z_start = self.agent_pos.z
+        roll_start, pitch_start, yaw_start = \
+            tf.transformations.euler_from_quaternion(
+             [self.agent_ori.x, self.agent_ori.y,
+              self.agent_ori.z, self.agent_ori.w])
 
         self.loginfo(f"x_start = {x_start}")
         self.loginfo(f"y_start = {y_start}")
@@ -98,6 +102,10 @@ class PrePlanner(CompatibleNode):
         x_target = data.poses[0].position.x
         y_target = data.poses[0].position.y
         # z_target = data.poses[0].position.z
+        roll_target, pitch_target, yaw_target = \
+            tf.transformations.euler_from_quaternion(
+             [data.poses[0].orientation.x, data.poses[0].orientation.y,
+              data.poses[0].orientation.z, data.poses[0].orientation.w])
 
         self.loginfo(f"x_target = {x_target}")
         self.loginfo(f"y_target = {y_target}")
@@ -117,7 +125,9 @@ class PrePlanner(CompatibleNode):
             self.loginfo("\n")
 
         # Trajectory for the starting road segment
-        self.odc.initial_road_trajectory(x_start, y_start, x_target, y_target)
+        self.odc.initial_road_trajectory(x_start, y_start, x_target, y_target,
+                                         yaw_start, yaw_target,
+                                         data.road_options[0])
 
         n = len(data.poses)
         i = 1
@@ -137,7 +147,8 @@ class PrePlanner(CompatibleNode):
             self.loginfo("Yaw {}".format(yaw))
 
             self.odc.target_road_trajectory(x_target, y_target,
-                                            self.odc.rad_to_degree(action))
+                                            self.odc.rad_to_degree(action),
+                                            road_option)
 
         # trajectory is now stored in the waypoints
         waypoints = self.odc.waypoints

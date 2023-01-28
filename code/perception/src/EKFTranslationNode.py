@@ -3,12 +3,15 @@
 """
 This node publishes all relevant topics for the ekf node.
 """
-
+import numpy as np
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from sensor_msgs.msg import NavSatFix, Imu
 from nav_msgs.msg import Odometry
 from coordinate_transformation import CoordinateTransformer, GeoRef
+
+
+GPS_RUNNING_AVG_ARGS = 3  # points taken into account for the avg
 
 
 class EKFTranslation(CompatibleNode):
@@ -62,9 +65,7 @@ class EKFTranslation(CompatibleNode):
             "/imu_data",
             qos_profile=1)
 
-        self.avg_gps = [0, 0, 0]
-        self.avg_gps_counter: int = 1
-        self.avg_gps_n: int = 3  # points taken into account for the avg
+        self.avg_xyz = np.zeros((GPS_RUNNING_AVG_ARGS, 3))
         # 3D Odometry (GPS)
         self.ekf_vo_publisher = self.new_publisher(
             Odometry,
@@ -102,21 +103,18 @@ class EKFTranslation(CompatibleNode):
         self.ekf_imu_publisher.publish(imu_data)
 
     def update_gps_data(self, data: NavSatFix):
-        if self.avg_gps_counter % (self.avg_gps_n + 1) != 0:
-            self.avg_gps[0] += data.latitude
-            self.avg_gps[1] += data.longitude
-            self.avg_gps[2] += data.altitude
-            self.avg_gps_counter += 1
-            return
+        # transform new measurement to global xyz-frame
+        lat = data.latitude
+        lon = data.longitude
+        alt = data.altitude
+        x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
 
-        avg_lat = self.avg_gps[0] / self.avg_gps_n
-        avg_lon = self.avg_gps[1] / self.avg_gps_n
-        avg_alt = self.avg_gps[2] / self.avg_gps_n
+        # rotate avg matrix by one and add new element to the back
+        self.avg_xyz = np.roll(self.avg_xyz, -1, axis=0)
+        self.avg_xyz[-1] = np.matrix([x, y, z])
 
-        self.avg_gps = [0, 0, 0]
-        self.avg_gps_counter = 1
-
-        x, y, z = self.transformer.gnss_to_xyz(avg_lat, avg_lon, avg_alt)
+        # compute average of each column
+        avg_x, avg_y, avg_z = np.mean(self.avg_xyz, axis=0)
 
         odom_msg = Odometry()
 
@@ -128,9 +126,9 @@ class EKFTranslation(CompatibleNode):
         cov_y = 1.0
         cov_z = 1.0
 
-        odom_msg.pose.pose.position.x = x
-        odom_msg.pose.pose.position.y = y
-        odom_msg.pose.pose.position.z = z
+        odom_msg.pose.pose.position.x = avg_x
+        odom_msg.pose.pose.position.y = avg_y
+        odom_msg.pose.pose.position.z = avg_z
 
         odom_msg.pose.pose.orientation.x = 0
         odom_msg.pose.pose.orientation.y = 0

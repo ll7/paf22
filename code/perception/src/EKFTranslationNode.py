@@ -11,7 +11,7 @@ from nav_msgs.msg import Odometry
 from coordinate_transformation import CoordinateTransformer, GeoRef
 
 
-GPS_RUNNING_AVG_ARGS = 3  # points taken into account for the avg
+GPS_RUNNING_AVG_ARGS = 5  # points taken into account for the avg
 
 
 class EKFTranslation(CompatibleNode):
@@ -66,6 +66,7 @@ class EKFTranslation(CompatibleNode):
             qos_profile=1)
 
         self.avg_xyz = np.zeros((GPS_RUNNING_AVG_ARGS, 3))
+        self.__publish_counter: int = 0
         # 3D Odometry (GPS)
         self.ekf_vo_publisher = self.new_publisher(
             Odometry,
@@ -142,7 +143,9 @@ class EKFTranslation(CompatibleNode):
                                     0, 0, 0, 0, 999999, 0,
                                     0, 0, 0, 0, 0, 999999]
 
-        self.ekf_vo_publisher.publish(odom_msg)
+        self.__publish_counter += 1
+        if self.__publish_counter % 5 == 0:
+            self.ekf_vo_publisher.publish(odom_msg)
 
     def run(self):
         """

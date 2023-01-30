@@ -125,7 +125,7 @@ class VehicleController(CompatibleNode):
 
             message.hand_brake = False
             message.manual_gear_shift = False
-            message.steer = steer + 0.125  # todo: remove + 0.125
+            message.steer = steer  # + 0.125 todo: remove + 0.125
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)

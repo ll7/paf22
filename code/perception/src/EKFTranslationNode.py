@@ -9,6 +9,7 @@ from ros_compatibility.node import CompatibleNode
 from sensor_msgs.msg import NavSatFix, Imu
 from nav_msgs.msg import Odometry
 from coordinate_transformation import CoordinateTransformer, GeoRef
+from scipy.spatial.transform import Rotation as R
 
 
 GPS_RUNNING_AVG_ARGS = 5  # points taken into account for the avg
@@ -87,19 +88,48 @@ class EKFTranslation(CompatibleNode):
                                            0, 0, 0,
                                            0, 0, 0]
 
-        imu_data.angular_velocity.x = data.angular_velocity.x
-        imu_data.angular_velocity.y = data.angular_velocity.y
-        imu_data.angular_velocity.z = data.angular_velocity.z
-        imu_data.angular_velocity_covariance = [0.001, 0,     0,
-                                                0,     0.001, 0,
-                                                0,     0,     0.001]
+        # Rotationsmatrix aufstellen
+        r = R.from_quat([imu_data.orientation.x,
+                         imu_data.orientation.y,
+                         imu_data.orientation.z,
+                         imu_data.orientation.w])
+        r = r.inv()
+        rot_mat = r.as_matrix()
 
-        imu_data.linear_acceleration.x = data.linear_acceleration.x
-        imu_data.linear_acceleration.y = data.linear_acceleration.y
-        imu_data.linear_acceleration.z = data.linear_acceleration.z
+        # Werte für Linearbeschleunigung auslesen und umrechnen
+        lin_x = data.linear_acceleration.x
+        lin_y = data.angular_velocity.y
+        lin_z = data.angular_velocity.z
+
+        lin_v = np.array([[lin_x],
+                          [lin_y],
+                          [lin_z]])
+
+        lin_res_v = np.matmul(rot_mat, lin_v)
+
+        imu_data.linear_acceleration.x = lin_res_v.item(0)
+        imu_data.linear_acceleration.y = lin_res_v.item(1)
+        imu_data.linear_acceleration.z = lin_res_v.item(2)
         imu_data.linear_acceleration_covariance = [0.001, 0,     0,
                                                    0,     0.001, 0,
                                                    0,     0,     0.015]
+
+        # Werte für Winkelbeschleunigung auslesen und umrechnen
+        ang_x = data.angular_velocity.x
+        ang_y = data.angular_velocity.y
+        ang_z = data.angular_velocity.z
+
+        ang_v = np.array([[ang_x],
+                          [ang_y],
+                          [ang_z]])
+        ang_res_v = np.matmul(rot_mat, ang_v)
+
+        imu_data.angular_velocity.x = ang_res_v.item(0)
+        imu_data.angular_velocity.y = ang_res_v.item(1)
+        imu_data.angular_velocity.z = ang_res_v.item(2)
+        imu_data.angular_velocity_covariance = [0.001, 0,     0,
+                                                0,     0.001, 0,
+                                                0,     0,     0.001]
 
         self.ekf_imu_publisher.publish(imu_data)
 
@@ -123,9 +153,9 @@ class EKFTranslation(CompatibleNode):
         odom_msg.header.frame_id = "global"
 
         # Covariance todo: needs tweaking
-        cov_x = 1.0
-        cov_y = 1.0
-        cov_z = 1.0
+        cov_x = 0.01
+        cov_y = 0.01
+        cov_z = 0.01
 
         odom_msg.pose.pose.position.x = avg_x
         odom_msg.pose.pose.position.y = avg_y

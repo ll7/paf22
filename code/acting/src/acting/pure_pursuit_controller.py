@@ -180,7 +180,7 @@ class PurePursuitController(CompatibleNode):
         :return:
         """
         l_vehicle = 2.85  # wheelbase
-        k_ld = 7.5  # todo: tune
+        k_ld = 5.0  # todo: tune
 
         current_velocity: float
         if self.__velocity == 0:

@@ -24,7 +24,7 @@ class GeoRef(Enum):  # todo: add values for other towns
     TOWN09 = 0, 0, 0  # lat =, lon =, alt = #Town09/HD not found
     TOWN10 = 0, 0, 0  # lat =-8.9e-05, lon =-3.1e-11, alt = 0.0 #Town10HD
     TOWN11 = 0, 0, 0  # lat =, lon =, alt = #Town11/HD not found
-    TOWN12 = 35.25000, -101.87500, 330.14000
+    TOWN12 = 35.25000, -101.87500, 331.00000
 
 
 a = 6378137

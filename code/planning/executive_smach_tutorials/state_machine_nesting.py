@@ -50,7 +50,7 @@ class Getter(smach.State):
         while 'x' not in ud:
             rospy.loginfo('>>> Waiting for data...')
             rospy.sleep(0.5)
-        rospy.loginfo('>>> GOT DATA! x = '+str(ud.x))
+        rospy.loginfo('>>> GOT DATA! x = ' + str(ud.x))
         return 'got_it'
 
 

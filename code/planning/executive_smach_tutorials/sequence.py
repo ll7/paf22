@@ -34,8 +34,8 @@ def main():
 
     # Create a SMACH state machine
     sq = smach.Sequence(
-            outcomes=['succeeded'],
-            connector_outcome='done')
+        outcomes=['succeeded'],
+        connector_outcome='done')
 
     # Open the container
     with sq:

@@ -2,8 +2,6 @@ import py_trees
 import numpy as np
 from std_msgs.msg import Float64
 from nav_msgs.msg import Odometry
-from custom_carla_msgs.srv import UpdateLocalPath, TrafficOnLanelet
-
 import rospy
 import math
 
@@ -15,13 +13,13 @@ class Approach(py_trees.behaviour.Behaviour):
     def setup(self, timeout):
         self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed",
                                                 Float64, queue_size=1)
-        rospy.wait_for_service('update_local_path')
-        self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # rospy.wait_for_service('update_local_path')
+        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
         self.Successs = False
         return True
 
     def initialise(self):
-        self.update_local_path(approach_roundabout=True)
+        # self.update_local_path(approach_roundabout=True)
         self.blackboard = py_trees.blackboard.Blackboard()
         rospy.loginfo("Starting to approach Roundabout")
 
@@ -58,8 +56,8 @@ class Wait(py_trees.behaviour.Behaviour):
     def setup(self, timeout):
         self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed",
                                                 Float64, queue_size=1)
-        rospy.wait_for_service('check_lanelet_free')
-        self.lanelet_free = rospy.ServiceProxy("check_lanelet_free", TrafficOnLanelet)
+        # rospy.wait_for_service('check_lanelet_free')
+        # self.lanelet_free = rospy.ServiceProxy("check_lanelet_free", TrafficOnLanelet)
 
         self.Successs = True
         return True
@@ -68,13 +66,14 @@ class Wait(py_trees.behaviour.Behaviour):
         self.blackboard = py_trees.blackboard.Blackboard()
 
     def update(self):
-        first_lanelet_roundabout = self.blackboard.get("/psaf/ego_vehicle/first_lanelet_roundabout")
-        if first_lanelet_roundabout is not None:
-            success_lanelet_free = self.lanelet_free(isRoundabout=True,
-                                                     lanelet_id=first_lanelet_roundabout.data)
-            rospy.loginfo(f"success_lanelet_free = {success_lanelet_free.Free}")
-            if success_lanelet_free.Free:
-                return py_trees.common.Status.SUCCESS
+        # first_lanelet_roundabout =
+        # self.blackboard.get("/psaf/ego_vehicle/first_lanelet_roundabout")
+        # if first_lanelet_roundabout is not None:
+        # success_lanelet_free = self.lanelet_free(isRoundabout=True,
+        #                                          lanelet_id=first_lanelet_roundabout.data)
+        # rospy.loginfo(f"success_lanelet_free = {success_lanelet_free.Free}")
+        # if success_lanelet_free.Free:
+        #     return py_trees.common.Status.SUCCESS
         return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
@@ -123,13 +122,13 @@ class Leave(py_trees.behaviour.Behaviour):
         self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed",
                                                 Float64, queue_size=1)
         self.Successs = False
-        rospy.wait_for_service('update_local_path')
-        self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # rospy.wait_for_service('update_local_path')
+        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
         return True
 
     def initialise(self):
         self.blackboard = py_trees.blackboard.Blackboard()
-        self.update_local_path(leave_intersection=True)
+        # self.update_local_path(leave_intersection=True)
         self.target_speed_pub.publish(50.0)
 
     def update(self):

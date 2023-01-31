@@ -1,7 +1,7 @@
 import py_trees
 import rospy
 
-from custom_carla_msgs.srv import UpdateLocalPath
+# from custom_carla_msgs.srv import UpdateLocalPath
 
 
 class SwitchLaneLeft(py_trees.behaviour.Behaviour):
@@ -9,13 +9,13 @@ class SwitchLaneLeft(py_trees.behaviour.Behaviour):
         super(SwitchLaneLeft, self).__init__(name)
 
     def setup(self, timeout):
-        rospy.wait_for_service('update_local_path')
-        self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # rospy.wait_for_service('update_local_path')
+        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
-        self.update_local_path(change_lane_left=True)
+        # self.update_local_path(change_lane_left=True)
         lane_status = self.blackboard.get("/psaf/ego_vehicle/lane_status")
         self.lanelet_id_before_lane_change = lane_status.currentLaneId
 
@@ -38,13 +38,13 @@ class SwitchLaneRight(py_trees.behaviour.Behaviour):
         super(SwitchLaneRight, self).__init__(name)
 
     def setup(self, timeout):
-        rospy.wait_for_service('update_local_path')
-        self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # rospy.wait_for_service('update_local_path')
+        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
-        self.update_local_path(change_lane_right=True)
+        # self.update_local_path(change_lane_right=True)
         lane_status = self.blackboard.get("/psaf/ego_vehicle/lane_status")
         self.lanelet_id_before_lane_change = lane_status.currentLaneId
 

@@ -2,7 +2,7 @@ import py_trees
 import numpy as np
 from std_msgs.msg import Float64
 from nav_msgs.msg import Odometry
-from custom_carla_msgs.srv import UpdateLocalPath
+# from custom_carla_msgs.srv import UpdateLocalPath
 
 import rospy
 
@@ -14,14 +14,14 @@ class Approach(py_trees.behaviour.Behaviour):
     def setup(self, timeout):
         self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed",
                                                 Float64, queue_size=1)
-        rospy.wait_for_service('update_local_path')
-        self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # rospy.wait_for_service('update_local_path')
+        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
         rospy.loginfo("Approaching Intersection")
-        self.update_local_path(approach_intersection=True)
+        # self.update_local_path(approach_intersection=True)
         self.start_time = rospy.get_time()
         self.stopline_detected = False
         self.stopline_distance = np.inf
@@ -145,8 +145,8 @@ class Enter(py_trees.behaviour.Behaviour):
     def setup(self, timeout):
         self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed", Float64,
                                                 queue_size=1)
-        rospy.wait_for_service('update_local_path')
-        self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # rospy.wait_for_service('update_local_path')
+        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
@@ -206,8 +206,8 @@ class ApproachNoRules(py_trees.behaviour.Behaviour):
     def setup(self, timeout):
         self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed", Float64,
                                                 queue_size=1)
-        rospy.wait_for_service('update_local_path')
-        self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # rospy.wait_for_service('update_local_path')
+        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
@@ -290,8 +290,8 @@ class EnterNoRules(py_trees.behaviour.Behaviour):
     def setup(self, timeout):
         self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed", Float64,
                                                 queue_size=1)
-        rospy.wait_for_service('update_local_path')
-        self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # rospy.wait_for_service('update_local_path')
+        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 

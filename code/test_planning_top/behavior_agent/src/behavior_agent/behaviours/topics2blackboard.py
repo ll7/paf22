@@ -8,9 +8,7 @@ from std_msgs.msg import Float64, String, Bool, Int32
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point
 
-from custom_carla_msgs.msg import GlobalPathLanelets, LaneStatus, NextLanelet
 from geometry_msgs.msg import PoseWithCovarianceStamped
-from custom_carla_msgs.msg import TrafficLight
 
 
 def create_node(role_name):
@@ -23,15 +21,7 @@ def create_node(role_name):
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/psaf/{role_name}/bt/condition/slowed_by_car_in_front", 'msg': Bool,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/psaf/{role_name}/next_lanelet", 'msg': NextLanelet,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/psaf/{role_name}/global_path_lanelets", 'msg': GlobalPathLanelets,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/psaf/{role_name}/lane_status", 'msg': LaneStatus,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/psaf/{role_name}/stopline_distance", 'msg': Float64,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/psaf/{role_name}/distance_next_roundabout", 'msg': NextLanelet,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/psaf/{role_name}/distance_exit_roundabout", 'msg': Point,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
@@ -42,8 +32,6 @@ def create_node(role_name):
         {'name': "/initialpose", 'msg': PoseWithCovarianceStamped,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/carla/{role_name}/initialpose", 'msg': PoseWithCovarianceStamped,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/psaf/{role_name}/traffic_light", 'msg': TrafficLight,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/psaf/{role_name}/first_lanelet_roundabout", 'msg': Int32,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER}

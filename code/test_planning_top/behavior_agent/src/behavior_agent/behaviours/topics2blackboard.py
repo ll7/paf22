@@ -10,6 +10,10 @@ from geometry_msgs.msg import Point
 
 from geometry_msgs.msg import PoseWithCovarianceStamped
 
+"""
+Source: https://github.com/ll7/psaf2
+"""
+
 
 def create_node(role_name):
     topics = [

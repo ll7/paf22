@@ -1,6 +1,10 @@
 import py_trees
 import rospy
 
+"""
+Source: https://github.com/ll7/psaf2
+"""
+
 
 class NotSlowedByCarInFront(py_trees.behaviour.Behaviour):
     def __init__(self, name):

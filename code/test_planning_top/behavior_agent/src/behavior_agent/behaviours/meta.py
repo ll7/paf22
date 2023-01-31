@@ -6,6 +6,10 @@ import numpy as np
 from std_msgs.msg import Float64
 # from custom_carla_msgs.srv import UpdateGlobalPath, UpdateLocalPath
 
+"""
+Source: https://github.com/ll7/psaf2
+"""
+
 
 class Start(py_trees.behaviour.Behaviour):
     def __init__(self, name):

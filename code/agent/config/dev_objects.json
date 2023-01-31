@@ -105,7 +105,7 @@
             "z": 1.60,
             "roll": 0.0,
             "pitch": 0.0,
-            "yaw": -45.0
+            "yaw": 0.0
           },
           "noise_accel_stddev_x": 0.001,
           "noise_accel_stddev_y": 0.001,

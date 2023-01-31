@@ -1,6 +1,6 @@
 <!-- TODO: Insert components of acting component-->
 <launch>
-    <arg name="role_name" default="ego_vehicle" />
+    <arg name="role_name" default="hero" />
     <arg name="control_loop_rate" default="0.1" />
 
     <node pkg="acting" type="pure_pursuit_controller.py" name="pure_pursuit_controller" output="screen">
@@ -34,8 +34,8 @@
         <param name="role_name" value="$(arg role_name)" />
     </node>
 
-    <node pkg="acting" type="DummyTrajectorySub.py" name="DummyTrajectorySub" output="screen">
+    <!--node pkg="acting" type="DummyTrajectorySub.py" name="DummyTrajectorySub" output="screen">
         <param name="control_loop_rate" value="1" />
         <param name="role_name" value="$(arg role_name)" />
-     </node>
+    </node-->
 </launch>

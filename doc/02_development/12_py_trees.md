@@ -53,6 +53,7 @@ Run:
 Run rqt visualization for behaviour tree
 
 `rqt --standalone rqt_py_trees.behaviour_tree.RosBehaviourTree`
+
 ![img.png](../00_assets/behaviour_tree.png)
 
 Inspect data written to the behaviour tree

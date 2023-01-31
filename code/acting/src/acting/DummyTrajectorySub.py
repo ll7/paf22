@@ -9,7 +9,7 @@ import ros_compatibility as roscomp
 # import matplotlib.pyplot as plt
 from ros_compatibility.node import CompatibleNode
 from nav_msgs.msg import Path
-from sensor_msgs.msg import NavSatFix
+from sensor_msgs.msg import NavSatFix, Imu
 from geometry_msgs.msg import PoseStamped
 from code.perception.src.coordinate_transformation import \
     CoordinateTransformer, GeoRef
@@ -38,6 +38,7 @@ class DummyTrajectorySub(CompatibleNode):
         self.transformer.set_gnss_ref(lat0, lon0, h0)
 
         self.current_pos = PoseStamped()
+        self.imu: Imu = Imu()
 
         # basic info
         self.role_name = self.get_param("role_name", "ego_vehicle")
@@ -63,6 +64,12 @@ class DummyTrajectorySub(CompatibleNode):
         #     self.output_average_gps_2_xyz,
         #     qos_profile=1)
 
+        self.imu_subscriber = self.new_subscription(
+            Imu,
+            "/carla/" + self.role_name + "/IMU",
+            self.update_imu,
+            qos_profile=1)
+
         # Publisher
 #        self.pos_publisher = self.new_publisher(
 #            PoseStamped,
@@ -87,6 +94,9 @@ class DummyTrajectorySub(CompatibleNode):
             # self.loginfo(f"x: {x}\t y: {y}\t z:{z}")
 
         self.pos_counter += 1
+
+    def update_imu(self, data: Imu):
+        self.imu = data
 
     def output_average_gps_2_xyz(self, data: NavSatFix):
         """
@@ -152,16 +162,16 @@ class DummyTrajectorySub(CompatibleNode):
         temp_pose = PoseStamped()
 
         temp_pose.header.stamp = rospy.Time.now()
-        temp_pose.header.frame_id = "Local Coordinate Frame"
+        temp_pose.header.frame_id = "global"
 
         temp_pose.pose.position.x = x
         temp_pose.pose.position.y = y
         temp_pose.pose.position.z = z
 
-        temp_pose.pose.orientation.x = 0.0
-        temp_pose.pose.orientation.y = 0.0
-        temp_pose.pose.orientation.z = 0.0
-        temp_pose.pose.orientation.w = 0.0
+        temp_pose.pose.orientation.x = self.imu.orientation.x
+        temp_pose.pose.orientation.y = self.imu.orientation.y
+        temp_pose.pose.orientation.z = self.imu.orientation.z
+        temp_pose.pose.orientation.w = self.imu.orientation.w
 
         self.current_pos = temp_pose
         self.pos_publisher.publish(self.current_pos)

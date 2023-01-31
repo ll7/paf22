@@ -1,13 +1,6 @@
 import preplanning_trajectory as pt
 from visualizer import TestVisualizer
-import math
-import numpy as np
 
-
-x_start = 983.5
-y_start = -5373.2
-x_target = 983.2598876953125
-y_target = -5381.88720703125
 
 end_x = list()
 end_y = list()
@@ -22,52 +15,75 @@ conv.convert_roads()
 conv.convert_junctions()
 conv.filter_geometry()
 
-print(conv.rad_to_degree(-3.141))
-print(conv.rad_to_degree(-1.572))
-print(conv.rad_to_degree(-0.9044))
-print("Numpy", np.degrees(-0.9044))
-yaw = -0.9044
-yaw = yaw * 180. / math.pi
-if yaw < 0:
-    yaw += 360
-print(yaw)
-
-
+x_start = 983.5
+y_start = -5373.2
+# muss zu beginn punkt eingeben der ein turn commando
+# ist erster Punkt mit lane change info -> target nächster punkt mit turn
+# filter vorab ob punkt vor aktuellem gps punkt liegt
+# wenn ja dann passt, wenn nein dann kurz hinter gps punkt lane change
+x_target = 983.2598876953125
+y_target = -5568.28662109375
 # Trajectory for the starting road segment
 end_x.append(x_target)
 end_y.append(y_target)
+# target must be a turn command point to choose the correct direction
 conv.initial_road_trajectory(x_start, y_start, x_target, y_target,
-                             983.2598876953125, -5568.28662109375, -90,
-                             conv.rad_to_degree(-2.1377235095443834), 4)
+                             974.2578735351562, -5575.4443359375,
+                             983.5927734375, -5381.88720703125,
+                             -90, 4)
 # preplanning until first target point is reached
+print()
 
 end_x.append(983.2598876953125)
 end_y.append(-5568.28662109375)
 conv.target_road_trajectory(983.2598876953125, -5568.28662109375,
-                            conv.rad_to_degree(-2.137723509544383), 2)
+                            974.2578735351562, -5575.4443359375, 2)
 print("current", conv.road_id)
 print("Follow", conv.follow_id)
+print()
 
-"""end_x.append(974.2578735351562)
+end_x.append(974.2578735351562)
 end_y.append(-5575.4443359375)
-conv.target_road_trajectory(974.2578735351562, -5575.4443359375, 0, 4)
+conv.target_road_trajectory(974.2578735351562, -5575.4443359375,
+                            805.0078735351562, -5575.51806640625, 4)
 print("current", conv.road_id)
 print("Follow", conv.follow_id)
+print("Hallo")
+print()
+
 
 end_x.append(805.0078735351562)
 end_y.append(-5575.51806640625)
-conv.target_road_trajectory(805.0078735351562, -5575.51806640625, 0, 6)
+conv.target_road_trajectory(805.0078735351562, -5575.51806640625,
+                            780.8638305664062, -5575.548828125, 3)
 print("current", conv.road_id)
-print("Follow", conv.follow_id)"""
+print("Follow", conv.follow_id)
+print()
 
+end_x.append(780.8638305664062)
+end_y.append(-5575.548828125)
+conv.target_road_trajectory(780.8638305664062, -5575.548828125,
+                            605.5011596679688, -5575.97021484375, 4)
+print("current", conv.road_id)
+print("Follow", conv.follow_id)
+print()
+
+end_x.append(605.5011596679688)
+end_y.append(-5575.97021484375)
+conv.target_road_trajectory(605.5011596679688, -5575.97021484375,
+                            600.8721923828125, -5579.2314453125, 5)
+print("current", conv.road_id)
+print("Follow", conv.follow_id)
+print()
+
+end_x.append(600.8721923828125)
+end_y.append(-5579.2314453125)
+# conv.target_road_trajectory(600.8721923828125, -5579.2314453125,
+#                           528.1724853515625, -5579.40625, 5)
+print("current", conv.road_id)
+print("Follow", conv.follow_id)
 
 """conv.target_road_trajectory(805.0078735351562, -5575.51806640625, 0, 6)
-print("current", conv.road_id)
-print("Follow", conv.follow_id)
-conv.target_road_trajectory(805.0078735351562, -5575.51806640625, 0, 6)
-print("current", conv.road_id)
-print("Follow", conv.follow_id)
-conv.target_road_trajectory(805.0078735351562, -5575.51806640625, 0, 6)
 print("current", conv.road_id)
 print("Follow", conv.follow_id)"""
 

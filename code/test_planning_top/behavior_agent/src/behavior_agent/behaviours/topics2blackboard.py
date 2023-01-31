@@ -4,7 +4,7 @@
 import py_trees
 import py_trees_ros
 
-from std_msgs.msg import Float64, String, Bool, Int32
+from std_msgs.msg import Float64, String, Bool, Int32, Float32
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point
 
@@ -34,6 +34,8 @@ def create_node(role_name):
         {'name': f"/carla/{role_name}/initialpose", 'msg': PoseWithCovarianceStamped,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/psaf/{role_name}/first_lanelet_roundabout", 'msg': Int32,
+         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/carla/{role_name}/max_velocity", 'msg': Float32,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER}
     ]
 

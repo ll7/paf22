@@ -118,10 +118,7 @@ def grow_a_tree(role_name):
                                            behaviours.meta.End("End")])
     root = Parallel("Root", children=[
         behaviours.topics2blackboard.create_node(role_name),
-        Sequence("Rules", children=[
-            behaviours.meta.Rules("Rules?"),
-            metarules
-        ]),
+        metarules,
         Running("Idle")
     ])
     return root
@@ -136,7 +133,7 @@ def main():
     Entry point for the demo script.
     """
     rospy.init_node('behavior_tree', anonymous=True)
-    role_name = rospy.get_param("~role_name", "ego_vehicle")
+    role_name = rospy.get_param("~role_name", "hero")
     root = grow_a_tree(role_name)
     behaviour_tree = py_trees_ros.trees.BehaviourTree(root)
     rospy.on_shutdown(functools.partial(shutdown, behaviour_tree))

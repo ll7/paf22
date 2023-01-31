@@ -43,8 +43,7 @@ class Start(py_trees.behaviour.Behaviour):
         #             rospy.loginfo("Everything is fine. We can start now!")
         #             self.target_speed_pub.publish(50.0)
         #             return py_trees.common.Status.SUCCESS
-
-        return py_trees.common.Status.RUNNING
+        return py_trees.common.Status.SUCCESS
 
     def terminate(self, new_status):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
@@ -82,27 +81,27 @@ class End(py_trees.behaviour.Behaviour):
                           (self.name, self.status, new_status))
 
 
-class Rules(py_trees.behaviour.Behaviour):
-    def __init__(self, name):
-        super(Rules, self).__init__(name)
-
-    def setup(self, timeout):
-        return True
-
-    def initialise(self):
-        return True
-
-    def update(self):
-        rules = rospy.get_param('/competition/traffic_rules', True)
-        if rules:
-            return py_trees.common.Status.SUCCESS
-        else:
-            return py_trees.common.Status.FAILURE
-
-    def terminate(self, new_status):
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
-                          (self.name, self.status, new_status))
-
+# class Rules(py_trees.behaviour.Behaviour):
+#     def __init__(self, name):
+#         super(Rules, self).__init__(name)
+#
+#     def setup(self, timeout):
+#         return True
+#
+#     def initialise(self):
+#         return True
+#
+#     def update(self):
+#         rules = rospy.get_param('/competition/traffic_rules', True)
+#         if rules:
+#             return py_trees.common.Status.SUCCESS
+#         else:
+#             return py_trees.common.Status.FAILURE
+#
+#     def terminate(self, new_status):
+#         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
+#                           (self.name, self.status, new_status))
+#
 
 class RespawnOrFinish(py_trees.behaviour.Behaviour):
     def __init__(self, name):

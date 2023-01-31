@@ -10,9 +10,9 @@
       "id": "hero",
       "role_name": "hero",
       "spawn_point": {
-        "x": 982.5,
-        "y": -5473.2,
-        "z": 371.5,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 350.0,
         "yaw": -90.0,
         "pitch": 0.0,
         "roll": 0.0
@@ -100,19 +100,19 @@
           "type": "sensor.other.imu",
           "id": "IMU",
           "spawn_point": {
-            "x": 0.7,
-            "y": 0.4,
-            "z": 1.60,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
             "roll": 0.0,
             "pitch": 0.0,
             "yaw": 0.0
           },
-          "noise_accel_stddev_x": 0.001,
-          "noise_accel_stddev_y": 0.001,
-          "noise_accel_stddev_z": 0.015,
-          "noise_gyro_stddev_x": 0.001,
-          "noise_gyro_stddev_y": 0.001,
-          "noise_gyro_stddev_z": 0.001
+          "noise_accel_stddev_x": 0.00,
+          "noise_accel_stddev_y": 0.00,
+          "noise_accel_stddev_z": 0.0,
+          "noise_gyro_stddev_x": 0.00,
+          "noise_gyro_stddev_y": 0.00,
+          "noise_gyro_stddev_z": 0.00
         },
         {
           "type": "sensor.pseudo.speedometer",

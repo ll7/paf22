@@ -9,12 +9,14 @@ http://dirsig.cis.rit.edu/docs/new/coordinates.html
 """
 import math
 from enum import Enum
+
+import numpy as np
 from scipy.spatial.transform import Rotation as R
 
 
 # Class to choose a map with a predefined reference point
-class GeoRef(Enum):  # todo: add values for other towns
-    TOWN01 = 0, 0, 0  # lat = 1.7e-08, lon = -5.6e-08, alt = 0.02
+class GeoRef(Enum):  # vales are rounded # todo: add citys
+    TOWN01 = 0, 0, 0, -57.2957356, 0.0709563127, 0
     TOWN02 = 0, 0, 0  # lat = 6.7e-10, lon= -3.4e-11, alt = -0.004
     TOWN03 = 0, 0, 0  # lat = 5.1e-10, lon = 2.1e-10, alt = 0.03
     TOWN04 = 0, 0, 0  # 0,0,0 not possible, but ref is correct
@@ -25,7 +27,7 @@ class GeoRef(Enum):  # todo: add values for other towns
     TOWN09 = 0, 0, 0  # lat =, lon =, alt = #Town09/HD not found
     TOWN10 = 0, 0, 0  # lat =-8.9e-05, lon =-3.1e-11, alt = 0.0 #Town10HD
     TOWN11 = 0, 0, 0  # lat =, lon =, alt = #Town11/HD not found
-    TOWN12 = 35.25000, -101.87500, 331.00000
+    TOWN12 = 35.25000, -101.87500, 331.00000, 0, 0, 0
 
 
 a = 6378137
@@ -43,30 +45,22 @@ class CoordinateTransformer:
     h_ref: float
     ref_set = False
 
-    def __init__(self):
-        self.la_ref = 0
-        self.ln_ref = 0
-        self.h_ref = 0
-
-    def set_gnss_ref(self, lat0, lon0, h0):
-        """
-        Set the given parameters as a reference point for x,y,z = 0,0,0
-        :param lat0: Lateral zero point reference
-        :param lon0: Longitudinal zero point reference
-        :param h0: Height zero point reference
-        :return: Nothing
-        """
-        self.la_ref = lat0
-        self.ln_ref = lon0
-        self.h_ref = h0
-        self.ref_set = True
+    def __init__(self, gps_ref: GeoRef):
+        self.la_ref = gps_ref.value[0]
+        self.ln_ref = gps_ref.value[1]
+        self.h_ref = gps_ref.value[2]
+        self.ref_rot = [gps_ref.value[3], gps_ref.value[4], gps_ref.value[5]]
 
     def gnss_to_xyz(self, lat, lon, h):
-        if self.ref_set:
-            return geodetic_to_enu(lat, lon, h,
-                                   self.la_ref, self.ln_ref, self.h_ref)
-        else:
-            return -1, -1, -1
+        return geodetic_to_enu(lat, lon, h,
+                               self.la_ref, self.ln_ref, self.h_ref)
+
+    def correct_rotation_offset(self, quat: (float, float, float, float)):
+        self.ref_rot = [0, 0, 0]
+        rot = R.from_quat(quat).as_matrix()
+        ref_rot = R.from_euler("xyz", self.ref_rot).inv().as_matrix()
+        corrected_rot = np.matmul(rot, ref_rot)
+        return R.from_matrix(corrected_rot).as_quat()
 
 
 def geodetic_to_enu(lat, lon, h, lat_ref, lon_ref, h_ref):

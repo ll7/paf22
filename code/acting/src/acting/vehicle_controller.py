@@ -130,10 +130,11 @@ class VehicleController(CompatibleNode):
                 message.throttle = 0
                 message.brake = abs(self.__throttle)
 
-            message.hand_brake = False
+            message.throttle = 0
+            message.hand_brake = True
             message.manual_gear_shift = False
             pid.setpoint = self.__map_steering(steer)
-            message.steer = pid(self.__current_steer)
+            message.steer = -1
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)

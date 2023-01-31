@@ -29,12 +29,7 @@ class PositionPublisher(CompatibleNode):
         super(PositionPublisher, self).__init__('position_publisher')
         self.loginfo("PositionPublisher node started")
 
-        self.transformer = CoordinateTransformer()
-        gps_ref = GeoRef.TOWN12
-        lat0 = gps_ref.value[0]
-        lon0 = gps_ref.value[1]
-        h0 = gps_ref.value[2]
-        self.transformer.set_gnss_ref(lat0, lon0, h0)
+        self.transformer = CoordinateTransformer(GeoRef.TOWN12)
 
         # current_pos ist the final PoseStamped that will be published
         self.current_pos_gps: PoseWithCovarianceStamped = \

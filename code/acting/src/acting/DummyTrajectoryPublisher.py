@@ -36,12 +36,24 @@ class DummyTrajectoryPub(CompatibleNode):
 
         # Static trajectory for testing purposes
         initial_trajectory = [
-            (985.0, -5373.2),
-            (985.0, -5473.2),
-            (990.0, -5474.2),
-            (990.0, -5524.2),
-            (990.0, -5574.2)
-        ]
+            (985.0, -5374.2),
+            (985.0, -5394.2),
+
+            (985.0, -5555.5),
+            (985.0, -5563.2),
+            (985.3, -5565.5),
+            (986.3, -5567.5),
+            (987.5, -5569.0),
+            (990.5, -5569.8),
+            (1000.0, -5570.2),
+
+            (1040.0, -5570.2),
+            (1050.0, -5570.2),
+            (1060.0, -5567.5),
+            (1090.0, -5567.5),
+            (1130.0, -5570.2),
+            (1164.6, -5570.2),
+            (1264.6, -5570.0)]
         self.updated_trajectory(initial_trajectory)
 
         # request for a new interpolated dummy trajectory
@@ -63,7 +75,7 @@ class DummyTrajectoryPub(CompatibleNode):
         :param: target_trajectory: the new target trajectory to be published
         :return:
         """
-        self.current_trajectory = interpolate_route(target_trajectory, 0.5)
+        self.current_trajectory = interpolate_route(target_trajectory, 0.25)
         self.path_msg.header.stamp = rospy.Time.now()
         self.path_msg.header.frame_id = "Frame ID Path Update"
 
@@ -90,7 +102,6 @@ class DummyTrajectoryPub(CompatibleNode):
     def run(self):
         """
         Control loop
-
         :return:
         """
 
@@ -105,7 +116,6 @@ class DummyTrajectoryPub(CompatibleNode):
 def main(args=None):
     """
     main function
-
     :param args:
     :return:
     """

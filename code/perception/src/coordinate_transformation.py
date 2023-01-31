@@ -4,7 +4,6 @@ ECEF -> ENU and Geodetic -> ENU
 (the composition of the two previous functions).
 Running the script by itself runs tests.
 based on https://gist.github.com/govert/1b373696c9a27ff4c72a.
-
 A good source to read up on the different reference frames is:
 http://dirsig.cis.rit.edu/docs/new/coordinates.html
 """
@@ -15,17 +14,17 @@ from scipy.spatial.transform import Rotation as R
 
 # Class to choose a map with a predefined reference point
 class GeoRef(Enum):  # todo: add values for other towns
-    TOWN01 = 0, 0, 0
-    TOWN02 = 0, 0, 0
-    TOWN03 = 0, 0, 0
-    TOWN04 = 0, 0, 0
-    TOWN05 = 0, 0, 0
-    TOWN06 = 0, 0, 0
-    TOWN07 = 0, 0, 0
-    TOWN08 = 0, 0, 0
-    TOWN09 = 0, 0, 0
-    TOWN10 = 0, 0, 0
-    TOWN11 = 0, 0, 0
+    TOWN01 = 0, 0, 0  # lat = 1.7e-08, lon = -5.6e-08, alt = 0.02
+    TOWN02 = 0, 0, 0  # lat = 6.7e-10, lon= -3.4e-11, alt = -0.004
+    TOWN03 = 0, 0, 0  # lat = 5.1e-10, lon = 2.1e-10, alt = 0.03
+    TOWN04 = 0, 0, 0  # 0,0,0 not possible, but ref is correct
+    TOWN05 = 0, 0, 0  # lat =2.6e-09, lon =8.7e-11, alt =-0.004 #fav
+    TOWN06 = 0, 0, 0  # lat =, lon =, alt = #Town06/HD not found
+    TOWN07 = 0, 0, 0  # lat =, lon =, alt = #Town07/HD not found
+    TOWN08 = 0, 0, 0  # lat =, lon =, alt = #Town08/HD not found
+    TOWN09 = 0, 0, 0  # lat =, lon =, alt = #Town09/HD not found
+    TOWN10 = 0, 0, 0  # lat =-8.9e-05, lon =-3.1e-11, alt = 0.0 #Town10HD
+    TOWN11 = 0, 0, 0  # lat =, lon =, alt = #Town11/HD not found
     TOWN12 = 35.25000, -101.87500, 331.00000
 
 

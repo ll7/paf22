@@ -44,7 +44,7 @@ class VelocityPublisherDummy(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-            self.loginfo('Published dummy velocity: ' + str(self.velocity))
+            # self.loginfo('Published dummy velocity: ' + str(self.velocity))
             self.velocity_pub.publish(self.velocity)
             if self.velocity > self.max_velocity:
                 self.__dv = -self.delta_velocity

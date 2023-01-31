@@ -16,13 +16,14 @@ Josef Kircher
 
 ---
 <!-- TOC -->
-* [SMACH](#smach)
+* [Pytrees](#pytrees)
   * [Author](#author)
   * [Date](#date)
   * [Prerequisite](#prerequisite)
   * [Getting started](#getting-started)
-  * [What is SMACH?](#what-is-smach)
+  * [What is Pytrees?](#what-is-pytrees)
   * [Examples](#examples)
+  * [Common commands](#common-commands)
     * [Sources](#sources)
 <!-- TOC -->
 ## Getting started
@@ -52,6 +53,8 @@ Run:
 Run rqt visualization for behaviour tree
 
 `rqt --standalone rqt_py_trees.behaviour_tree.RosBehaviourTree`
+
+![img.png](../00_assets/behaviour_tree.png)
 
 Inspect data written to the behaviour tree
 

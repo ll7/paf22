@@ -48,6 +48,7 @@ class MainFramePublisher(CompatibleNode):
                 rot_quat = [1, 0, 0, 0]
             rot_deg = -R.from_quat(rot_quat).as_euler("xyz", degrees=True)[
                 0] + 90
+            # self.loginfo(R.from_quat(rot_quat).as_euler("xyz", degrees=True))
             pos = [0, 0, 0]
             pos[0] = cos(radians(rot_deg)) * \
                 self.current_pos.pose.position.x - \

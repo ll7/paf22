@@ -30,12 +30,7 @@ class DummyTrajectorySub(CompatibleNode):
         super(DummyTrajectorySub, self).__init__('dummy_trajectory_sub')
         self.loginfo("DummyTrajectorySub node started")
 
-        self.transformer = CoordinateTransformer()
-        gps_ref = GeoRef.TOWN12
-        lat0 = gps_ref.value[0]
-        lon0 = gps_ref.value[1]
-        h0 = gps_ref.value[2]
-        self.transformer.set_gnss_ref(lat0, lon0, h0)
+        self.transformer = CoordinateTransformer(GeoRef.TOWN12)
 
         self.current_pos = PoseStamped()
         self.imu: Imu = Imu()
@@ -71,10 +66,11 @@ class DummyTrajectorySub(CompatibleNode):
             qos_profile=1)
 
         # Publisher
-#        self.pos_publisher = self.new_publisher(
-#            PoseStamped,
-#            "/carla/" + self.role_name + "/current_pos",
-#            qos_profile=1)
+
+    #        self.pos_publisher = self.new_publisher(
+    #            PoseStamped,
+    #            "/carla/" + self.role_name + "/current_pos",
+    #            qos_profile=1)
 
     def output_gps_2_xyz(self, data: NavSatFix):
         """

@@ -16,11 +16,12 @@ Josef Kircher
 
 ---
 <!-- TOC -->
-* [Title of wiki page](#title-of-wiki-page)
+* [Dev round - Sprint 4](#dev-round---sprint-4)
   * [Author](#author)
   * [Date](#date)
   * [Prerequisite](#prerequisite)
-  * [Some Content](#some-content)
+  * [Planning](#planning)
+    * [Things that need to handled](#things-that-need-to-handled)
   * [more Content](#more-content)
     * [Sources](#sources)
 <!-- TOC -->
@@ -35,8 +36,14 @@ Josef Kircher
   * Can lidar detect obstacles and assign them to a lane?
   * Is lane detection handled by your team or should it be done by the map analysis?
 
-## more Content
+* Information from acting
+  * When is ACC used, who should it activate/deactivate?
+  * What else do you need from planning besides a path and a velocity?
+  * What should the path look like, how dense should it be?
+  * How should we handle re-planning of the path? New message?
+
+## Acting
+
+## Perception
 
 ### Sources
-
-<https://www.markdownguide.org/cheat-sheet/>

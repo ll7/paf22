@@ -6,7 +6,8 @@
 
 ## Author
 
-Josef Kircher
+Josef Kircher 1h
+Julian Graf 30 min
 
 ## Date
 
@@ -22,7 +23,9 @@ Josef Kircher
   * [Prerequisite](#prerequisite)
   * [Planning](#planning)
     * [Things that need to handled](#things-that-need-to-handled)
-  * [more Content](#more-content)
+    * [Results](#results)
+  * [Acting](#acting)
+  * [Perception](#perception)
     * [Sources](#sources)
 <!-- TOC -->
 
@@ -30,11 +33,12 @@ Josef Kircher
 
 ### Things that need to handled
 
-* Information from preception
+* Information from perception
   * What will the traffic light message look like?
   * How will traffic sign information be published?
   * Can lidar detect obstacles and assign them to a lane?
   * Is lane detection handled by your team or should it be done by the map analysis?
+  * Doors detected?
 
 * Information from acting
   * When is ACC used, who should it activate/deactivate?
@@ -42,8 +46,21 @@ Josef Kircher
   * What should the path look like, how dense should it be?
   * How should we handle re-planning of the path? New message?
 
+### Results
+
+* Acting
+  * ACC controlled by decision tree
+  * Possibility of ACC to work with static obstacles
+  * two topics for target speed. Perception publishes the street limits to one topic, planning publishes an artificial target speed e.g. at intersections to another topic. Acting takes the minimal value. Planning send a predefined value to give priority to street limit speed
+  * path points can be as far away from each other as we want as long a linear interpolation is feasible.
+  * New message for new path is the way to go, regular updates for the path would be nice
+
 ## Acting
 
+no questions so far
+
 ## Perception
+
+no questions so far
 
 ### Sources

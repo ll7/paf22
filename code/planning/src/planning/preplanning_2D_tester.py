@@ -27,6 +27,7 @@ y_target = -5568.28662109375
 end_x.append(x_target)
 end_y.append(y_target)
 # target must be a turn command point to choose the correct direction
+# x_first and y_first None if first point is turn command
 conv.initial_road_trajectory(x_start, y_start, x_target, y_target,
                              974.2578735351562, -5575.4443359375,
                              983.5927734375, -5381.88720703125,
@@ -48,7 +49,6 @@ conv.target_road_trajectory(974.2578735351562, -5575.4443359375,
                             805.0078735351562, -5575.51806640625, 4)
 print("current", conv.road_id)
 print("Follow", conv.follow_id)
-print("Hallo")
 print()
 
 
@@ -76,12 +76,12 @@ print("current", conv.road_id)
 print("Follow", conv.follow_id)
 print()
 
-end_x.append(600.8721923828125)
+"""end_x.append(600.8721923828125)
 end_y.append(-5579.2314453125)
 # conv.target_road_trajectory(600.8721923828125, -5579.2314453125,
 #                           528.1724853515625, -5579.40625, 5)
 print("current", conv.road_id)
-print("Follow", conv.follow_id)
+print("Follow", conv.follow_id)"""
 
 """conv.target_road_trajectory(805.0078735351562, -5575.51806640625, 0, 6)
 print("current", conv.road_id)

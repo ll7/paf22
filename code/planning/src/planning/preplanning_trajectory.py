@@ -588,6 +588,7 @@ class OpenDriveConverter:
                 step_size = STEP_SIZE
                 ind = widths.index(last_width)
                 new_width = widths[ind-1]
+                self.width = new_width
                 diff = abs(last_width - new_width)
                 steps = int(diff / step_size)
                 print(steps)
@@ -608,6 +609,21 @@ class OpenDriveConverter:
                                                      first_widths[i])
                     points_calc[0][index + i] = point[0]
                     points_calc[1][index + i] = point[1]
+                for i in range(index + len(first_widths), len(points[0])-1):
+                    p1_x = points[0][i]
+                    p1_y = points[1][i]
+                    p2_x = points[0][i + 1]
+                    p2_y = points[1][i + 1]
+                    if i != len((points[0])) - 2:
+                        p3_x = points[0][i + 2]
+                        p3_y = points[1][i + 2]
+                    point, v = self.update_one_point(p1_x, p1_y,
+                                                     p2_x, p2_y,
+                                                     p3_x, p3_y,
+                                                     direction,
+                                                     new_width)
+                    points_calc[0][i] = point[0]
+                    points_calc[1][i] = point[1]
             # change lane right
             elif command == CHANGE_RIGHT:
                 # print(widths)
@@ -617,6 +633,7 @@ class OpenDriveConverter:
                 step_size = STEP_SIZE
                 ind = widths.index(last_width)
                 new_width = widths[ind + 1]
+                self.width = new_width
                 diff = abs(last_width - new_width)
                 steps = int(diff / step_size)
                 first_widths = [last_width - step_size * i
@@ -634,6 +651,21 @@ class OpenDriveConverter:
                                                      p3_x, p3_y,
                                                      direction,
                                                      first_widths[i])
+                    points_calc[0][index + i] = point[0]
+                    points_calc[1][index + i] = point[1]
+                for i in range(index + len(first_widths), len(points[0])):
+                    p1_x = points[0][index + i]
+                    p1_y = points[1][index + i]
+                    p2_x = points[0][index + i + 1]
+                    p2_y = points[1][index + i + 1]
+                    if i != len((points[0])) - 2:
+                        p3_x = points[0][index + i + 2]
+                        p3_y = points[1][index + i + 2]
+                    point, v = self.update_one_point(p1_x, p1_y,
+                                                     p2_x, p2_y,
+                                                     p3_x, p3_y,
+                                                     direction,
+                                                     new_width)
                     points_calc[0][index + i] = point[0]
                     points_calc[1][index + i] = point[1]
         # passing a junction action
@@ -760,8 +792,13 @@ class OpenDriveConverter:
             return []
         width = driving[0].find("width").get("a")
         # agent drives in the middle of the street
-        width = float(width) / 2.0
-        widths = [width*i for i in range(1, len(driving)+1)]
+        widths = list()
+        width = float(width)
+        middle = width / 2.0
+        widths.append(middle)
+        for i in range(1, len(driving)):
+            widths.append(middle + width * i)
+        # widths = [width*i for i in range(1, len(driving)+1)]
         return widths
 
     def right_or_left(self, points: list, x_agent: float, y_agent: float,

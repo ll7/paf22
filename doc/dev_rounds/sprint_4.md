@@ -6,8 +6,9 @@
 
 ## Author
 
-Josef Kircher 1h
-Julian Graf 30 min
+Josef Kircher
+Julian Graf
+Marco Riedenauer
 
 ## Date
 
@@ -54,6 +55,12 @@ Julian Graf 30 min
   * two topics for target speed. Perception publishes the street limits to one topic, planning publishes an artificial target speed e.g. at intersections to another topic. Acting takes the minimal value. Planning send a predefined value to give priority to street limit speed
   * path points can be as far away from each other as we want as long a linear interpolation is feasible.
   * New message for new path is the way to go, regular updates for the path would be nice
+
+* Perception
+  * Traffic light: status, distance, (lane?)
+  * Radar gives a relative speed of other vehicles at every tick
+  * traffic sign: state, distance
+  * lane detection will be most likely handled by perception
 
 ## Acting
 

@@ -35,7 +35,7 @@ class DummyTrajectoryPub(CompatibleNode):
         self.path_msg.header.frame_id = "global"
 
         # Static trajectory for testing purposes
-        initial_trajectory = [
+        self.initial_trajectory = [
             (985.0, -5374.2),
             (985.0, -5394.2),
 
@@ -54,7 +54,7 @@ class DummyTrajectoryPub(CompatibleNode):
             (1130.0, -5570.2),
             (1164.6, -5570.2),
             (1264.6, -5570.0)]
-        self.updated_trajectory(initial_trajectory)
+        self.updated_trajectory(self.initial_trajectory)
         # request for a new interpolated dummy trajectory
         # self.dummy_trajectory_request_subscriber = self.new_subscription(
         #     DummyTrajectoryRequest,

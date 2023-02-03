@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from random import random
+import random
 
 import ros_compatibility as roscomp
 from carla_msgs.msg import CarlaSpeedometer
@@ -19,7 +19,7 @@ class AccDistancePublisherDummy(CompatibleNode):
         super(AccDistancePublisherDummy, self). \
             __init__('acc_distance_publisher_dummy')
 
-        self.control_loop_rate = 10
+        self.control_loop_rate = 0.5
         self.role_name = self.get_param('role_name', 'ego_vehicle')
         self.enabled = self.get_param('enabled', False)
 
@@ -53,21 +53,31 @@ class AccDistancePublisherDummy(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-
-            max_delta_v = 1
+            max_delta_v = 4
             self.velocity_car_ahead = \
                 self.velocity_car_ahead + \
                 random.uniform(-max_delta_v, max_delta_v)
+            self.velocity_car_ahead = max(self.velocity_car_ahead, 0)
+            self.velocity_car_ahead = min(self.velocity_car_ahead, 50)
+
             self.distance = \
                 self.distance + \
                 self.velocity_car_ahead * (1 / self.control_loop_rate)
             self.distance = \
                 self.distance - \
                 self.velocity * (1 / self.control_loop_rate)
-            self.distance_pub.publish(self.distance)
+            if self.distance > 200:
+                self.loginfo("AccDistancePublisherDummy: "
+                             "You lost the car in front")
+                self.distance_pub.publish(-1)
+            else:
+                self.distance_pub.publish(self.distance)
+            self.loginfo("v = " + str(self.velocity_car_ahead) +
+                         "; d = " + str(self.distance) +
+                         "; delte_v = " + str(
+                self.velocity_car_ahead - self.velocity))
 
-            self.new_timer(self.control_loop_rate, loop)
-
+        self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
     def __set_speed(self, data: CarlaSpeedometer):

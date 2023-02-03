@@ -123,9 +123,9 @@ class PurePursuitController(CompatibleNode):
         dist = self.__dist_to(data.pose.position)
         if dist < min_diff:
             # for debugging purposes:
-            self.logwarn("New position disregarded, "
-                         f"as dist ({round(dist, 3)}) to current pos "
-                         f"< min_diff ({round(min_diff, 3)})")
+            # self.logwarn("New position disregarded, "
+            #              f"as dist ({round(dist, 3)}) to current pos "
+            #              f"< min_diff ({round(min_diff, 3)})")
             return
 
         old_x = self.__position[0]

@@ -21,7 +21,7 @@
     <node pkg="acting" type="velocity_publisher_dummy.py" name="velocity_publisher_dummy" output="screen">
         <param name="role_name" value="$(arg role_name)" />
         <param name="control_loop_rate" value="0.2" />
-        <param name="enabled" value="True" /> <!-- set to True to publish dummy velocities for testing-->
+        <param name="enabled" value="False" /> <!-- set to True to publish dummy velocities for testing-->
     </node>
      <node pkg="acting" type="vehicle_controller.py" name="vehicle_controller" output="screen">
         <param name="control_loop_rate" value="$(arg control_loop_rate)" />
@@ -42,5 +42,9 @@
    <node pkg="acting" type="acc_distance_publisher_dummy.py" name="AccDistancePublisherDummy" output="screen">
         <param name="role_name" value="$(arg role_name)" />
         <param name="enabled" value="True" /> <!-- set to True to publish dummy velocities for testing-->
-    </node>
+   </node>
+  <node pkg="acting" type="acc.py" name="Acc" output="screen">
+        <param name="control_loop_rate" value="$(arg control_loop_rate)" />
+        <param name="role_name" value="$(arg role_name)" />
+  </node>
 </launch>

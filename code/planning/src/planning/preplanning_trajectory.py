@@ -6,7 +6,8 @@ from math import sin, cos, degrees
 
 
 SMALL_DIST = 0.001
-STEP_SIZE = 0.2
+STEP_SIZE = 0.5
+INTERVALL = 1.0
 # difference to the target point
 TARGET_DIFF = 5
 LINE = 0.0
@@ -304,19 +305,19 @@ class OpenDriveConverter:
 
     def get_dist_list(self, pred, current, succ, agent):
         options = [pred, current, succ]
-        print(options)
+        # print(options)
         dist = list()
         for opt in options:
             if opt is None:
                 continue
             # check shortest distance to start or endpoints
             start, end = self.get_endpoints(opt)
-            print(start, end)
+            # print(start, end)
             start_d = help_functions.euclid_dist(agent, start)
             dist.append(start_d)
             end_d = help_functions.euclid_dist(agent, end)
             dist.append(end_d)
-            print(dist)
+            # print(dist)
         return dist
 
     def initial_road_trajectory(self, x_curr: float, y_curr: float,
@@ -378,7 +379,8 @@ class OpenDriveConverter:
         # last points new based on the target lane for the next action
         if min_dist <= TARGET_DIFF:
             p = points.copy()
-            points = self.target_reached(x_next_t, y_next_t, command,
+            points = self.target_reached(x_target, y_target,
+                                         x_next_t, y_next_t, command,
                                          index, self.reference,
                                          follow_section_id, p,
                                          widths, direction, True)
@@ -404,6 +406,7 @@ class OpenDriveConverter:
         print("inital road: ", self.road_id)
         print("intial follow ", self.follow_id)
         self.pt = points
+        self.follow_section = follow_section_id
         self.waypoints = points
 
     def calculate_midpoints(self, points: list,
@@ -465,6 +468,9 @@ class OpenDriveConverter:
             if still_calculated is True:
                 # command is turn action
                 if command <= 3:
+                    self.follow_id = self.next_action_id(x_next_t, y_next_t,
+                                                         self.follow_section,
+                                                         self.pt)
                     break
                 # command is lane action
                 else:
@@ -477,7 +483,8 @@ class OpenDriveConverter:
                             min_dist = dist
                             index = i
                     widths = self.lane_widths(self.road_id)
-                    points = self.target_reached(x_next_t, y_next_t,
+                    points = self.target_reached(x_target, y_target,
+                                                 x_next_t, y_next_t,
                                                  command, index,
                                                  self.reference_l,
                                                  self.follow_section,
@@ -534,8 +541,8 @@ class OpenDriveConverter:
                     self.width = min_width
                 # size = len(widths)
                 points, direction = \
-                    self.calculate_midpoints(points, self.waypoints[0][-1],
-                                             self.waypoints[1][-1])
+                    self.calculate_midpoints(points, self.pt[0][-1],
+                                             self.pt[1][-1])
                 if command == LEFT or command == RIGHT or command == STRAIGHT:
                     self.follow_id = self.next_action_id(x_next_t, y_next_t,
                                                          follow_section_id,
@@ -554,7 +561,8 @@ class OpenDriveConverter:
                         if dist < min_dist:
                             min_dist = dist
                             index = i
-                    points = self.target_reached(x_next_t, y_next_t,
+                    points = self.target_reached(x_target, y_target,
+                                                 x_next_t, y_next_t,
                                                  command,
                                                  index, reference_line,
                                                  follow_section_id, points,
@@ -569,7 +577,8 @@ class OpenDriveConverter:
                 self.add_waypoints(points)
                 break
 
-    def target_reached(self,  x_next_t: float, y_next_t: float,
+    def target_reached(self, target_x: float, target_y: float,
+                       x_next_t: float, y_next_t: float,
                        command: int, index: int,
                        reference_line, follow_section_id: int,
                        points_calc, widths: list,
@@ -578,20 +587,24 @@ class OpenDriveConverter:
            command == CHANGE_RIGHT or command == CHANGE_FOLLOW:
             # first_widths = []
             # min_width = []
-            self.follow_id = self.next_action_id(x_next_t, y_next_t,
-                                                 follow_section_id,
-                                                 points_calc)
+
             # print("AAAAA", self.follow_id)
             if command == CHANGE_LEFT:
                 points = reference_line
                 last_width = self.width
                 step_size = STEP_SIZE
                 ind = widths.index(last_width)
+                if ind == 0:
+                    print("Change not possible")
+                    return points_calc
+                """self.follow_id = self.next_action_id(x_next_t, y_next_t,
+                                                     follow_section_id,
+                                                     points_calc)"""
                 new_width = widths[ind-1]
                 self.width = new_width
                 diff = abs(last_width - new_width)
                 steps = int(diff / step_size)
-                print(steps)
+                # print(steps)
                 first_widths = [last_width - step_size * i
                                 for i in range(steps)]
                 for i in range(len(first_widths)):
@@ -617,6 +630,9 @@ class OpenDriveConverter:
                     if i != len((points[0])) - 2:
                         p3_x = points[0][i + 2]
                         p3_y = points[1][i + 2]
+                    else:
+                        p3_x = points[0][-1]
+                        p3_y = points[1][-1]
                     point, v = self.update_one_point(p1_x, p1_y,
                                                      p2_x, p2_y,
                                                      p3_x, p3_y,
@@ -624,14 +640,29 @@ class OpenDriveConverter:
                                                      new_width)
                     points_calc[0][i] = point[0]
                     points_calc[1][i] = point[1]
+                # print("SIZE", len(points[0]))
+                # print(len(self.reference_l[0]))
+                point, v = self.update_one_point(p2_x, p2_y,
+                                                 target_x, target_y,
+                                                 target_x, target_y,
+                                                 direction,
+                                                 new_width)
+                points_calc[0][i + 1] = point[0]
+                points_calc[1][i + 1] = point[1]
             # change lane right
             elif command == CHANGE_RIGHT:
                 # print(widths)
                 points = reference_line
                 last_width = self.width
-                print(last_width)
+                # print(last_width)
                 step_size = STEP_SIZE
                 ind = widths.index(last_width)
+                if ind == len(widths) - 1:
+                    print("Change not possible")
+                    return points_calc
+                """self.follow_id = self.next_action_id(x_next_t, y_next_t,
+                                                     follow_section_id,
+                                                     points_calc)"""
                 new_width = widths[ind + 1]
                 self.width = new_width
                 diff = abs(last_width - new_width)
@@ -666,8 +697,15 @@ class OpenDriveConverter:
                                                      p3_x, p3_y,
                                                      direction,
                                                      new_width)
-                    points_calc[0][index + i] = point[0]
-                    points_calc[1][index + i] = point[1]
+                    points_calc[0][i] = point[0]
+                    points_calc[1][i] = point[1]
+                point, v = self.update_one_point(p2_x, p2_y,
+                                                 target_x, target_y,
+                                                 target_x, target_y,
+                                                 direction,
+                                                 new_width)
+                points_calc[0][i + 1] = point[0]
+                points_calc[1][i + 1] = point[1]
         # passing a junction action
         else:
             self.follow_id = self.next_action_id(x_next_t, y_next_t,
@@ -738,7 +776,7 @@ class OpenDriveConverter:
             :return: possible_road_ids: the id of the next road
         """
         endpoint_values = list()
-        print(possible_road_ids)
+        # print(possible_road_ids)
         # filter the endpoints for each possible road
         for road_id in possible_road_ids:
             start, end = self.get_endpoints(road_id)
@@ -839,7 +877,9 @@ class OpenDriveConverter:
         dist_1 = help_functions.euclid_dist(point1, agent)
         dist_2 = help_functions.euclid_dist(point2, agent)
         if dist_1 > dist_2:
+            # print("DIRECTION")
             direction = False
+        print(direction)
         return direction
 
     def update_one_point(self, point1_x: float, point1_y: float,
@@ -864,6 +904,7 @@ class OpenDriveConverter:
         vector = help_functions.sub_vector(second, first)
         # if dist to the next point is to small -> outliners
         if vector[0] < SMALL_DIST and vector[1] < SMALL_DIST:
+            # print("SMALL DISTANZ")
             vector = help_functions.sub_vector((point3_x, point3_y), first)
         if right is True:
             vec = help_functions.perpendicular_vector_right(vector)
@@ -919,10 +960,10 @@ class OpenDriveConverter:
                         heading:    list of yaw values (rad)
                         speed:      list of speed limitations (m/s)
         """
-        x = points[0].copy()
-        y = points[1].copy()
-        hdg = points[2].copy()
-        speed = points[3].copy()
+        x = copy.deepcopy(points[0])
+        y = copy.deepcopy(points[1])
+        hdg = copy.deepcopy(points[2])
+        speed = copy.deepcopy(points[3])
         self.waypoints[0] += x
         self.waypoints[1] += y
         self.waypoints[2] += hdg
@@ -1003,7 +1044,7 @@ class OpenDriveConverter:
                 points = help_functions.linear_interpolation(
                     start=start,
                     end=end,
-                    interval_m=1)
+                    interval_m=INTERVALL)
             else:
                 radius = self.geometry_data[road_id][3][i]
                 end = help_functions.end_of_circular_arc(
@@ -1163,6 +1204,7 @@ class OpenDriveConverter:
                 y: value of the y coordinate
                 road_id: id of the chosen road
         """
+        # print("ROAD: ", road_id)
         line_list = list()
         # check if it is a junction
         if self.geometry_data[road_id] is None:
@@ -1176,7 +1218,10 @@ class OpenDriveConverter:
                 id = int(c.get("connectingRoad"))
                 road_data = self.geometry_data[id]
                 for i in range(len(road_data[0])):
-                    if road_data[3][i] != 0.0:
+                    # print(abs(road_data[3][i]))
+                    # check if there is a straight road
+                    # can also have a small radius -> (1/0.001)
+                    if abs(road_data[3][i]) >= (1 / 0.001):
                         line = False
                         break
                 if line is True:

@@ -22,5 +22,5 @@ class TestVisualizer:
         plt.scatter(self.start[0], self.start[1], c="red", marker="o")
         plt.scatter(self.end[0], self.end[1], c="orange", marker="o")
         # plt.xlim(570, 640)
-        # b5 lintplt.ylim(-5560, -5600)
+        # plt.ylim(-5560, -5600)
         plt.show()

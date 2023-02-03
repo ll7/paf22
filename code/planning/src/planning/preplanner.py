@@ -111,7 +111,7 @@ class PrePlanner(CompatibleNode):
         self.loginfo(f"y_target = {y_target}")
 
         self.loginfo(f"Road Options: {data.road_options}")
-        for i in range(15):
+        for i in range(20):
             x_target = data.poses[i].position.x
             y_target = data.poses[i].position.y
             self.loginfo(f"x_target = {x_target}")

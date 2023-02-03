@@ -39,4 +39,8 @@
         <param name="control_loop_rate" value="1" />
         <param name="role_name" value="$(arg role_name)" />
     </node-->
+   <node pkg="acting" type="acc_distance_publisher_dummy.py" name="AccDistancePublisherDummy" output="screen">
+        <param name="role_name" value="$(arg role_name)" />
+        <param name="enabled" value="True" /> <!-- set to True to publish dummy velocities for testing-->
+    </node>
 </launch>

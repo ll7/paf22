@@ -10,16 +10,14 @@ from std_msgs.msg import Float32
 
 class AccDistancePublisherDummy(CompatibleNode):
     """
-    This node publishes velocities. It can be used for testing.
-    Published velocities move up and down in steps of delta_velocity between
-    min_velocity and max_velocity.
+    This node dummy distances. It can be used for testing the acc.
     """
 
     def __init__(self):
         super(AccDistancePublisherDummy, self). \
             __init__('acc_distance_publisher_dummy')
 
-        self.control_loop_rate = 0.5
+        self.control_loop_rate = 0.05
         self.role_name = self.get_param('role_name', 'ego_vehicle')
         self.enabled = self.get_param('enabled', False)
 
@@ -34,8 +32,8 @@ class AccDistancePublisherDummy(CompatibleNode):
             self.__set_speed,
             qos_profile=1)
 
-        self.velocity_car_ahead = 10  # = 36 km/h
-        self.distance = 36
+        self.velocity_car_ahead = 0  # = 36 km/h
+        self.distance = 10
         self.velocity = 0
 
     def run(self):
@@ -53,7 +51,7 @@ class AccDistancePublisherDummy(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-            max_delta_v = 4
+            max_delta_v = 0.5
             self.velocity_car_ahead = \
                 self.velocity_car_ahead + \
                 random.uniform(-max_delta_v, max_delta_v)
@@ -62,10 +60,10 @@ class AccDistancePublisherDummy(CompatibleNode):
 
             self.distance = \
                 self.distance + \
-                self.velocity_car_ahead * (1 / self.control_loop_rate)
+                self.velocity_car_ahead * self.control_loop_rate
             self.distance = \
                 self.distance - \
-                self.velocity * (1 / self.control_loop_rate)
+                self.velocity * self.control_loop_rate
             if self.distance > 200:
                 self.loginfo("AccDistancePublisherDummy: "
                              "You lost the car in front")

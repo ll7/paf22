@@ -3,13 +3,16 @@
 """
 This node publishes all relevant topics for the ekf node.
 """
+import math
+
 import numpy as np
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from sensor_msgs.msg import NavSatFix, Imu
 from nav_msgs.msg import Odometry
+from std_msgs.msg import Float32
 from coordinate_transformation import CoordinateTransformer, GeoRef
-from scipy.spatial.transform import Rotation as R
+from tf.transformations import euler_from_quaternion
 
 
 GPS_RUNNING_AVG_ARGS = 5  # points taken into account for the avg
@@ -74,64 +77,50 @@ class EKFTranslation(CompatibleNode):
             "/vo",
             qos_profile=1)
 
+        self.__heading_publisher = self.new_publisher(
+            Float32,
+            f"/carla/{self.role_name}/current_heading",
+            qos_profile=1)
+
     def update_imu_data(self, data: Imu):
+        # Take measurements from IMU and republish with covariance
         imu_data = Imu()
 
         imu_data.header.stamp = data.header.stamp
         imu_data.header.frame_id = "hero"
 
-        imu_data.orientation.x = data.orientation.x
-        imu_data.orientation.y = data.orientation.y
-        imu_data.orientation.z = data.orientation.z
-        imu_data.orientation.w = data.orientation.w
+        imu_data.orientation = data.orientation
         imu_data.orientation_covariance = [0, 0, 0,
                                            0, 0, 0,
                                            0, 0, 0]
 
-        # Rotationsmatrix aufstellen
-        r = R.from_quat([imu_data.orientation.x,
-                         imu_data.orientation.y,
-                         imu_data.orientation.z,
-                         imu_data.orientation.w])
-        r = r.inv()
-        rot_mat = r.as_matrix()
-
-        # Werte für Linearbeschleunigung auslesen und umrechnen
-        lin_x = data.linear_acceleration.x
-        lin_y = data.angular_velocity.y
-        lin_z = data.angular_velocity.z
-
-        lin_v = np.array([[lin_x],
-                          [lin_y],
-                          [lin_z]])
-
-        lin_res_v = np.matmul(rot_mat, lin_v)
-
-        imu_data.linear_acceleration.x = lin_res_v.item(0)
-        imu_data.linear_acceleration.y = lin_res_v.item(1)
-        imu_data.linear_acceleration.z = lin_res_v.item(2)
+        imu_data.linear_acceleration = data.linear_acceleration
         imu_data.linear_acceleration_covariance = [0.001, 0,     0,
                                                    0,     0.001, 0,
                                                    0,     0,     0.015]
 
-        # Werte für Winkelbeschleunigung auslesen und umrechnen
-        ang_x = data.angular_velocity.x
-        ang_y = data.angular_velocity.y
-        ang_z = data.angular_velocity.z
-
-        ang_v = np.array([[ang_x],
-                          [ang_y],
-                          [ang_z]])
-        ang_res_v = np.matmul(rot_mat, ang_v)
-
-        imu_data.angular_velocity.x = ang_res_v.item(0)
-        imu_data.angular_velocity.y = ang_res_v.item(1)
-        imu_data.angular_velocity.z = ang_res_v.item(2)
+        imu_data.angular_velocity = data.angular_velocity
         imu_data.angular_velocity_covariance = [0.001, 0,     0,
                                                 0,     0.001, 0,
                                                 0,     0,     0.001]
 
         self.ekf_imu_publisher.publish(imu_data)
+
+        # Calculate the heading based on the orientation given by the IMU
+        data_orientation_q = [data.orientation.x,
+                              data.orientation.y,
+                              data.orientation.z,
+                              data.orientation.w]
+
+        roll, pitch, yaw = euler_from_quaternion(data_orientation_q)
+        raw_heading = math.atan2(roll, pitch)
+
+        # transform raw_heading so that:
+        # ---------------------------------------------------------------
+        # | 0 = x-axis | pi/2 = y-axis | pi = -x-axis | -pi/2 = -y-axis |
+        # ---------------------------------------------------------------
+        heading = (raw_heading - (math.pi / 2)) % (2 * math.pi) - math.pi
+        self.__heading_publisher.publish(heading)
 
     def update_gps_data(self, data: NavSatFix):
         # transform new measurement to global xyz-frame
@@ -172,6 +161,13 @@ class EKFTranslation(CompatibleNode):
                                     0, 0, 0, 999999, 0, 0,
                                     0, 0, 0, 0, 999999, 0,
                                     0, 0, 0, 0, 0, 999999]
+
+        odom_msg.twist.covariance = [999999, 0, 0, 0, 0, 0,
+                                     0, 999999, 0, 0, 0, 0,
+                                     0, 0, 999999, 0, 0, 0,
+                                     0, 0, 0, 999999, 0, 0,
+                                     0, 0, 0, 0, 999999, 0,
+                                     0, 0, 0, 0, 0, 999999]
 
         self.__publish_counter += 1
         if self.__publish_counter % 5 == 0:

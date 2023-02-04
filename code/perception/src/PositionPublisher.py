@@ -8,10 +8,8 @@ It therefore receives a nav_msgs/Path msg.
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
-from std_msgs.msg import Float32
 
-from coordinate_transformation import CoordinateTransformer, GeoRef, \
-    quat2heading
+from coordinate_transformation import CoordinateTransformer, GeoRef
 import rospy
 
 
@@ -60,11 +58,6 @@ class PositionPublisher(CompatibleNode):
             "/carla/" + self.role_name + "/current_pos",
             qos_profile=1)
 
-        self.heading_publisher = self.new_publisher(
-            Float32,
-            "/carla/" + self.role_name + "/current_heading",
-            qos_profile=1)
-
     def update_pos_filtered_data(self, data: PoseWithCovarianceStamped):
         self.current_pos_gps = data
 
@@ -74,18 +67,10 @@ class PositionPublisher(CompatibleNode):
         IMU, Speedometer and GNSS sensor data.
         :return:
         """
-        # self.loginfo("updating pos data")
         x = self.current_pos_gps.pose.pose.position.x
         y = self.current_pos_gps.pose.pose.position.y
         z = self.current_pos_gps.pose.pose.position.z
-        # x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
-
         orientation_quat = self.current_pos_gps.pose.pose.orientation
-        self.current_heading = quat2heading([orientation_quat.x,
-                                            orientation_quat.y,
-                                            orientation_quat.z,
-                                            orientation_quat.w])[0]
-        # self.loginfo(self.current_heading)
 
         temp_pose: PoseStamped = PoseStamped()
 
@@ -107,7 +92,6 @@ class PositionPublisher(CompatibleNode):
         # self.loginfo("publishing data")
         temp_pos = self.update_current_pos()
         self.pos_publisher.publish(temp_pos)
-        self.heading_publisher.publish(self.current_heading)
 
     def run(self):
         """

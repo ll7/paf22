@@ -43,7 +43,8 @@ RUN apt-get update && apt-get install -y \
 SHELL ["/bin/bash", "-c"]
 
 # Create and apply the non-root user
-RUN groupadd --gid $USER_GID $USERNAME \
+# -f parameter to work in macos (https://unix.stackexchange.com/a/465014), since gid is already in use there
+RUN groupadd --gid $USER_GID $USERNAME -f \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && apt-get update \
     && apt-get install -y sudo \

@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import ros_compatibility as roscomp
+import rospy
 from carla_msgs.msg import CarlaSpeedometer
 from ros_compatibility.node import CompatibleNode
 from ros_compatibility.qos import QoSProfile, DurabilityPolicy
-from rospy import Publisher, Subscriber
+from rospy import Publisher, Subscriber, Duration
 from simple_pid import PID
 from std_msgs.msg import Float32, Bool
 
@@ -31,6 +32,12 @@ class Acc(CompatibleNode):
             f"/carla/{self.role_name}/max_velocity",
             qos_profile=1)
 
+        # Use for testing
+        # self.d_dist_pub: Publisher = self.new_publisher(
+        #     Float32,
+        #     f"/carla/{self.role_name}/d_dist",
+        #     qos_profile=1)
+
         self.velocity_sub: Subscriber = self.new_subscription(
             CarlaSpeedometer,
             f"/carla/{self.role_name}/Speed",
@@ -47,6 +54,8 @@ class Acc(CompatibleNode):
         self.__velocity = None
         self.__dist = None
         self.__on = False
+        self.__dist_last_received_at = 0
+        self.__v_max = 0
 
     def run(self):
         """
@@ -54,7 +63,7 @@ class Acc(CompatibleNode):
         :return:
         """
         self.loginfo('VehicleController node running')
-        pid = PID(0.1, 0.01, 0)  # todo: tune
+        pid = PID(2, 0, 0.2)  # todo: tune
 
         def loop(timer_event=None):
             """
@@ -63,9 +72,10 @@ class Acc(CompatibleNode):
             :return:
             """
             if self.__dist is None:
-                self.logdebug("ACC hasn't received a distance"
-                              " yet and can therefore not publish a "
-                              "velocity")
+                if self.__on:
+                    self.logdebug("ACC hasn't received a distance"
+                                  " yet and can therefore not publish a "
+                                  "velocity")
                 return
             if self.__velocity is None:
                 self.logdebug("ACC hasn't received the velocity of the ego "
@@ -73,9 +83,25 @@ class Acc(CompatibleNode):
                               "velocity")
                 return
 
+            if self.__dist == -1:
+                self.loginfo("ACC turned off by sending dist = -1")
+                self.__on = False
+                self.__dist = None  # to check if new dist was published
+                return
+
+            if self.__on and rospy.get_rostime() - \
+               self.__dist_last_received_at\
+               > Duration(1):
+                self.logwarn("ACC hasn't received a distance for more than 1 "
+                             "second. ACC turning off")
+                self.velocity_pub.publish(0)
+                self.__on = False
+                self.__dist = None  # to check if new dist was published
+                return
+
             if not self.__on:
-                if self.__dist > 0 and \
-                   self.__dist > self.calculate_optimal_dist() * 0.7:
+                if self.__dist > 0 and self.__dist > \
+                   self.calculate_optimal_dist() * 0.7:
                     self.logwarn("ACC on")
                     self.__on = True
                 else:
@@ -87,20 +113,24 @@ class Acc(CompatibleNode):
                 self.velocity_pub.publish(0)
                 self.logwarn("ACC off")
                 self.__on = False
+                self.__dist = None  # to check if new dist was published
                 return
 
             if self.__dist < self.calculate_optimal_dist() / 2:
                 self.emergency_pub.publish(True)
                 self.on = False
+                self.__dist = None  # to check if new dist was published
                 self.logwarn("Distance to car in front is to low for ACC to "
                              "handle. "
                              "Turning ACC off and triggering emergency")
                 return
 
+            # Use for testing
+            # self.d_dist_pub.publish(self.calculate_optimal_dist()-self.__dist)
+
             pid.setpoint = self.calculate_optimal_dist()
             delta = pid(self.__dist)
             v = self.__velocity - delta
-            self.loginfo(v)
             v = max(v, 0)
             self.velocity_pub.publish(v)
 
@@ -109,6 +139,7 @@ class Acc(CompatibleNode):
 
     def __get_current_dist(self, data: Float32):
         self.__dist = data.data
+        self.__dist_last_received_at = rospy.get_rostime()
 
     def __get_velocity(self, data: CarlaSpeedometer):
         self.__velocity = data.speed

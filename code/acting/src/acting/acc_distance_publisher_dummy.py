@@ -51,7 +51,7 @@ class AccDistancePublisherDummy(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-            max_delta_v = 0.5
+            max_delta_v = 1
             self.velocity_car_ahead = \
                 self.velocity_car_ahead + \
                 random.uniform(-max_delta_v, max_delta_v)
@@ -65,15 +65,14 @@ class AccDistancePublisherDummy(CompatibleNode):
                 self.distance - \
                 self.velocity * self.control_loop_rate
             if self.distance > 200:
-                self.loginfo("AccDistancePublisherDummy: "
-                             "You lost the car in front")
+                self.logdebug("AccDistancePublisherDummy: "
+                              "You lost the car in front")
                 self.distance_pub.publish(-1)
             else:
                 self.distance_pub.publish(self.distance)
-            self.loginfo("v = " + str(self.velocity_car_ahead) +
-                         "; d = " + str(self.distance) +
-                         "; delte_v = " + str(
-                self.velocity_car_ahead - self.velocity))
+                self.loginfo("AccDistancePublisherDummy published: d = " + str(
+                    self.distance) + "; v_car_in_front = " + str(
+                    self.velocity_car_ahead))
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()

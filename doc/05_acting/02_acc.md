@@ -65,3 +65,8 @@ If the `acc_distance` isn't published for more than one second, the ACC will tur
 
 The ACC can be tested using the `AccDistancePublisherDummy`.
 To do so, enable the `AccDistancePublisherDummy` in the acting launch file.
+
+## Also see
+
+* [Dev round 4](../dev_rounds/sprint_4.md)
+* [research](../03_research/01_acting/Readme.md)

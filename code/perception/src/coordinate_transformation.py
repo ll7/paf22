@@ -114,11 +114,11 @@ def ecef_to_enu(x, y, z, lat0, lon0, h0):
     return xE, yN, zUp
 
 
-def quat2heading(quat: [float, float, float, float]):  # todo: docs
-    if all(v == 0 for v in quat):
-        return [0.0, 0.0, 0.0]
-    rot = R.from_quat(quat)
-    return rot.as_euler("xyz", degrees=True)
+# def quat2heading(quat: [float, float, float, float]):  # todo: docs
+#     if all(v == 0 for v in quat):
+#         return [0.0, 0.0, 0.0]
+#     rot = R.from_quat(quat)
+#     return rot.as_euler("xyz", degrees=True)
 #
 # if __name__ == '__main__':
 #    def are_close(a, b):

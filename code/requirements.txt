@@ -2,3 +2,6 @@ dvc==2.36.0
 dvc-gdrive==2.19.1
 torch==1.13.1
 torchvision==0.14.1
+scipy==1.10.0
+xmltodict==0.13.0
+py-trees==2.1.6

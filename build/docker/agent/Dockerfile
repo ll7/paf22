@@ -50,7 +50,7 @@ RUN apt-get update && apt-get install -y \
         ros-noetic-ackermann-msgs ros-noetic-derived-object-msgs \
         ros-noetic-carla-msgs ros-noetic-pcl-conversions \
         ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server \
-        ros-noetic-smach-ros
+        ros-noetic-smach-ros ros-noetic-cv-bridge ros-noetic-image-geometry ros-noetic-ros-numpy
 
 SHELL ["/bin/bash", "-c"]
 
@@ -137,6 +137,9 @@ COPY --chown=$USERNAME:$USERNAME ./code /workspace/code/
 
 # Link code into catkin workspace
 RUN ln -s /workspace/code /catkin_ws/src
+
+# Download ROS packages from GitHub
+RUN cd src && git clone https://github.com/timdreier/lidar-camera.git
 
 # re-make the catkin workspace
 RUN source /opt/ros/noetic/setup.bash && catkin_make

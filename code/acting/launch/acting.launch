@@ -8,10 +8,10 @@
         <param name="role_name" value="$(arg role_name)" />
     </node>
 
-    <!--<node pkg="acting" type="stanley_controller.py" name="stanley_controller" output="screen">-->
-    <!--    <param name="control_loop_rate" value="$(arg control_loop_rate)" />-->
-    <!--    <param name="role_name" value="$(arg role_name)" />-->
-    <!--</node>-->
+    <node pkg="acting" type="stanley_controller.py" name="stanley_controller" output="screen">
+        <param name="control_loop_rate" value="$(arg control_loop_rate)" />
+        <param name="role_name" value="$(arg role_name)" />
+    </node>
 
     <node pkg="acting" type="velocity_controller.py" name="velocity_controller" output="screen">
         <param name="control_loop_rate" value="$(arg control_loop_rate)" />

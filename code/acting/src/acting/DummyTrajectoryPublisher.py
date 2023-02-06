@@ -39,8 +39,8 @@ class DummyTrajectoryPub(CompatibleNode):
             (0, 0),
             (1, 0),
             (2, 0),
-            (2, 1),
-            (2, 2),]
+            (5, 0),
+            (15, 1),]
         self.updated_trajectory(self.initial_trajectory)
         # request for a new interpolated dummy trajectory
         # self.dummy_trajectory_request_subscriber = self.new_subscription(

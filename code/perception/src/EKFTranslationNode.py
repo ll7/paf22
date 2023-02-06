@@ -9,7 +9,7 @@ from ros_compatibility.node import CompatibleNode
 from sensor_msgs.msg import NavSatFix, Imu
 from nav_msgs.msg import Odometry
 from coordinate_transformation import CoordinateTransformer, GeoRef
-from scipy.spatial.transform import Rotation as R
+# from scipy.spatial.transform import Rotation as R
 
 
 class EKFTranslation(CompatibleNode):
@@ -77,9 +77,9 @@ class EKFTranslation(CompatibleNode):
         rot_offset = [data.orientation.x, data.orientation.y,
                       data.orientation.z, data.orientation.w]
         rot_corrected = self.transformer.correct_rotation_offset(rot_offset)
-        self.loginfo(self.loginfo(
-            "BEFORE: " + str(R.from_quat(rot_offset).as_euler("xyz"))))
-        self.loginfo(self.loginfo(R.from_quat(rot_corrected).as_euler("xyz")))
+        # self.loginfo(self.loginfo(
+        #     "BEFORE: " + str(R.from_quat(rot_offset).as_euler("xyz"))))
+        # self.loginfo(self.loginfo(R.from_quat(rot_corrected).as_euler("xyz")))
         # todo: multiply by pi to get correct value
 
         imu_data.orientation.x = rot_corrected[0]

@@ -4,7 +4,7 @@
 This node tests the subscription side of the dummy trajectory message.
 It therefore receives a nav_msgs/Path msg.
 """
-from math import atan2
+from math import atan2, pi, degrees
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
@@ -20,7 +20,7 @@ def quat2heading(msg):
                         orientation_q.w]
     (roll, pitch, yaw) = euler_from_quaternion(orientation_list)
     heading = float(atan2(pitch, roll))
-    return heading
+    return -heading + pi
 
 
 class PositionPublisher(CompatibleNode):
@@ -78,13 +78,14 @@ class PositionPublisher(CompatibleNode):
         :return:
         """
         # self.loginfo("updating pos data")
-        x = self.current_pos_gps.pose.pose.position.x
-        y = self.current_pos_gps.pose.pose.position.y
-        z = self.current_pos_gps.pose.pose.position.z
-        # x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
+        lat = self.current_pos_gps.pose.pose.position.x
+        lon = self.current_pos_gps.pose.pose.position.y
+        alt = self.current_pos_gps.pose.pose.position.z
+        x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
 
         orientation_quat = self.current_pos_gps.pose.pose.orientation
         self.current_heading = quat2heading(orientation_quat)
+        self.loginfo(degrees(self.current_heading))
         # self.loginfo(self.current_heading)
 
         temp_pose: PoseStamped = PoseStamped()

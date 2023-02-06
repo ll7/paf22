@@ -1,7 +1,8 @@
 <!-- TODO: Insert components of component-->
 <launch>
-  <!--<node pkg="perception" type="lidar_debugger.py" name="lidar_debugger" output="screen"/>-->
-
-  <include file="$(find lidar_camera)/launch/test_lidar_camera.launch">
-  </include>
+  <node pkg="lidar_camera" name="lidar_camera" type="lidar_camera_node" output="screen" required="true">
+    <remap from="cloud_in" to="/carla/hero/LIDAR"/>
+    <remap from="image_in" to="/carla/hero/Center/image"/>
+    <remap from="camera_info" to="/carla/hero/Center/camera_info"/>
+  </node>
 </launch>

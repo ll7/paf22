@@ -1,4 +1,2 @@
 dvc==2.36.0
 dvc-gdrive==2.19.1
-opencv-python==4.7.0.68
-numpy==1.23

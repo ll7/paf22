@@ -87,6 +87,7 @@ For more complex tasks it's easier to just get a shell into the container with `
 `b5 rosstack`
 `b5 rostopic`
 `b5 rosversion`
+`b5 rqt_graph`
 
 ## 🚨 Common Problems
 

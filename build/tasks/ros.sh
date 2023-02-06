@@ -101,3 +101,6 @@ task:rostopic() {
 task:rosversion() {
  task:roscommand "rosversion ${@}"
 }
+task:rqt_graph() {
+  task:roscommand "rqt_graph ${@}"
+}

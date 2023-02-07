@@ -68,10 +68,10 @@ class PositionPublisher(CompatibleNode):
         :return:
         """
         # self.loginfo("updating pos data")
-        lat = self.current_pos_gps.pose.pose.position.x
-        lon = self.current_pos_gps.pose.pose.position.y
-        alt = self.current_pos_gps.pose.pose.position.z
-        x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
+        x = self.current_pos_gps.pose.pose.position.x
+        y = self.current_pos_gps.pose.pose.position.y
+        z = self.current_pos_gps.pose.pose.position.z
+        # x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
 
         orientation_quat = self.current_pos_gps.pose.pose.orientation
         self.current_heading = quat2heading(orientation_quat)

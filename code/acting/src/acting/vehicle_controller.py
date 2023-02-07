@@ -133,8 +133,7 @@ class VehicleController(CompatibleNode):
             message.hand_brake = False
             message.manual_gear_shift = False
             pid.setpoint = self.__map_steering(steer)
-            # message.steer = pid(self.__current_steer)
-            message.steer = 0  # todo: jest for testing
+            message.steer = pid(self.__current_steer)
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)

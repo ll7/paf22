@@ -21,30 +21,34 @@ Julian Graf
   * [How to turn on the ACC](#how-to-turn-on-the-acc)
   * [How to turn off the ACC](#how-to-turn-off-the-acc)
   * [How to test the ACC](#how-to-test-the-acc)
+  * [Also see](#also-see)
 <!-- TOC -->
 
 ## What is the ACC
 
 The [ACC](https://en.wikipedia.org/wiki/Adaptive_cruise_control) will publish the vehicle speed to maintain a safe distance to vehicle ahead.
 An optimal distance to keep is therefore calculated using $dist = - \frac{1}{2} \cdot a \cdot (1s)^2 + v \cdot 1s + v \cdot 1s$.
-This gives 1 second to react and 1s to break before hitting the car in front suddenly breaking.
-The speed is then calculated using a [PID controller](https://en.wikipedia.org/wiki/PID_controller).
+This gives 1 second to react and 1s to break before hitting the car in front if it suddenly stops.
+The target speed is calculated using a [PID controller](https://en.wikipedia.org/wiki/PID_controller).
 
 To do this, the node needs the current distance to the vehicle in front in meters via the topic `acc_distance`.
 The ACC will automatically turn off, if this topic isn't published for more than one second.
-The node also need to receive the current speed published by the carla bridge.
+The node also needs to receive the current speed published by the carla bridge.
 
-The ACC will publish he calculated speed as `max_velocity`.
+The ACC will publish the calculated speed as `max_velocity`.
 The ACC might also trigger emergency breaking if a collisions seems likely.
 
 ## When to use the ACC
 
 The ACC is best used when following a road behind another car.
 It should only be used in more complicated situations with caution.
+
 The ACC needs to know the distance to the car in front.
 If this distance isn't published for more than one second, The ACC will automatically turn off.
-The ACC only takes this distance in account.
-This can for example lead to too high speed in tight corners or when driving around obstacles.
+
+The ACC only takes in account the distance to the car in front and the current speed of the ego vehicle.
+This can for example lead to too high speeds in tight corners or when driving around obstacles.
+The ACC will also hinder overtaking if not turned off.
 
 ## How to turn on the ACC
 

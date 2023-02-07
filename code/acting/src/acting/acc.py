@@ -83,7 +83,7 @@ class Acc(CompatibleNode):
                               "velocity")
                 return
 
-            if self.__dist < 0:
+            if self.__dist < 0 and self.__on:
                 self.loginfo("ACC turned off by sending dist < 0")
                 self.__on = False
                 self.__dist = None  # to check if new dist was published

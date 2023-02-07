@@ -92,3 +92,5 @@ task:install:git_hooks() {
     test -L ../.git/hooks/commit-msg || ln -s ../../build/hooks/commit-msg ../.git/hooks/
     chmod +x ./hooks/*
 }
+
+source ./tasks/ros.sh

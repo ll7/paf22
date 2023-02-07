@@ -154,11 +154,11 @@ class PurePursuitController(CompatibleNode):
             return
 
         cur_x, cur_y = points_to_vector(
-                                        (self.__last_pos[0],
-                                         self.__last_pos[1]),
-                                        (self.__position[0],
-                                         self.__position[1])
-                                        )
+            (self.__last_pos[0],
+             self.__last_pos[1]),
+            (self.__position[0],
+             self.__position[1])
+        )
         # maybe remove weight if it doesn't help (after fixing gps signal)
         # code without weight:
         # self.__heading = vectors_to_angle(cur_x, cur_y, 1, 0)

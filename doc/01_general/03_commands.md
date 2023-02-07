@@ -88,3 +88,13 @@ For more complex tasks it's easier to just get a shell into the container with `
 `b5 rostopic`
 `b5 rosversion`
 `b5 rqt_graph`
+
+## 🚨 Common Problems
+
+`
+REQUIRED process [carla_ros_bridge-1] has died!
+`
+
+If the execution of `b5 run` is stopping because of this error the reason might be a duplicate Carla ROS bridge.
+
+To eliminate this problem, run `b5 halt --remove-orphans`.

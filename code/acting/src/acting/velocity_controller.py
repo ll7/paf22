@@ -11,6 +11,8 @@ class VelocityController(CompatibleNode):
     """
     This node controls the velocity of the vehicle.
     For this it uses a PID controller
+    Published speeds will always stay below received speed limit
+    Publish speed_limit = -1 to drive without speeed limit
     """
 
     def __init__(self):
@@ -32,6 +34,12 @@ class VelocityController(CompatibleNode):
             self.__get_current_velocity,
             qos_profile=1)
 
+        self.speed_limit_sub: Subscriber = self.new_subscription(
+            Float32,
+            f"/carla/{self.role_name}/speed_limit",
+            self.__get_speed_limit,
+            qos_profile=1)
+
         self.throttle_pub: Publisher = self.new_publisher(
             Float32,
             f"/carla/{self.role_name}/throttle",
@@ -46,6 +54,7 @@ class VelocityController(CompatibleNode):
 
         self.__current_velocity: float = None
         self.__max_velocity: float = None
+        self.__speed_limit: float = None
 
     def run(self):
         """
@@ -58,6 +67,8 @@ class VelocityController(CompatibleNode):
         def loop(timer_event=None):
             """
             Calculates the result of the PID controller and publishes it.
+            Never publishes values above speed limit
+            (Publish speed_limit = -1 to drive without speeed limit)
             :param timer_event: Timer event from ROS
             :return:
             """
@@ -71,12 +82,15 @@ class VelocityController(CompatibleNode):
                               "current_velocity yet and can therefore not"
                               "publish a throttle value")
                 return
+            if self.__speed_limit is None or self.__speed_limit < 0:
+                self.__speed_limit = float("inf")
             if self.__max_velocity < 0:
                 self.logerr("Velocity controller doesn't support backward "
                             "driving yet.")
-                raise Exception("Velocity controller doesn't support backward "
-                                "driving yet.")
-            pid.setpoint = self.__max_velocity
+                return
+            v = min(self.__max_velocity, self.__speed_limit)
+
+            pid.setpoint = v
             throttle = pid(self.__current_velocity)
             throttle = max(throttle, 0)  # ensures that throttle >= 0
             throttle = min(throttle, 1.0)  # ensures that throttle <= 1
@@ -91,6 +105,9 @@ class VelocityController(CompatibleNode):
 
     def __get_max_velocity(self, data: Float32):
         self.__max_velocity = float(data.data)
+
+    def __get_speed_limit(self, data: Float32):
+        self.__speed_limit = float(data.data)
 
 
 def main(args=None):

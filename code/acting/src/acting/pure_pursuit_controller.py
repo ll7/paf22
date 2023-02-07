@@ -82,13 +82,13 @@ class PurePursuitController(CompatibleNode):
                               "yet and can therefore not publish steering")
                 return
             if self.__position is None:
-                self.logdebug("PurePursuitController hasn't received the"
+                self.logdebug("PurePursuitController hasn't received the "
                               "position of the vehicle yet "
                               "and can therefore not publish steering")
                 return
 
             if self.__heading is None:
-                self.logdebug("PurePursuitController hasn't received the"
+                self.logdebug("PurePursuitController hasn't received the "
                               "heading of the vehicle yet and "
                               "can therefore not publish steering")
                 return
@@ -123,9 +123,9 @@ class PurePursuitController(CompatibleNode):
         dist = self.__dist_to(data.pose.position)
         if dist < min_diff:
             # for debugging purposes:
-            # self.logwarn("New position disregarded, "
-            #              f"as dist ({round(dist, 3)}) to current pos "
-            #              f"< min_diff ({round(min_diff, 3)})")
+            self.logwarn("New position disregarded, "
+                         f"as dist ({round(dist, 3)}) to current pos "
+                         f"< min_diff ({round(min_diff, 3)})")
             return
 
         old_x = self.__position[0]

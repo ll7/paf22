@@ -47,32 +47,6 @@ class MainFramePublisher(CompatibleNode):
             if self.current_pos is None:
                 # conversion only works if pos is known
                 return
-            # Invert Translation and Rotation to transform from main
-            # to hero frame
-            # curr_rot = self.current_pos.pose.orientation
-            # rot_quat = [curr_rot.x, curr_rot.y, curr_rot.z, curr_rot.w]
-            # if all(v == 0 for v in rot_quat):
-            #     self.loginfo("Invalid rotation data")
-            #     rot_quat = [1, 0, 0, 0]
-            # rot_deg = -R.from_quat(rot_quat).as_euler("xyz", degrees=True)[
-            #     0] + 90
-            # self.loginfo(R.from_quat(rot_quat).as_euler("xyz", degrees=True))
-            # pos = [0, 0, 0]
-            # pos[0] = cos(radians(rot_deg)) * \
-            #     self.current_pos.pose.position.x - \
-            #     sin(radians(rot_deg)) * self.current_pos.pose.position.y
-            # pos[1] = sin(radians(rot_deg)) * \
-            #     self.current_pos.pose.position.x + \
-            #     cos(radians(rot_deg)) * self.current_pos.pose.position.y
-            # pos[2] = self.current_pos.pose.position.z
-            # pos[0] = pos[0] * -1
-            # pos[1] = pos[1] * -1
-            # rot_quat = R.from_euler("xyz", [0, 0, rot_deg], degrees=True) \
-            #     .as_quat()
-            pos = [-self.current_pos.pose.position.x,
-                   -self.current_pos.pose.position.y,
-                   -self.current_pos.pose.position.z]
-            self.loginfo("POS: " + str(pos))
             rot = -self.current_heading
             pos = [0, 0, 0]
             pos[0] = cos(rot) * \
@@ -84,7 +58,6 @@ class MainFramePublisher(CompatibleNode):
             pos[2] = -self.current_pos.pose.position.z
             pos[0] = pos[0] * 1
             pos[1] = pos[1] * 1
-            self.loginfo(pos)
             rot_quat = R.from_euler("xyz", [0, 0, -self.current_heading+pi],
                                     degrees=False).as_quat()
 

@@ -47,7 +47,6 @@ class CoordinateTransformer:
         self.la_ref = gps_ref.value[0]
         self.ln_ref = gps_ref.value[1]
         self.h_ref = gps_ref.value[2]
-        # self.ref_rot = [gps_ref.value[3], gps_ref.value[4], gps_ref.value[5]]
 
     def gnss_to_xyz(self, lat, lon, h):
         return geodetic_to_enu(lat, lon, h,

@@ -76,11 +76,6 @@ class EKFTranslation(CompatibleNode):
 
         rot = [data.orientation.x, data.orientation.y,
                data.orientation.z, data.orientation.w]
-        # rot_corrected = self.transformer.correct_rotation_offset(rot_offset)
-        # self.loginfo(self.loginfo(
-        #     "BEFORE: " + str(R.from_quat(rot_offset).as_euler("xyz"))))
-        # self.loginfo(self.loginfo(R.from_quat(rot_corrected).as_euler("xyz")))
-        # todo: multiply by pi to get correct value
 
         imu_data.orientation.x = rot[0]
         imu_data.orientation.y = rot[1]

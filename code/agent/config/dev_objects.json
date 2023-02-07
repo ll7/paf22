@@ -85,9 +85,9 @@
           "type": "sensor.other.gnss",
           "id": "GPS",
           "spawn_point": {
-            "x": 0.0,
+            "x": 0.7,
             "y": 0.0,
-            "z": 0.0
+            "z": 1.60
           },
           "noise_alt_stddev": 0.00000,
           "noise_lat_stddev": 0.00000,
@@ -107,12 +107,12 @@
             "pitch": 0.0,
             "yaw": 0.0
           },
-          "noise_accel_stddev_x": 0.00,
-          "noise_accel_stddev_y": 0.00,
-          "noise_accel_stddev_z": 0.0,
-          "noise_gyro_stddev_x": 0.00,
-          "noise_gyro_stddev_y": 0.00,
-          "noise_gyro_stddev_z": 0.00
+          "noise_accel_stddev_x": 0.001,
+          "noise_accel_stddev_y": 0.001,
+          "noise_accel_stddev_z": 0.015,
+          "noise_gyro_stddev_x": 0.001,
+          "noise_gyro_stddev_y": 0.001,
+          "noise_gyro_stddev_z": 0.001
         },
         {
           "type": "sensor.pseudo.speedometer",

@@ -66,11 +66,10 @@ class DummyTrajectorySub(CompatibleNode):
             qos_profile=1)
 
         # Publisher
-
-    #        self.pos_publisher = self.new_publisher(
-    #            PoseStamped,
-    #            "/carla/" + self.role_name + "/current_pos",
-    #            qos_profile=1)
+#        self.pos_publisher = self.new_publisher(
+#            PoseStamped,
+#            "/carla/" + self.role_name + "/current_pos",
+#            qos_profile=1)
 
     def output_gps_2_xyz(self, data: NavSatFix):
         """

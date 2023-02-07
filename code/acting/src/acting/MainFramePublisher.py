@@ -72,7 +72,7 @@ class MainFramePublisher(CompatibleNode):
             pos = [self.current_pos.pose.position.x,
                    self.current_pos.pose.position.y,
                    self.current_pos.pose.position.z]
-            pos = [0, 0, 0]
+            self.loginfo(pos)
             rot_quat = R.from_euler("xyz", [0, 0, -self.current_heading+pi],
                                     degrees=False).as_quat()
 

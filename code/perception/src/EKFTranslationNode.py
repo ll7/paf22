@@ -74,18 +74,18 @@ class EKFTranslation(CompatibleNode):
         imu_data.header.stamp = data.header.stamp
         imu_data.header.frame_id = "hero"
 
-        rot_offset = [data.orientation.x, data.orientation.y,
-                      data.orientation.z, data.orientation.w]
-        rot_corrected = self.transformer.correct_rotation_offset(rot_offset)
+        rot = [data.orientation.x, data.orientation.y,
+               data.orientation.z, data.orientation.w]
+        # rot_corrected = self.transformer.correct_rotation_offset(rot_offset)
         # self.loginfo(self.loginfo(
         #     "BEFORE: " + str(R.from_quat(rot_offset).as_euler("xyz"))))
         # self.loginfo(self.loginfo(R.from_quat(rot_corrected).as_euler("xyz")))
         # todo: multiply by pi to get correct value
 
-        imu_data.orientation.x = rot_corrected[0]
-        imu_data.orientation.y = rot_corrected[1]
-        imu_data.orientation.z = rot_corrected[2]
-        imu_data.orientation.w = rot_corrected[3]
+        imu_data.orientation.x = rot[0]
+        imu_data.orientation.y = rot[1]
+        imu_data.orientation.z = rot[2]
+        imu_data.orientation.w = rot[3]
         imu_data.orientation_covariance = [0, 0, 0,
                                            0, 0, 0,
                                            0, 0, 0]

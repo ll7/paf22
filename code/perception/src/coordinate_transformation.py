@@ -9,25 +9,23 @@ http://dirsig.cis.rit.edu/docs/new/coordinates.html
 """
 import math
 from enum import Enum
-
-import numpy as np
-from scipy.spatial.transform import Rotation as R
+from tf.transformations import euler_from_quaternion
 
 
 # Class to choose a map with a predefined reference point
-class GeoRef(Enum):  # vales are rounded # todo: add citys
-    TOWN01 = 0, 0, 0, -57.2957356, 0.0709563127, 0
-    TOWN02 = 0, 0, 0  # lat = 6.7e-10, lon= -3.4e-11, alt = -0.004
-    TOWN03 = 0, 0, 0  # lat = 5.1e-10, lon = 2.1e-10, alt = 0.03
-    TOWN04 = 0, 0, 0  # 0,0,0 not possible, but ref is correct
-    TOWN05 = 0, 0, 0  # lat =2.6e-09, lon =8.7e-11, alt =-0.004 #fav
+class GeoRef(Enum):
+    TOWN01 = 0, 0, 0
+    TOWN02 = 0, 0, 0
+    TOWN03 = 0, 0, 0
+    TOWN04 = 0, 0, 0
+    TOWN05 = 0, 0, 0
     TOWN06 = 0, 0, 0  # lat =, lon =, alt = #Town06/HD not found
     TOWN07 = 0, 0, 0  # lat =, lon =, alt = #Town07/HD not found
     TOWN08 = 0, 0, 0  # lat =, lon =, alt = #Town08/HD not found
     TOWN09 = 0, 0, 0  # lat =, lon =, alt = #Town09/HD not found
-    TOWN10 = 0, 0, 0  # lat =-8.9e-05, lon =-3.1e-11, alt = 0.0 #Town10HD
+    TOWN10 = 0, 0, 0  # Town10HD
     TOWN11 = 0, 0, 0  # lat =, lon =, alt = #Town11/HD not found
-    TOWN12 = 35.25000, -101.87500, 331.00000, 0, 0, 0
+    TOWN12 = 35.25000, -101.87500, 331.00000
 
 
 a = 6378137
@@ -49,18 +47,11 @@ class CoordinateTransformer:
         self.la_ref = gps_ref.value[0]
         self.ln_ref = gps_ref.value[1]
         self.h_ref = gps_ref.value[2]
-        self.ref_rot = [gps_ref.value[3], gps_ref.value[4], gps_ref.value[5]]
+        # self.ref_rot = [gps_ref.value[3], gps_ref.value[4], gps_ref.value[5]]
 
     def gnss_to_xyz(self, lat, lon, h):
         return geodetic_to_enu(lat, lon, h,
                                self.la_ref, self.ln_ref, self.h_ref)
-
-    def correct_rotation_offset(self, quat: (float, float, float, float)):
-        self.ref_rot = [0, 0, 0]
-        rot = R.from_quat(quat).as_matrix()
-        ref_rot = R.from_euler("xyz", self.ref_rot).inv().as_matrix()
-        corrected_rot = np.matmul(rot, ref_rot)
-        return R.from_matrix(corrected_rot).as_quat()
 
 
 def geodetic_to_enu(lat, lon, h, lat_ref, lon_ref, h_ref):
@@ -114,12 +105,14 @@ def ecef_to_enu(x, y, z, lat0, lon0, h0):
     return xE, yN, zUp
 
 
-# def quat2heading(quat: [float, float, float, float]):  # todo: docs
-#     if all(v == 0 for v in quat):
-#         return [0.0, 0.0, 0.0]
-#     rot = R.from_quat(quat)
-#     return rot.as_euler("xyz", degrees=True)
-#
+def quat2heading(msg):
+    orientation_q = msg
+    orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z,
+                        orientation_q.w]
+    (roll, pitch, yaw) = euler_from_quaternion(orientation_list)
+    heading = float(math.atan2(pitch, roll))
+    return -heading + math.pi
+
 # if __name__ == '__main__':
 #    def are_close(a, b):
 #        return abs(a - b) < 1e-4

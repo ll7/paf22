@@ -99,6 +99,7 @@ class Cruise(py_trees.behaviour.Behaviour):
         self.blackboard = py_trees.blackboard.Blackboard()
 
     def update(self):
+        rospy.loginfo("Crusing around")
         return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):

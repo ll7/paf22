@@ -97,3 +97,5 @@ task:install:git_hooks() {
 task:gitconfig:copy() {
   cp -u ~/.gitconfig ../.gitconfig
 }
+
+source ./tasks/ros.sh

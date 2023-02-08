@@ -57,3 +57,23 @@ The last step is to set up the docker-compose integration.
 For this, please follow this [official guide](https://www.jetbrains.com/help/pycharm/using-docker-compose-as-a-remote-interpreter.html#docker-compose-remote), while selecting `./build/docker-compose.yml` as configuration file and `agent` as service.
 
 After the initial indexing, PyCharm will provide intelligent code feedback and refactoring options in Python.
+
+## 🚨 Common Problems
+
+* Error when committing via PyCharm (error message may vary):
+
+  ```shell
+  ...
+  .git/hooks/pre-commit: 9: ././build/hooks/pre-commit.d/20-markdown.sh: b5: not found
+  ```
+
+  This may happen if you installed b5 in your conda environment instead of the native one.
+  To fix this, install b5 in your native environment:
+
+  ```shell
+  conda deactivate
+  sudo apt-get install python pip
+  pip install b5
+  ```
+  
+  After that, the commit should work!

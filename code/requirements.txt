@@ -1,3 +1,5 @@
+dvc==2.36.0
+dvc-gdrive==2.19.1
 torch==1.13.1
 torchvision==0.14.1
 torchaudio==0.13.1
@@ -8,3 +10,6 @@ git+https://github.com/facebookresearch/detectron2.git
 inplace-abn==1.1.0
 efficientnet_pytorch==0.7.1
 opencv-python==4.7.0.68
+scipy==1.10.0
+xmltodict==0.13.0
+py-trees==2.1.6

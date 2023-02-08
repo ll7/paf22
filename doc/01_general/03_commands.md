@@ -56,3 +56,45 @@ Runs the python linter. More documentation about linting can be found [here](../
 ### `b5 markdown:lint`
 
 Runs the markdown linter. More documentation about linting can be found [here](../02_development/02_linting.md).
+
+## Shortcuts for ROS
+
+Shortcuts to run the ROS commands directly in the container. Detailed documentation
+about this commands can be found [here](http://wiki.ros.org/ROS/CommandLineTools#Common_user_tools).
+
+For more complex tasks it's easier to just get a shell into the container with `b5 shell` and run the commands there.
+
+`b5 rosbag`
+`b5 ros_readbagfile`
+`b5 rosbash`
+`b5 roscd`
+`b5 rosclean`
+`b5 roscore`
+`b5 rosdep`
+`b5 rosed`
+`b5 roscreate-pkg`
+`b5 roscreate-stack`
+`b5 rosrun`
+`b5 roslaunch`
+`b5 roslocate`
+`b5 rosmake`
+`b5 rosmsg`
+`b5 rosnode`
+`b5 rospack`
+`b5 rosparam`
+`b5 rossrv`
+`b5 rosservice`
+`b5 rosstack`
+`b5 rostopic`
+`b5 rosversion`
+`b5 rqt_graph`
+
+## 🚨 Common Problems
+
+`
+REQUIRED process [carla_ros_bridge-1] has died!
+`
+
+If the execution of `b5 run` is stopping because of this error the reason might be a duplicate Carla ROS bridge.
+
+To eliminate this problem, run `b5 halt --remove-orphans`.

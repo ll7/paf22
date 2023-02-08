@@ -13,6 +13,10 @@ from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 
 from preplanning_trajectory import OpenDriveConverter
 
+RIGHT = 1
+LEFT = 2
+FORWARD = 3
+
 
 class PrePlanner(CompatibleNode):
 
@@ -88,13 +92,16 @@ class PrePlanner(CompatibleNode):
             return
 
         self.global_route_backup = None
+        # wrong start coordinates from GPS
         x_start = self.agent_pos.x
         y_start = self.agent_pos.y
+        x_start = 983.5
+        y_start = -5373.2
         # z_start = self.agent_pos.z
-        roll_start, pitch_start, yaw_start = \
+        """ roll_start, pitch_start, yaw_start = \
             tf.transformations.euler_from_quaternion(
              [self.agent_ori.x, self.agent_ori.y,
-              self.agent_ori.z, self.agent_ori.w])
+              self.agent_ori.z, self.agent_ori.w]) """
 
         self.loginfo(f"x_start = {x_start}")
         self.loginfo(f"y_start = {y_start}")
@@ -102,54 +109,85 @@ class PrePlanner(CompatibleNode):
         x_target = data.poses[0].position.x
         y_target = data.poses[0].position.y
         # z_target = data.poses[0].position.z
-        roll_target, pitch_target, yaw_target = \
+        """ roll_target, pitch_target, yaw_target = \
             tf.transformations.euler_from_quaternion(
              [data.poses[0].orientation.x, data.poses[0].orientation.y,
-              data.poses[0].orientation.z, data.poses[0].orientation.w])
+              data.poses[0].orientation.z, data.poses[0].orientation.w]) """
 
         self.loginfo(f"x_target = {x_target}")
         self.loginfo(f"y_target = {y_target}")
 
         self.loginfo(f"Road Options: {data.road_options}")
         for i in range(20):
-            x_target = data.poses[i].position.x
-            y_target = data.poses[i].position.y
-            self.loginfo(f"x_target = {x_target}")
-            self.loginfo(f"y_target = {y_target}")
-            roll, pitch, yaw = tf.transformations.euler_from_quaternion(
-                [data.poses[i].orientation.x, data.poses[i].orientation.y,
-                 data.poses[i].orientation.z, data.poses[i].orientation.w])
-            self.loginfo(f"yaw = {yaw}")
-            self.loginfo(f"yaw = {roll}")
-            self.loginfo(f"yaw = {pitch}")
+            x_t = data.poses[i].position.x
+            y_t = data.poses[i].position.y
+            self.loginfo(f"x_target = {x_t}")
+            self.loginfo(f"y_target = {y_t}")
             self.loginfo("\n")
 
-        # Trajectory for the starting road segment
-        self.odc.initial_road_trajectory(x_start, y_start, x_target, y_target,
-                                         yaw_start, yaw_target,
-                                         data.road_options[0])
+        # get the first turn command (1, 2, or 3)
+        ind = 0
+        for i, opt in enumerate(data.road_options):
+            if opt == LEFT or opt == RIGHT or opt == FORWARD:
+                x_turn = data.poses[i].position.x
+                y_turn = data.poses[i].position.y
+                ind = i
+                break
+        # if first target point is turning point
+        if x_target == x_turn and y_target == y_turn:
+            x_target = None
+            y_target = None
 
+        x_turn_follow = data.poses[ind+1].position.x
+        y_turn_follow = data.poses[ind+1].position.y
+
+        self.loginfo(f"x_target = {x_start}")
+        self.loginfo(f"y_target = {y_start}")
+        self.loginfo(f"x_target = {x_turn}")
+        self.loginfo(f"y_target = {y_turn}")
+        self.loginfo(f"x_target = {x_turn_follow}")
+        self.loginfo(f"y_target = {y_turn_follow}")
+        self.loginfo(f"x_target = {x_target}")
+        self.loginfo(f"y_target = {y_target}")
+        # Trajectory for the starting road segment
+        self.odc.initial_road_trajectory(x_start, y_start,
+                                         x_turn, y_turn,
+                                         x_turn_follow, y_turn_follow,
+                                         x_target, y_target,
+                                         0, data.road_options[0])
         n = len(data.poses)
-        i = 1
+
         # iterating through global route to create trajectory
-        for pose, road_option in zip(data.poses, data.road_options):
-            self.loginfo(f"Preplanner going throug global plan {i}/{n}")
-            i += 1
-            x_target = pose.position.x
-            y_target = pose.position.y
+        for i in range(1, len(data.road_options)):
+            self.loginfo(f"Preplanner going throug global plan {i+1}/{n}")
+
+            x_target = data.poses[i].position.x
+            y_target = data.poses[i].position.y
+            action = data.road_options[i]
             # z_target = pose.position.z
 
-            roll, pitch, yaw = tf.transformations.euler_from_quaternion(
+            """ roll, pitch, yaw = tf.transformations.euler_from_quaternion(
                 [pose.orientation.x, pose.orientation.y,
                  pose.orientation.z, pose.orientation.w])
-            action = yaw    # TODO: action should be road_option
-            self.loginfo("road option {}".format(road_option))
-            self.loginfo("Yaw {}".format(yaw))
-
+            action = yaw    # TODO: action should be road_option """
+            # self.loginfo("Yaw {}".format(yaw))
+            # last target reached -> has no follower
+            if i == len(data.road_options) - 1:
+                break
+            x_target_next = data.poses[i+1].position.x
+            y_target_next = data.poses[i+1].position.y
             self.odc.target_road_trajectory(x_target, y_target,
-                                            self.odc.rad_to_degree(action),
-                                            road_option)
+                                            x_target_next, y_target_next,
+                                            action)
+            self.loginfo("ROAD ID {}".format(self.odc.road_id))
+            self.loginfo("Action {}".format(action))
 
+        self.odc.target_road_trajectory(x_target, y_target,
+                                        None, None,
+                                        action)
+        self.loginfo("ROAD ID {}".format(self.odc.road_id))
+        self.loginfo("Action {}".format(action))
+        self.loginfo("Trajectory completed!")
         # trajectory is now stored in the waypoints
         waypoints = self.odc.waypoints
         way_x = waypoints[0]
@@ -164,8 +202,9 @@ class PrePlanner(CompatibleNode):
             position = Point(way_x[i], way_y[i], 0)
             quaternion = tf.transformations.quaternion_from_euler(0,
                                                                   0,
-                                                                  way_yaw)
-            orientation = Quaternion(quaternion)
+                                                                  way_yaw[i])
+            orientation = Quaternion(x=quaternion[0], y=quaternion[1],
+                                     z=quaternion[2], w=quaternion[3])
             pose = Pose(position, orientation)
             header = Header(self.seq, rospy.Time.now(), "path_pose")
             self.seq += 1

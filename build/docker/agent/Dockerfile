@@ -50,7 +50,7 @@ RUN apt-get update && apt-get install -y \
         ros-noetic-ackermann-msgs ros-noetic-derived-object-msgs \
         ros-noetic-carla-msgs ros-noetic-pcl-conversions \
         ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server \
-        ros-noetic-smach-ros ros-noetic-cv-bridge ros-noetic-image-geometry ros-noetic-ros-numpy
+        ros-noetic-smach-ros
 
 SHELL ["/bin/bash", "-c"]
 

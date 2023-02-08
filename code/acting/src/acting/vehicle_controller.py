@@ -164,7 +164,7 @@ class VehicleController(CompatibleNode):
             return
         if self.__emergency:  # emergency was already triggered
             return
-        self.loginfo("Emergency breaking engaged")
+        self.logerr("Emergency breaking engaged")
         self.__emergency = True
         message = CarlaEgoVehicleControl()
         message.throttle = 1

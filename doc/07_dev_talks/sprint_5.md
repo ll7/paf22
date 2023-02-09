@@ -1,4 +1,4 @@
-# Dev round - Sprint 4
+# Dev talk - Sprint 5
 
 **Summary:** For better communication a developer round is held in this sprint to improve communication and clarify responsibilities.
 
@@ -31,6 +31,18 @@ Marco Riedenauer
 <!-- TOC -->
 
 ## Planning
+
+### Suggestions
+
+traffic light message:
+
+    int state
+    float distance
+
+traffic sign message:
+
+    bool isStop
+    float distance
 
 ### Things that need to handled
 

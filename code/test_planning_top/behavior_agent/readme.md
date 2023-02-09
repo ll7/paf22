@@ -27,6 +27,7 @@ The following Notation is used in this documentation:
 ### Big Picture
 
 ![BT Big Picture](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/bt_big_picture.svg)
+
 This top-level tree consists mainly of sub-trees that are explained below. If none of the subtrees fit the current situation, the behaviour_agent goes into _Cruising_-behaviour, where it just follows the Path at an appropriate speed.
 
 ### Intersection
@@ -51,6 +52,7 @@ If there is a Intersection coming up the agent executes the following sequence o
 ### Roundabout
 
 ![BT Roundabout](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/bt-roundabout.svg)
+
 This subtree is basically identical to the intersection-subtree. The implementation of the behaviours varies a bit though.
 
 ### Overtaking

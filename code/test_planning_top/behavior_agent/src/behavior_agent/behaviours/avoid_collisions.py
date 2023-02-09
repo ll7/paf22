@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import py_trees
-import rospy
-import math
-from nav_msgs.msg import Odometry
+# import rospy
+# import math
+# from nav_msgs.msg import Odometry
 
 """
 Source: https://github.com/ll7/psaf2

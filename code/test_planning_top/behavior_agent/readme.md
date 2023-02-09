@@ -32,6 +32,7 @@ This top-level tree consists mainly of sub-trees that are explained below. If no
 ### Intersection
 
 ![BT Intersection](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/bt-intersection.svg)
+
 If there is a Intersection coming up the agent executes the following sequence of behaviours:
 
 * Approach Intersection

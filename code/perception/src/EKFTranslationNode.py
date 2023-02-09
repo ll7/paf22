@@ -74,13 +74,10 @@ class EKFTranslation(CompatibleNode):
         imu_data.header.stamp = data.header.stamp
         imu_data.header.frame_id = "hero"
 
-        rot = [data.orientation.x, data.orientation.y,
-               data.orientation.z, data.orientation.w]
-
-        imu_data.orientation.x = rot[0]
-        imu_data.orientation.y = rot[1]
-        imu_data.orientation.z = rot[2]
-        imu_data.orientation.w = rot[3]
+        imu_data.orientation.x = data.orientation.x
+        imu_data.orientation.y = data.orientation.y
+        imu_data.orientation.z = data.orientation.z
+        imu_data.orientation.w = data.orientation.w
         imu_data.orientation_covariance = [0, 0, 0,
                                            0, 0, 0,
                                            0, 0, 0]

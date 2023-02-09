@@ -104,7 +104,7 @@ def ecef_to_enu(x, y, z, lat0, lon0, h0):
     return xE, yN, zUp
 
 
-def quat2heading(msg):
+def quat_to_heading(msg):
     orientation_q = msg
     orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z,
                         orientation_q.w]

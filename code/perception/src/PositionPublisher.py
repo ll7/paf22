@@ -9,7 +9,7 @@ from ros_compatibility.node import CompatibleNode
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from std_msgs.msg import Float32
 from coordinate_transformation import CoordinateTransformer, GeoRef, \
-    quat2heading
+    quat_to_heading
 import rospy
 
 
@@ -74,7 +74,7 @@ class PositionPublisher(CompatibleNode):
         # x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
 
         orientation_quat = self.current_pos_gps.pose.pose.orientation
-        self.current_heading = quat2heading(orientation_quat)
+        self.current_heading = quat_to_heading(orientation_quat)
         # self.loginfo(degrees(self.current_heading))
         # self.loginfo(self.current_heading)
 

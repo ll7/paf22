@@ -56,8 +56,6 @@ class MainFramePublisher(CompatibleNode):
                 self.current_pos.pose.position.x + \
                 cos(rot) * self.current_pos.pose.position.y
             pos[2] = -self.current_pos.pose.position.z
-            pos[0] = pos[0] * 1
-            pos[1] = pos[1] * 1
             rot_quat = R.from_euler("xyz", [0, 0, -self.current_heading+pi],
                                     degrees=False).as_quat()
 

@@ -11,7 +11,7 @@ from nav_msgs.msg import Path
 from scipy.spatial.transform import Rotation
 
 
-def vectors_to_angle(x1: float, y1: float, x2: float, y2: float) -> float:
+def vectors_to_angle_abs(x1: float, y1: float, x2: float, y2: float) -> float:
     """
     Returns the angle (degrees) between the two given vectors
     :param x1: v1[x]
@@ -20,13 +20,33 @@ def vectors_to_angle(x1: float, y1: float, x2: float, y2: float) -> float:
     :param y2: v2[y]
     :return: angle between v1 and v2
     """
-    v1 = [x1, y1]
-    v2 = [x2, y2]
+    v1 = np.array([x1, y1])
+    v2 = np.array([x2, y2])
 
     cos_angle = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
-    alpha = np.arccos(cos_angle)
+    alpha = math.acos(cos_angle)
+    return alpha
 
-    return math.degrees(alpha)
+
+def vector_angle(x1: float, y1: float) -> float:
+    """
+    Returns the angle (degrees) between the two given vectors
+    :param x1: v1[x]
+    :param y1: v1[y]
+    :return: angle between v1 and x-axis [-pi/2, pi/2]
+    """
+    # v_0 is a vector parallel on the x-axis
+    l_v = math.sqrt(x1**2 + y1**2)
+    x_0 = x1 + l_v
+    y_0 = 0
+    # return the angle between the 2 vectors
+    alpha = vectors_to_angle_abs(x_0, y_0, x1, y1)
+    # check if the angle should be negative
+    if y1 < 0:
+        sign = -1
+    else:
+        sign = 0
+    return alpha * sign
 
 
 def vector_to_direction(x1, y1, x2, y2) -> float:

@@ -1,5 +1,6 @@
 .DS_Store
 .idea
+.gitconfig
 
 build/config.local.yml
 

@@ -35,9 +35,11 @@ Marco Riedenauer
 
 ### Suggestions
 
+How should be the naming convention for topics?
+
 traffic light message:
 
-    int state
+    int state or string color
     float distance
 
 traffic sign message:
@@ -63,7 +65,7 @@ acc message:
 
 * Information from acting
   * is it simple enough to have a bool message?
-  * this message would only be used to deactive in case of overturn and put back on afterwards and otherwise the ACC could turn on automatically when the distance to the car in front is below a threshold?
+  * this message would only be used to de-active in case of overturn and put back on afterwards and otherwise the ACC could turn on automatically when the distance to the car in front is below a threshold?
 
 ### Results
 

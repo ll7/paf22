@@ -23,11 +23,9 @@ class MockTrafficLightPublisher(CompatibleNode):
             Traffic_light,
             f"/carla/{self.role_name}/traffic_light",
             qos_profile=1)
-        self.velocity = 7
-        self.delta_velocity = 0.25
-        self.max_velocity = 10
-        self.min_velocity = 5
-        self.__dv = self.delta_velocity
+        self.delta = 0.5
+        self.distance = 100.0
+        self.color = "green"
 
     def run(self):
         """
@@ -44,16 +42,19 @@ class MockTrafficLightPublisher(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-            # self.loginfo('Published dummy velocity: ' + str(self.velocity))
             msg = Traffic_light()
-            msg.color = "green"
-            msg.distance = 100.0
-            self.velocity_pub.publish(msg)
-            # if self.velocity > self.max_velocity:
-            #     self.__dv = -self.delta_velocity
-            # if self.velocity < self.min_velocity:
-            #     self.__dv = self.delta_velocity
-            # self.velocity += self.__dv
+            msg.color = self.color
+            self.distance -= self.delta
+            if self.distance < 0.0:
+                if self.color == "green":
+                    self.color = "yellow"
+                elif self.color == "yellow":
+                    self.color = "red"
+                elif self.color == "red":
+                    self.color = "green"
+                self.distance = 100.0
+            msg.distance = self.distance
+            self.traffic_light_pub.publish(msg)
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 

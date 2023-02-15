@@ -23,8 +23,8 @@ class MockTrafficLightPublisher(CompatibleNode):
             Traffic_light,
             f"/carla/{self.role_name}/traffic_light",
             qos_profile=1)
-        self.delta = 0.5
-        self.distance = 100.0
+        self.delta = 0.2
+        self.distance = 20.0
         self.color = "green"
 
     def run(self):
@@ -52,7 +52,7 @@ class MockTrafficLightPublisher(CompatibleNode):
                     self.color = "red"
                 elif self.color == "red":
                     self.color = "green"
-                self.distance = 100.0
+                self.distance = 20.0
             msg.distance = self.distance
             self.traffic_light_pub.publish(msg)
         self.new_timer(self.control_loop_rate, loop)

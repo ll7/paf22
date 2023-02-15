@@ -1,6 +1,6 @@
 import py_trees
 import numpy as np
-from std_msgs.msg import Float64
+from std_msgs.msg import Float32
 # from nav_msgs.msg import Odometry
 # from custom_carla_msgs.srv import UpdateLocalPath
 
@@ -20,11 +20,8 @@ class Approach(py_trees.behaviour.Behaviour):
     """
     def __init__(self, name):
         """
-        Minimal one-time initialisation. A good rule of thumb is to only
-        include the initialisation relevant for being able to insert this
-        behaviour in a tree for offline rendering to dot graphs.
-        Other one-time initialisation requirements should be met via the
-        setup() method.
+        Minimal one-time initialisation. Other one-time initialisation
+        requirements should be met via the setup() method.
          :param name: name of the behaviour
         """
         super(Approach, self).__init__(name)
@@ -42,7 +39,7 @@ class Approach(py_trees.behaviour.Behaviour):
         :return: True, as the set up is successful.
         """
         self.target_speed_pub = rospy.Publisher("/carla/hero/max_velocity",
-                                                Float64, queue_size=1)
+                                                Float32, queue_size=1)
         # rospy.wait_for_service('update_local_path') # TODO is this necessary?
         # self.update_local_path =
         # rospy.ServiceProxy("update_local_path", UpdateLocalPath)
@@ -125,7 +122,10 @@ class Approach(py_trees.behaviour.Behaviour):
 
         # get speed
         speedometer = self.blackboard.get("/carla/hero/Speed")
-        speed = speedometer.speed
+        if speedometer is not None:
+            speed = speedometer.speed
+        else:
+            rospy.logwarn("no speedometer connected")
         if self.virtual_stopline_distance > 5.0:
             # too far
             return py_trees.common.Status.RUNNING
@@ -175,33 +175,88 @@ class Approach(py_trees.behaviour.Behaviour):
 
 
 class Wait(py_trees.behaviour.Behaviour):
+    """
+    This behavior handles the waiting in front of the stop line at the inter-
+    section until there either is no traffic light or the traffic light is
+    green.
+    """
     def __init__(self, name):
+        """
+        Minimal one-time initialisation. Other one-time initialisation
+        requirements should be met via the setup() method.
+         :param name: name of the behaviour
+        """
         super(Wait, self).__init__(name)
 
     def setup(self, timeout):
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
-                                                "target_speed", Float64,
+        """
+        Delayed one-time initialisation that would otherwise interfere with
+        offline rendering of this behaviour in a tree to dot graph or
+        validation of the behaviour's configuration.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics and the target speed publisher.
+        :param timeout: an initial timeout to see if the tree generation is
+        successful
+        :return: True, as the set up is successful.
+        """
+        self.target_speed_pub = rospy.Publisher("/carla/hero/"
+                                                "max_velocity", Float32,
                                                 queue_size=1)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
+        """
+        When is this called?
+            The first time your behaviour is ticked and anytime the status is
+            not RUNNING thereafter.
+        What to do here?
+            Any initialisation you need before putting your behaviour to work.
+        This just prints a state status message.
+        """
         rospy.loginfo("Wait Intersection")
         return True
 
     def update(self):
-        light_status = self.blackboard.get("/psaf/ego_vehicle/traffic_light")
-        if light_status is None:
+        """
+        When is this called?
+            Every time your behaviour is ticked.
+        What to do here?
+           - Triggering, checking, monitoring. Anything...but do not block!
+           - Set a feedback message
+           - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
+        Waits in front of the intersection until there is a green light or no
+        traffic light at all.
+        :return: py_trees.common.Status.RUNNING, while traffic light is yellow
+                 or red
+                 py_trees.common.Status.SUCCESS, if the traffic light switched
+                 to green or no traffic light is detected
+        """
+        light_status_msg = self.blackboard.get("/carla/hero/traffic_light")
+        if light_status_msg is None:
+            rospy.loginfo("No traffic light detected")
             return py_trees.common.Status.SUCCESS
         else:
-            light_status = light_status.color
-        if light_status == "red" or light_status == "yellow":
+            traffic_light_status = light_status_msg.color
+        if traffic_light_status == "red" or traffic_light_status == "yellow":
+            rospy.loginfo(f"Light Status: {traffic_light_status}")
             self.target_speed_pub.publish(0)
             return py_trees.common.Status.RUNNING
         else:
+            rospy.loginfo(f"Light Status: {traffic_light_status}")
             return py_trees.common.Status.SUCCESS
 
     def terminate(self, new_status):
+        """
+        When is this called?
+            Whenever your behaviour switches to a non-running state.
+           - SUCCESS || FAILURE : your behaviour's work cycle has finished
+           - INVALID : a higher priority branch has interrupted, or shutting
+           down
+        writes a status message to the console when the behaviour terminates
+        :param new_status: new state after this one is terminated
+        """
         self.logger.debug(
             "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
                                                              self.status,
@@ -209,12 +264,33 @@ class Wait(py_trees.behaviour.Behaviour):
 
 
 class Enter(py_trees.behaviour.Behaviour):
+    """
+    This behavior handles the driving through an intersection, it initially
+    sets a speed and finishes if the ego vehicle is close to the end of the
+    intersection.
+    """
     def __init__(self, name):
+        """
+        Minimal one-time initialisation. Other one-time initialisation
+        requirements should be met via the setup() method.
+        :param name: name of the behaviour
+        """
         super(Enter, self).__init__(name)
 
     def setup(self, timeout):
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
-                                                "target_speed", Float64,
+        """
+        Delayed one-time initialisation that would otherwise interfere with
+        offline rendering of this behaviour in a tree to dot graph or
+        validation of the behaviour's configuration.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics and the target speed publisher.
+        :param timeout: an initial timeout to see if the tree generation is
+        successful
+        :return: True, as the set up is successful.
+        """
+        self.target_speed_pub = rospy.Publisher("/carla/hero/"
+                                                "max_velocity", Float32,
                                                 queue_size=1)
         # rospy.wait_for_service('update_local_path')
         # self.update_local_path = rospy.ServiceProxy("update_local_path",
@@ -223,31 +299,71 @@ class Enter(py_trees.behaviour.Behaviour):
         return True
 
     def initialise(self):
+        """
+        When is this called?
+            The first time your behaviour is ticked and anytime the status is
+            not RUNNING thereafter.
+        What to do here?
+            Any initialisation you need before putting your behaviour to work.
+        This prints a state status message and changes the driving speed for
+        the intersection.
+        """
         rospy.loginfo("Enter Intersection")
-        light_status = self.blackboard.get("/psaf/ego_vehicle/traffic_light")
-        if light_status is None:
+        light_status_msg = self.blackboard.get("/carla/hero/traffic_light")
+        if light_status_msg is None:
             self.target_speed_pub.publish(50.0)
         else:
-            light_status = light_status.color
-        if light_status == "":
+            traffic_light_status = light_status_msg.color
+        if traffic_light_status == "":
             self.target_speed_pub.publish(10.0)
         else:
+            rospy.loginfo(f"Light Status: {traffic_light_status}")
             self.target_speed_pub.publish(50.0)
 
     def update(self):
-        next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/"
-                                               "next_lanelet")
-        if next_lanelet_msg is None:
-            return py_trees.common.Status.FAILURE
-        if next_lanelet_msg.distance < 12 and not next_lanelet_msg.\
-                isInIntersection:
-            rospy.loginfo("Leave intersection!")
-            self.update_local_path(leave_intersection=True)
-            return py_trees.common.Status.SUCCESS
-        else:
-            return py_trees.common.Status.RUNNING
+        """
+        When is this called?
+            Every time your behaviour is ticked.
+        What to do here?
+           - Triggering, checking, monitoring. Anything...but do not block!
+           - Set a feedback message
+           - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
+        Continues driving through the intersection until the vehicle gets
+        close enough to the next global way point.
+        :return: py_trees.common.Status.RUNNING, if too far from intersection
+                 py_trees.common.Status.SUCCESS, if stopped in front of inter-
+                 section or entered the intersection
+                 py_trees.common.Status.FAILURE, if no next path point can be
+                 detected.
+        """
+        # TODO this part needs to be refurbished when we have a publisher for
+        # the next global way point
+        # next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/"
+        #                                        "next_lanelet")
+
+        rospy.loginfo("Through intersection")
+        return py_trees.common.Status.SUCCESS
+
+        # if next_lanelet_msg is None:
+        #     return py_trees.common.Status.FAILURE
+        # if next_lanelet_msg.distance < 12 and not next_lanelet_msg.\
+        #         isInIntersection:
+        #     rospy.loginfo("Leave intersection!")
+        #     self.update_local_path(leave_intersection=True)
+        #     return py_trees.common.Status.SUCCESS
+        # else:
+        #     return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
+        """
+        When is this called?
+           Whenever your behaviour switches to a non-running state.
+          - SUCCESS || FAILURE : your behaviour's work cycle has finished
+          - INVALID : a higher priority branch has interrupted, or shutting
+          down
+        writes a status message to the console when the behaviour terminates
+        :param new_status: new state after this one is terminated
+        """
         self.logger.debug(
             "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
                                                              self.status,
@@ -255,25 +371,75 @@ class Enter(py_trees.behaviour.Behaviour):
 
 
 class Leave(py_trees.behaviour.Behaviour):
+    """
+    This behaviour defines the leaf of this subtree, if this behavior is
+    reached, the vehicle left the intersection.
+    """
     def __init__(self, name):
+        """
+        Minimal one-time initialisation. Other one-time initialisation
+        requirements should be met via the setup() method.
+        :param name: name of the behaviour
+        """
         super(Leave, self).__init__(name)
 
     def setup(self, timeout):
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
-                                                "target_speed", Float64,
+        """
+        Delayed one-time initialisation that would otherwise interfere with
+        offline rendering of this behaviour in a tree to dot graph or
+        validation of the behaviour's configuration.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics and the target speed publisher.
+        :param timeout: an initial timeout to see if the tree generation is
+        successful
+        :return: True, as the set up is successful.
+        """
+        self.target_speed_pub = rospy.Publisher("/carla/hero/"
+                                                "max_velocity", Float32,
                                                 queue_size=1)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
+        """
+        When is this called?
+            The first time your behaviour is ticked and anytime the status is
+            not RUNNING thereafter.
+        What to do here?
+            Any initialisation you need before putting your behaviour to work.
+        This prints a state status message and changes the driving speed to
+        the street speed limit.
+        """
         rospy.loginfo("Leave Intersection")
-        self.target_speed_pub.publish(50.0)
+        street_speed_msg = self.blackboard.get("/carla/hero/street_limit")
+        if street_speed_msg is not None:
+            self.target_speed_pub.publish(street_speed_msg.speed)
         return True
 
     def update(self):
+        """
+        When is this called?
+            Every time your behaviour is ticked.
+        What to do here?
+           - Triggering, checking, monitoring. Anything...but do not block!
+           - Set a feedback message
+           - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
+        Abort this subtree
+        :return: py_trees.common.Status.FAILURE, to exit this subtree
+        """
         return py_trees.common.Status.FAILURE
 
     def terminate(self, new_status):
+        """
+        When is this called?
+           Whenever your behaviour switches to a non-running state.
+          - SUCCESS || FAILURE : your behaviour's work cycle has finished
+          - INVALID : a higher priority branch has interrupted, or shutting
+          down
+        writes a status message to the console when the behaviour terminates
+        :param new_status: new state after this one is terminated
+        """
         self.logger.debug(
             "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
                                                              self.status,

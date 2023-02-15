@@ -66,6 +66,7 @@ acc message:
 
 * Information from acting
   * is it simple enough to have a bool message?
+  * Speed is published in m/s or km/h?
   * this message would only be used to de-active in case of overturn and put back on afterwards and otherwise the ACC could turn on automatically when the distance to the car in front is below a threshold?
 
 ### Results

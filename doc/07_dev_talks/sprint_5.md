@@ -62,6 +62,7 @@ acc message:
   * traffic signs are firstly limited to stop signs, I guess? Is the design modular enough to add different signs?
   * should there be a state as in the traffic light suggestion? Would keep the message short
   * is it alright to handle speed limits differently?
+  * We might need to track crossing traffic for unsignalized intersections.
 
 * Information from acting
   * is it simple enough to have a bool message?

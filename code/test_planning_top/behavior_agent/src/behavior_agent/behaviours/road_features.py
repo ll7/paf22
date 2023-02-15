@@ -190,5 +190,5 @@ class LeftLaneAvailable(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.FAILURE
 
     def terminate(self, new_status):
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
+        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s ]" %
                           (self.name, self.status, new_status))

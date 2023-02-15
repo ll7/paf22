@@ -27,8 +27,9 @@ Julian Graf
 ## What is the ACC
 
 The [ACC](https://en.wikipedia.org/wiki/Adaptive_cruise_control) will publish the vehicle speed to maintain a safe distance to vehicle ahead.
-An optimal distance to keep is therefore calculated using $dist = - \frac{1}{2} \cdot a \cdot (1s)^2 + v \cdot 1s + v \cdot 1s$.
-This gives 1 second to react and 1s to break before hitting the car in front if it suddenly stops.
+An optimal distance to keep is therefore calculated using $dist = - \frac{1}{2} \cdot a \cdot (1s)^2 + v \cdot 1s + v \cdot 1s + 5m$.
+The formula replicates official recommendations for safe distances.
+This gives about 1 second to react and 1s to break before hitting the car in front if it suddenly stops.
 The target speed is calculated using a [PID controller](https://en.wikipedia.org/wiki/PID_controller).
 
 To do this, the node needs the current distance to the vehicle in front in meters via the topic `acc_distance`.

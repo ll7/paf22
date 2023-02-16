@@ -17,8 +17,8 @@ conv.convert_roads()
 conv.convert_junctions()
 conv.filter_geometry()
 
-x_start = 985.65
-y_start = -5357.70
+x_start = 983.5
+y_start = -5373.2
 # muss zu beginn punkt eingeben der ein turn commando
 # ist erster Punkt mit lane change info -> target nächster punkt mit turn
 # filter vorab ob punkt vor aktuellem gps punkt liegt

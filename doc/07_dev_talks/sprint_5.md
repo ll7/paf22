@@ -7,8 +7,12 @@
 ## Author
 
 Josef Kircher
-Julian Graf
+
+Gabriel Schwand
+
 Marco Riedenauer
+
+Korbinian Stein
 
 ## Date
 
@@ -39,8 +43,8 @@ How should be the naming convention for topics?
 
 traffic light message:
 
-    int state or string color
-    float distance
+    string color
+    float32 distance
 
 traffic sign message:
 
@@ -53,6 +57,7 @@ speed limit message:
     float distance
 
 acc message:
+
     bool activate/deactivate
 
 ### Things that need to handled
@@ -71,9 +76,41 @@ acc message:
 
 ### Results
 
+Topic naming: /paf/hero/*
+
+traffic light message:
+
+    string color
+    float32 distance
+
+acc message:
+
+    bool activate/deactivate
+    
+
+    
+Open: 
+
+traffic sign message:
+
+    bool isStop
+    float distance
+
+speed limit message:
+
+    float speedlimit in m/s
+    float distance
+    
+* Perception
+  * crossing traffic dependent on segmentation/lidar model accuracy 
+  * speed limits are part of opendrive file/ could also have redundent street signs/
+
+* Acting
+  * Speed in m/s
+
 ## Acting
 
-no questions so far
+* Unpark routine/ other scenarios handled by acting/ hard coded behavior
 
 ## Perception
 

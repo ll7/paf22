@@ -8,7 +8,7 @@
 
 Josef Kircher
 
-Gabriel Schwand
+Gabriel Schwald
 
 Marco Riedenauer
 
@@ -86,10 +86,8 @@ traffic light message:
 acc message:
 
     bool activate/deactivate
-    
 
-    
-Open: 
+Open:
 
 traffic sign message:
 
@@ -100,9 +98,9 @@ speed limit message:
 
     float speedlimit in m/s
     float distance
-    
+
 * Perception
-  * crossing traffic dependent on segmentation/lidar model accuracy 
+  * crossing traffic dependent on segmentation/lidar model accuracy
   * speed limits are part of opendrive file/ could also have redundent street signs/
 
 * Acting

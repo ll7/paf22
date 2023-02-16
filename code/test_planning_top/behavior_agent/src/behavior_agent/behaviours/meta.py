@@ -18,10 +18,13 @@ class Start(py_trees.behaviour.Behaviour):
     def setup(self, timeout):
         self.blackboard = py_trees.blackboard.Blackboard()
         # rospy.wait_for_service('update_global_path')
-        # self.update_global_path = rospy.ServiceProxy("update_global_path", UpdateGlobalPath)
+        # self.update_global_path = rospy.ServiceProxy("update_global_path",
+        # UpdateGlobalPath)
         # rospy.wait_for_service('update_local_path')
-        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed",
+        # self.update_local_path = rospy.ServiceProxy("update_local_path",
+        # UpdateLocalPath)
+        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
+                                                "target_speed",
                                                 Float64, queue_size=1)
         return True
 
@@ -40,9 +43,11 @@ class Start(py_trees.behaviour.Behaviour):
         #         if is_next_intersection:
         #             success_local_path = self.update_local_path().Success
         #         elif is_next_roundabout:
-        #             success_local_path = self.update_local_path(approach_roundabout=True).Success
+        #             success_local_path = self.
+        #             update_local_path(approach_roundabout=True).Success
         #         else:
-        #             success_local_path = self.update_local_path(leave_intersection=True).Success
+        #             success_local_path = self.
+        #             update_local_path(leave_intersection=True).Success
         #         if success_local_path:
         #             rospy.loginfo("Everything is fine. We can start now!")
         #             self.target_speed_pub.publish(50.0)
@@ -60,7 +65,8 @@ class End(py_trees.behaviour.Behaviour):
 
     def setup(self, timeout):
         self.blackboard = py_trees.blackboard.Blackboard()
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed",
+        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
+                                                "target_speed",
                                                 Float64, queue_size=1)
         return True
 
@@ -71,9 +77,12 @@ class End(py_trees.behaviour.Behaviour):
         odo = self.blackboard.get("/carla/ego_vehicle/odometry")
         if odo is None:
             return py_trees.common.Status.FAILURE
-        current_pos = np.array([odo.pose.pose.position.x, odo.pose.pose.position.y])
-        target_pos = np.array([rospy.get_param('/competition/goal/position/x', 10),
-                               rospy.get_param('/competition/goal/position/y', 50)])
+        current_pos = np.array([odo.pose.pose.position.x, odo.pose.pose.
+                               position.y])
+        target_pos = np.array([rospy.get_param('/competition/goal/'
+                                               'position/x', 10),
+                               rospy.get_param('/competition/goal/'
+                                               'position/y', 50)])
         dist = np.linalg.norm(current_pos - target_pos)
         if dist < 15:
             return py_trees.common.Status.RUNNING
@@ -129,7 +138,8 @@ class RespawnOrFinish(py_trees.behaviour.Behaviour):
         init_pose = self.blackboard.get("/initialpose")
         if init_pose is not None:
             if init_pose != self.last_init_pose:
-                self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed",
+                self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
+                                                        "target_speed",
                                                         Float64, queue_size=1)
                 self.target_speed_pub.publish(0.0)
                 rospy.loginfo(f"New spawn at {init_pose.pose.pose}")
@@ -138,11 +148,13 @@ class RespawnOrFinish(py_trees.behaviour.Behaviour):
             else:
                 self.last_init_pose = init_pose
 
-        # check for change on topic carla/ego_vehicle/initialpose  (for respawn in competition)
+        # check for change on topic carla/ego_vehicle/initialpose  (for
+        # respawn in competition)
         init_pose = self.blackboard.get("/carla/ego_vehicle/initialpose")
         if init_pose is not None:
             if init_pose != self.last_init_pose_carla:
-                self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed",
+                self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
+                                                        "target_speed",
                                                         Float64, queue_size=1)
                 self.target_speed_pub.publish(0.0)
                 rospy.loginfo(f"New spawn at {init_pose.pose.pose}")
@@ -154,9 +166,12 @@ class RespawnOrFinish(py_trees.behaviour.Behaviour):
         odo = self.blackboard.get("/carla/ego_vehicle/odometry")
         if odo is None:
             return py_trees.common.Status.FAILURE
-        current_pos = np.array([odo.pose.pose.position.x, odo.pose.pose.position.y])
-        target_pos = np.array([rospy.get_param('/competition/goal/position/x', 10),
-                               rospy.get_param('/competition/goal/position/y', 50)])
+        current_pos = np.array([odo.pose.pose.position.x, odo.pose.pose.
+                               position.y])
+        target_pos = np.array([rospy.get_param('/competition/goal/position/x',
+                                               10),
+                               rospy.get_param('/competition/goal/position/y',
+                                               50)])
         dist = np.linalg.norm(current_pos - target_pos)
         if dist < 0.5:
             return py_trees.common.Status.SUCCESS

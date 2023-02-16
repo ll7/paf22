@@ -18,7 +18,8 @@ class NotSlowedByCarInFront(py_trees.behaviour.Behaviour):
         self.blackboard = py_trees.blackboard.Blackboard()
 
     def update(self):
-        self.slowed = self.blackboard.get("/psaf/ego_vehicle/bt/condition/slowed_by_car_in_front")
+        self.slowed = self.blackboard.get("/psaf/ego_vehicle/bt/condition/"
+                                          "slowed_by_car_in_front")
         if self.slowed is None:
             return py_trees.common.Status.SUCCESS
         if self.slowed.data is True:
@@ -43,7 +44,8 @@ class WaitLeftLaneFree(py_trees.behaviour.Behaviour):
         self.timer = rospy.get_time()
 
     def update(self):
-        self.car_left = self.blackboard.get("/psaf/ego_vehicle/obstacle_on_left_lane")
+        self.car_left = self.blackboard.get("/psaf/ego_vehicle/"
+                                            "obstacle_on_left_lane")
         if self.car_left is None:
             return py_trees.common.Status.SUCCESS
         elif self.car_left.data is None or self.car_left.data > 20:
@@ -70,7 +72,8 @@ class WaitRightLaneFree(py_trees.behaviour.Behaviour):
         self.timer = rospy.get_time()
 
     def update(self):
-        self.car_right = self.blackboard.get("/psaf/ego_vehicle/obstacle_on_right_lane")
+        self.car_right = self.blackboard.get("/psaf/ego_vehicle/"
+                                             "obstacle_on_right_lane")
         if self.car_right is None:
             return py_trees.common.Status.SUCCESS
         elif self.car_right.data is None or self.car_right.data > 40:

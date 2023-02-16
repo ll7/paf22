@@ -1,7 +1,7 @@
 import py_trees
 import numpy as np
 from std_msgs.msg import Float64
-from nav_msgs.msg import Odometry
+# from nav_msgs.msg import Odometry
 # from custom_carla_msgs.srv import UpdateLocalPath
 
 import rospy
@@ -16,10 +16,12 @@ class Approach(py_trees.behaviour.Behaviour):
         super(Approach, self).__init__(name)
 
     def setup(self, timeout):
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed",
+        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
+                                                "target_speed",
                                                 Float64, queue_size=1)
         # rospy.wait_for_service('update_local_path')
-        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # self.update_local_path =
+        # rospy.ServiceProxy("update_local_path", UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
@@ -38,7 +40,8 @@ class Approach(py_trees.behaviour.Behaviour):
 
     def update(self):
         # Update Light Info
-        light_status_msg = self.blackboard.get("/psaf/ego_vehicle/traffic_light")
+        light_status_msg = self.blackboard.get("/psaf/ego_vehicle/"
+                                               "traffic_light")
         if light_status_msg is not None:
             self.traffic_light_status = light_status_msg.color
             rospy.loginfo(f"Light Status: {self.traffic_light_status}")
@@ -64,7 +67,8 @@ class Approach(py_trees.behaviour.Behaviour):
             v_stop = 0
         # stop when there is no or red/yellow traffic light
         if self.traffic_light_status == '' \
-                or self.traffic_light_status == 'red' or self.traffic_light_status == 'yellow':
+                or self.traffic_light_status == 'red' \
+                or self.traffic_light_status == 'yellow':
 
             rospy.loginfo(f"slowing down: {v_stop}")
             self.target_speed_pub.publish(v_stop)
@@ -75,7 +79,8 @@ class Approach(py_trees.behaviour.Behaviour):
 
         # get speed
         odo = self.blackboard.get("/carla/ego_vehicle/odometry")
-        speed = np.sqrt(odo.twist.twist.linear.x ** 2 + odo.twist.twist.linear.y ** 2 +
+        speed = np.sqrt(odo.twist.twist.linear.x ** 2 +
+                        odo.twist.twist.linear.y ** 2 +
                         odo.twist.twist.linear.z ** 2) * 3.6
 
         if self.virtual_stopline_distance > 5:
@@ -97,10 +102,12 @@ class Approach(py_trees.behaviour.Behaviour):
             # ran over line
             return py_trees.common.Status.SUCCESS
 
-        next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/next_lanelet")
+        next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/"
+                                               "next_lanelet")
         if next_lanelet_msg is None:
             return py_trees.common.Status.FAILURE
-        if next_lanelet_msg.distance < 12 and not next_lanelet_msg.isInIntersection:
+        if next_lanelet_msg.distance < 12 and not next_lanelet_msg.\
+                isInIntersection:
             rospy.loginfo("Leave intersection!")
             self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS
@@ -109,7 +116,9 @@ class Approach(py_trees.behaviour.Behaviour):
 
     def terminate(self, new_status):
         self.logger.debug(
-            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
+                                                             self.status,
+                                                             new_status))
 
 
 class Wait(py_trees.behaviour.Behaviour):
@@ -117,7 +126,8 @@ class Wait(py_trees.behaviour.Behaviour):
         super(Wait, self).__init__(name)
 
     def setup(self, timeout):
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed", Float64,
+        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
+                                                "target_speed", Float64,
                                                 queue_size=1)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
@@ -139,7 +149,9 @@ class Wait(py_trees.behaviour.Behaviour):
 
     def terminate(self, new_status):
         self.logger.debug(
-            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
+                                                             self.status,
+                                                             new_status))
 
 
 class Enter(py_trees.behaviour.Behaviour):
@@ -147,10 +159,12 @@ class Enter(py_trees.behaviour.Behaviour):
         super(Enter, self).__init__(name)
 
     def setup(self, timeout):
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed", Float64,
+        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
+                                                "target_speed", Float64,
                                                 queue_size=1)
         # rospy.wait_for_service('update_local_path')
-        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # self.update_local_path = rospy.ServiceProxy("update_local_path",
+        # UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
@@ -166,10 +180,12 @@ class Enter(py_trees.behaviour.Behaviour):
             self.target_speed_pub.publish(50.0)
 
     def update(self):
-        next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/next_lanelet")
+        next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/"
+                                               "next_lanelet")
         if next_lanelet_msg is None:
             return py_trees.common.Status.FAILURE
-        if next_lanelet_msg.distance < 12 and not next_lanelet_msg.isInIntersection:
+        if next_lanelet_msg.distance < 12 and not next_lanelet_msg.\
+                isInIntersection:
             rospy.loginfo("Leave intersection!")
             self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS
@@ -178,7 +194,9 @@ class Enter(py_trees.behaviour.Behaviour):
 
     def terminate(self, new_status):
         self.logger.debug(
-            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
+                                                             self.status,
+                                                             new_status))
 
 
 class Leave(py_trees.behaviour.Behaviour):
@@ -186,7 +204,8 @@ class Leave(py_trees.behaviour.Behaviour):
         super(Leave, self).__init__(name)
 
     def setup(self, timeout):
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed", Float64,
+        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
+                                                "target_speed", Float64,
                                                 queue_size=1)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
@@ -200,7 +219,9 @@ class Leave(py_trees.behaviour.Behaviour):
 
     def terminate(self, new_status):
         self.logger.debug(
-            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
+                                                             self.status,
+                                                             new_status))
 
 
 class ApproachNoRules(py_trees.behaviour.Behaviour):
@@ -208,10 +229,12 @@ class ApproachNoRules(py_trees.behaviour.Behaviour):
         super(ApproachNoRules, self).__init__(name)
 
     def setup(self, timeout):
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed", Float64,
+        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
+                                                "target_speed", Float64,
                                                 queue_size=1)
         # rospy.wait_for_service('update_local_path')
-        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # self.update_local_path = rospy.ServiceProxy("update_local_path",
+        # UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
@@ -231,7 +254,8 @@ class ApproachNoRules(py_trees.behaviour.Behaviour):
         self.last_virtual_distance = np.inf
 
     def update(self):
-        light_status_msg = self.blackboard.get("/psaf/ego_vehicle/traffic_light")
+        light_status_msg = self.blackboard.get("/psaf/ego_vehicle/"
+                                               "traffic_light")
         # Update Light Info
         if light_status_msg is not None:
             self.traffic_light_status = light_status_msg.color
@@ -254,10 +278,12 @@ class ApproachNoRules(py_trees.behaviour.Behaviour):
         if self.virtual_stopline_distance < 3.5:
             return py_trees.common.Status.SUCCESS
 
-        next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/next_lanelet")
+        next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/"
+                                               "next_lanelet")
         if next_lanelet_msg is None:
             return py_trees.common.Status.FAILURE
-        if next_lanelet_msg.distance < 12 and not next_lanelet_msg.isInIntersection:
+        if next_lanelet_msg.distance < 12 and not next_lanelet_msg.\
+                isInIntersection:
             rospy.loginfo("Leave intersection!")
             self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS
@@ -266,7 +292,9 @@ class ApproachNoRules(py_trees.behaviour.Behaviour):
 
     def terminate(self, new_status):
         self.logger.debug(
-            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
+                                                             self.status,
+                                                             new_status))
 
 
 class WaitNoRules(py_trees.behaviour.Behaviour):
@@ -284,7 +312,9 @@ class WaitNoRules(py_trees.behaviour.Behaviour):
 
     def terminate(self, new_status):
         self.logger.debug(
-            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
+                                                             self.status,
+                                                             new_status))
 
 
 class EnterNoRules(py_trees.behaviour.Behaviour):
@@ -292,10 +322,12 @@ class EnterNoRules(py_trees.behaviour.Behaviour):
         super(EnterNoRules, self).__init__(name)
 
     def setup(self, timeout):
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed", Float64,
+        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
+                                                "target_speed", Float64,
                                                 queue_size=1)
         # rospy.wait_for_service('update_local_path')
-        # self.update_local_path = rospy.ServiceProxy("update_local_path", UpdateLocalPath)
+        # self.update_local_path = rospy.ServiceProxy("update_local_path",
+        # UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
@@ -305,16 +337,19 @@ class EnterNoRules(py_trees.behaviour.Behaviour):
             self.target_speed_pub.publish(50.0)
         else:
             light_status = light_status.color
-        if light_status == "" or light_status == "red" or light_status == "yellow":
+        if light_status == "" or light_status == "red" or \
+                light_status == "yellow":
             self.target_speed_pub.publish(10.0)
         else:
             self.target_speed_pub.publish(50.0)
 
     def update(self):
-        next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/next_lanelet")
+        next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/"
+                                               "next_lanelet")
         if next_lanelet_msg is None:
             return py_trees.common.Status.FAILURE
-        if next_lanelet_msg.distance < 12 and not next_lanelet_msg.isInIntersection:
+        if next_lanelet_msg.distance < 12 and not next_lanelet_msg.\
+                isInIntersection:
             rospy.loginfo("Leave intersection!")
             self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS
@@ -323,7 +358,9 @@ class EnterNoRules(py_trees.behaviour.Behaviour):
 
     def terminate(self, new_status):
         self.logger.debug(
-            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
+                                                             self.status,
+                                                             new_status))
 
 
 class LeaveNoRules(py_trees.behaviour.Behaviour):
@@ -331,7 +368,8 @@ class LeaveNoRules(py_trees.behaviour.Behaviour):
         super(LeaveNoRules, self).__init__(name)
 
     def setup(self, timeout):
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/target_speed", Float64,
+        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
+                                                "target_speed", Float64,
                                                 queue_size=1)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
@@ -345,4 +383,6 @@ class LeaveNoRules(py_trees.behaviour.Behaviour):
 
     def terminate(self, new_status):
         self.logger.debug(
-            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+            "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
+                                                             self.status,
+                                                             new_status))

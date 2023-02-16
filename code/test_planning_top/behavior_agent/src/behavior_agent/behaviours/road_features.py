@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 import rospy
 import py_trees
-from std_msgs.msg import Float64
-from nav_msgs.msg import Odometry
-import numpy as np
+# from std_msgs.msg import Float64
+# from nav_msgs.msg import Odometry
+# import numpy as np
 import math
 
 """
@@ -190,5 +190,5 @@ class LeftLaneAvailable(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.FAILURE
 
     def terminate(self, new_status):
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
+        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s ]" %
                           (self.name, self.status, new_status))

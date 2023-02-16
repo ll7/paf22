@@ -95,8 +95,8 @@ def main():
         count_files = min(len(rgb_images), len(instance_images))
 
         for split, name in zip(splits, split_names):
-            rgb_target_dir = output_dir / side / "ds" / name
-            groundtruth_target_dir = groundtruth / side / "ds"
+            rgb_target_dir = output_dir / side / name / "ds"
+            groundtruth_target_dir = groundtruth / name / "ds"
             rgb_target_dir.mkdir(parents=True, exist_ok=True)
             groundtruth_target_dir.mkdir(parents=True, exist_ok=True)
 
@@ -111,9 +111,11 @@ def main():
                 rgb_file_name = f"ds_{side}_{image_id}.png"
                 instance_file_name = f"ds_{side}_{image_id}_groundtruth.png"
                 copyfile(rgb_image, rgb_target_dir / rgb_file_name)
-                convert_image_to_cityscapes_labelids(
-                    instance_image,
-                    groundtruth_target_dir / instance_file_name)
+                # convert_image_to_cityscapes_labelids(
+                #    instance_image,
+                #    groundtruth_target_dir / instance_file_name)   zzzyy
+                copyfile(instance_image,
+                         groundtruth_target_dir / instance_file_name)
 
 
 if __name__ == '__main__':

@@ -13,7 +13,7 @@ from scipy.spatial.transform import Rotation
 
 def vectors_to_angle_abs(x1: float, y1: float, x2: float, y2: float) -> float:
     """
-    Returns the angle (degrees) between the two given vectors
+    Returns the angle (radians) between the two given vectors
     :param x1: v1[x]
     :param y1: v1[y]
     :param x2: v2[x]
@@ -30,7 +30,7 @@ def vectors_to_angle_abs(x1: float, y1: float, x2: float, y2: float) -> float:
 
 def vector_angle(x1: float, y1: float) -> float:
     """
-    Returns the angle (degrees) between the two given vectors
+    Returns the angle (radians) between the two given vectors
     :param x1: v1[x]
     :param y1: v1[y]
     :return: angle between v1 and x-axis [-pi/2, pi/2]

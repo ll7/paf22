@@ -66,7 +66,7 @@ class PurePursuitController(CompatibleNode):
         self.__position: (float, float) = None  # x, y
         self.__last_pos: (float, float) = None
         self.__path: Path = None
-        self.__heading: float = 0.0
+        self.__heading: float = None
         self.__velocity: float = None
         self.__tp_idx: int = 0  # target waypoint index
         # error when there are no targets

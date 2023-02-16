@@ -5,20 +5,28 @@ from typing import Tuple
 from math import sin, cos, degrees
 
 
+# Check small distance between two points
 SMALL_DIST = 0.001
+# Step size for lane change
 STEP_SIZE = 0.5
+# distance between points in linear interpolation
 INTERVALL = 1.0
 # difference to the target point
 TARGET_DIFF = 5
 LINE = 0.0
 # Value to convert mph in m/s
 MPH = 2.24
+# Value to convert kmh/h in m/s
+KMH = 3.6
 # Default speed for passing a junction in m/s
 DEFAULT_MS = 12
+# Road value from openDrive format
 ROAD = -1
+# Change lane commands from leaderboard
 CHANGE_LEFT = 5
 CHANGE_RIGHT = 6
 CHANGE_FOLLOW = 4
+# Turn commands from leaderboard
 LEFT = 1
 RIGHT = 2
 STRAIGHT = 3
@@ -439,9 +447,10 @@ class OpenDriveConverter:
         # and so on
         """ direction = self.right_or_left(points, x_agent, y_agent,
                                        self.width) """
+        print("length: ", len(points[0]))
         # Calculate points in the middle of the road
-        new_points = self.update_points(points, self.direction, self.width)
-        return new_points
+        points = self.update_points(points, self.direction, self.width)
+        return points
 
     def target_road_trajectory(self, x_target: float, y_target: float,
                                x_next_t: float, y_next_t: float,
@@ -540,16 +549,17 @@ class OpenDriveConverter:
                 self.reference[2] += copy.deepcopy(points[2])
                 self.reference[3] += copy.deepcopy(points[3])
                 reference_line = copy.deepcopy(points)
+                # print("reference", len(reference_line[0]))
                 # all lane widths in this road
                 # first width is for the road next to the reference line
                 # and so on
                 widths = self.lane_widths(self.road_id)
-                print(widths)
+                # print(widths)
                 old_w = self.lane_widths(self.old_id)
-                print(old_w)
+                # print(old_w)
                 # if previous lane width was the rightmost one
                 if old_w.index(self.width) + 1 == len(old_w):
-                    print("RIGHTMOST")
+                    # print("RIGHTMOST")
                     last_p = (self.pt[0][-1], self.pt[1][-1])
                     min_diff = float("inf")
                     w_min = None
@@ -560,19 +570,9 @@ class OpenDriveConverter:
                             points[0][2], points[1][2],
                             self.direction, width)
                         diff = help_functions.euclid_dist(p, last_p)
-                        print(p)
-                        print(last_p)
                         if diff < min_diff:
                             min_diff = diff
                             w_min = width
-                            print("min", w_min)
-
-                    # hier falsche weite
-                    # prüfe distanz von letztem punkt zur referenz wenn auf
-                    # neuer straße mehrere widths sind
-                    # näheste differenz an entsprechender weite nehmen
-                    # print("old", self.old_id)
-                    # print(widths[-1])
                     self.width = w_min
                 else:
                     min_diff = float("inf")
@@ -584,12 +584,6 @@ class OpenDriveConverter:
                             min_width = width
                     self.width = min_width
                 # size = len(widths)
-                print("po", points[0][0])
-                print("po", points[1][0])
-                print("po", points[0][-1])
-                print("po", points[1][-1])
-                print("po", self.pt[0][-1])
-                print("po", self.pt[1][-1])
                 points = self.calculate_midpoints(points, self.pt[0][-1],
                                                   self.pt[1][-1])
                 if command == LEFT or command == RIGHT or command == STRAIGHT:
@@ -1101,9 +1095,14 @@ class OpenDriveConverter:
             :return: speed: speed value for the road in m/s
         """
         road = self.roads[road_id]
+        speed_type = road.find("type").find("speed").get("unit")
         if road.get("junction") == "-1":
-            speed = road.find("type").find("speed")
-            speed = float(speed.get("max")) / MPH
+            if speed_type == "km/h":
+                speed = road.find("type").find("speed")
+                speed = float(speed.get("max")) / KMH
+            elif speed_type == "mph":
+                speed = road.find("type").find("speed")
+                speed = float(speed.get("max")) / MPH
         else:
             speed = DEFAULT_MS
         return speed
@@ -1153,7 +1152,32 @@ class OpenDriveConverter:
                 y.append(points[j][1])
                 yaw.append(hdg)
                 speed.append(max_speed)
-        return [x, y, yaw, speed]
+        points = [x, y, yaw, speed]
+        # Delete duplicates and very close points
+        delete_index = []
+        for i in range(0, len(points[0]) - 1):
+            p = (points[0][i], points[1][i])
+            p_next = (points[0][i + 1], points[1][i + 1])
+            dist = help_functions.euclid_dist(p, p_next)
+            # print("dist", dist)
+            # point is to close to the following point (0.5m)
+            if dist < 0.5:
+                # print("SMALL")
+                delete_index.append(i)
+            # outliner point
+            elif dist > 3:
+                # print("BIG")
+                delete_index.append(i)
+        # delete the points with the calculated indices
+        number = 0
+        for i in delete_index:
+            i -= number
+            del points[0][i]
+            del points[1][i]
+            del points[2][i]
+            del points[3][i]
+            number += 1
+        return points
 
     def get_endpoints(self, road_id: int):
         """ Calculate the startpoint and endpoint of a given road

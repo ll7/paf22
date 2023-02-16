@@ -92,9 +92,10 @@ class PrePlanner(CompatibleNode):
             return
 
         self.global_route_backup = None
-        # wrong start coordinates from GPS
-        x_start = self.agent_pos.x
-        y_start = self.agent_pos.y
+        # wrong start coordinates from  -> PR 191 solves it
+        x_start_ = self.agent_pos.x
+        y_start_ = self.agent_pos.y
+        # after PR 191 is merged it should work without the manual position
         x_start = 983.5
         y_start = -5373.2
         # z_start = self.agent_pos.z
@@ -102,7 +103,8 @@ class PrePlanner(CompatibleNode):
             tf.transformations.euler_from_quaternion(
              [self.agent_ori.x, self.agent_ori.y,
               self.agent_ori.z, self.agent_ori.w]) """
-
+        self.loginfo(f"x_start = {x_start_}")
+        self.loginfo(f"y_start = {y_start_}")
         self.loginfo(f"x_start = {x_start}")
         self.loginfo(f"y_start = {y_start}")
 
@@ -193,13 +195,14 @@ class PrePlanner(CompatibleNode):
         way_x = waypoints[0]
         way_y = waypoints[1]
         way_yaw = waypoints[2]
-        # way_speed = waypoints[3]    # TODO publish max_speed as well
+        way_speed = waypoints[3]
 
         # Transforming the calculated waypoints into a Path msg
+        # speed is the z coordinate of the path message
         stamped_poses = []
         for i in range(len(way_x)):
             # TODO: add z, roll and pitch
-            position = Point(way_x[i], way_y[i], 0)
+            position = Point(way_x[i], way_y[i], way_speed[i])
             quaternion = tf.transformations.quaternion_from_euler(0,
                                                                   0,
                                                                   way_yaw[i])

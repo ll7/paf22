@@ -2,6 +2,12 @@ import preplanning_trajectory as pt
 from visualizer import TestVisualizer
 
 
+# This Script gives contains the first 20 waypoints with the attached road
+# option from the carla Leaderboard. The trajectory is visualized with
+# matplotlib.
+# Green points = reference line (only to get a better understanding)
+# Blue points = final trajectory
+
 end_x = list()
 end_y = list()
 
@@ -11,8 +17,8 @@ conv.convert_roads()
 conv.convert_junctions()
 conv.filter_geometry()
 
-x_start = 983.5
-y_start = -5373.20
+x_start = 985.65
+y_start = -5357.70
 # muss zu beginn punkt eingeben der ein turn commando
 # ist erster Punkt mit lane change info -> target nächster punkt mit turn
 # filter vorab ob punkt vor aktuellem gps punkt liegt
@@ -28,13 +34,7 @@ conv.initial_road_trajectory(x_start, y_start, x_target, y_target,
                              974.2578735351562, -5575.4443359375,
                              983.5927734375, -5381.88720703125,
                              0, 4)
-print(conv.lane_widths(19828))
 # preplanning until first target point is reached
-print()
-print(conv.waypoints[0][-1])
-print(conv.waypoints[1][-1])
-print(conv.pt[0][-1])
-print(conv.pt[1][-1])
 print()
 
 end_x.append(983.2598876953125)
@@ -44,12 +44,6 @@ conv.target_road_trajectory(983.2598876953125, -5568.28662109375,
 print("current", conv.road_id)
 # print("Follow", conv.follow_id)
 print()
-print(conv.waypoints[0][-1])
-print(conv.waypoints[1][-1])
-print(conv.pt[0][-1])
-print(conv.pt[1][-1])
-print()
-
 
 end_x.append(974.2578735351562)
 end_y.append(-5575.4443359375)
@@ -58,13 +52,6 @@ conv.target_road_trajectory(974.2578735351562, -5575.4443359375,
 print("current", conv.road_id)
 # print("Follow", conv.follow_id)
 print()
-print()
-print(conv.waypoints[0][-1])
-print(conv.waypoints[1][-1])
-print(conv.pt[0][-1])
-print(conv.pt[1][-1])
-print()
-
 
 end_x.append(805.0078735351562)
 end_y.append(-5575.51806640625)
@@ -72,12 +59,6 @@ conv.target_road_trajectory(805.0078735351562, -5575.51806640625,
                             780.8638305664062, -5575.548828125, 3)
 print("current", conv.road_id)
 # print("Follow", conv.follow_id)
-print()
-print()
-print(conv.waypoints[0][-1])
-print(conv.waypoints[1][-1])
-print(conv.pt[0][-1])
-print(conv.pt[1][-1])
 print()
 
 end_x.append(780.8638305664062)
@@ -87,12 +68,6 @@ conv.target_road_trajectory(780.8638305664062, -5575.548828125,
 print("current", conv.road_id)
 # print("Follow", conv.follow_id)
 print()
-print()
-print(conv.waypoints[0][-1])
-print(conv.waypoints[1][-1])
-print(conv.pt[0][-1])
-print(conv.pt[1][-1])
-print()
 
 end_x.append(605.5011596679688)
 end_y.append(-5575.97021484375)
@@ -101,12 +76,6 @@ conv.target_road_trajectory(605.5011596679688, -5575.97021484375,
 print("current", conv.road_id)
 # print("Follow", conv.follow_id)
 print()
-print()
-print(conv.waypoints[0][-1])
-print(conv.waypoints[1][-1])
-print(conv.pt[0][-1])
-print(conv.pt[1][-1])
-print()
 
 end_x.append(600.8721923828125)
 end_y.append(-5579.2314453125)
@@ -114,12 +83,6 @@ conv.target_road_trajectory(600.8721923828125, -5579.2314453125,
                             528.1724853515625, -5579.40625, 5)
 print("current", conv.road_id)
 # print("Follow", conv.follow_id)
-print()
-print()
-print(conv.waypoints[0][-1])
-print(conv.waypoints[1][-1])
-print(conv.pt[0][-1])
-print(conv.pt[1][-1])
 print()
 
 end_x.append(528.1724853515625)
@@ -138,7 +101,7 @@ print("current", conv.road_id)
 # print("Follow", conv.follow_id)
 print()
 
-"""end_x.append(483.8909912109375)
+end_x.append(483.8909912109375)
 end_y.append(-5791.52587890625)
 conv.target_road_trajectory(483.8909912109375, -5791.52587890625,
                             488.34564208984375, -5833.22021484375, 4)
@@ -216,18 +179,84 @@ conv.target_road_trajectory(280.88623046875, -6108.14501953125,
                             268.74639892578125, -6100.86669921875, 1)
 print("current", conv.road_id)
 # print("Follow", conv.follow_id)
-print()"""
+print()
 
 
 # visualize the whole trajectory and the reference line
 # Two red points are the start and the endpoint of the first part
 # of the trajectory
-vis = TestVisualizer((x_start, y_start),
+vis = TestVisualizer((conv.pt[0][2], conv.pt[1][2]),
                      [end_x, end_y],
                      conv.waypoints[0], conv.waypoints[1],
                      conv.reference[0], conv.reference[1])
 vis.visualize()
+# ---------------------------------------------------------------------
+# Check interpolation points
+"""import help_functions as hp
+import math
+import matplotlib.pyplot as plt
+from collections import OrderedDict
 
+size = len(conv.geometry_data[19663][0])
+max_speed = conv.get_speed(19663)
+x = list()
+y = list()
+farbe = ["green", "red", "blue", "orange", "black", "purple"]
+for i in range(size):
+    x_start = conv.geometry_data[19663][0][i]
+    y_start = conv.geometry_data[19663][1][i]
+    start = (x_start, y_start)
+    length = conv.geometry_data[19663][4][i]
+    hdg = conv.geometry_data[19663][2][i]
+    if conv.geometry_data[19663][3][i] == 0.0:
+        xd = length * math.cos(hdg)
+        yd = length * math.sin(hdg)
+        end = hp.add_vector(start, (xd, yd))
+        points = hp.linear_interpolation(
+            start=start,
+            end=end,
+            interval_m=1.0)
+    else:
+        radius = conv.geometry_data[19663][3][i]
+        end = hp.end_of_circular_arc(
+                        start_point=start, angle=hdg,
+                        length=length, radius=radius)
+        points = hp.circular_interpolation(
+                        start=start,
+                        end=end,
+                        arc_radius=radius)
+    for j in range(len(points)):
+        x.append(points[j][0])
+        y.append(points[j][1])
+        plt.scatter(points[j][0], points[j][1], c=farbe[i])
+points = [x, y]
+plt.show()
+
+delete_index = []
+for i in range(0, len(points[0]) - 1):
+    p = (points[0][i], points[1][i])
+    p_next = (points[0][i+1], points[1][i+1])
+    dist = hp.euclid_dist(p, p_next)
+    print("dist", dist)
+    if dist < 0.2:
+        print("SMALL")
+        delete_index.append(i)
+    elif dist > 3:
+        print("BIG")
+        delete_index.append(i)
+print("delete", delete_index)
+number = 0
+for i in delete_index:
+    i -= number
+    del points[0][i]
+    del points[1][i]
+    number += 1
+
+points = conv.calculate_midpoints(points, None, None)
+
+plt.scatter(points[0], points[1])
+plt.show()"""
+# -------------------------------------------------------------------
 
 """x_start = 384.
 y_start = -0.002

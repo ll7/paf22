@@ -7,7 +7,5 @@
            <param name="global_route_txt" value="/code/planning/src/planning/global_route.txt" />
            <param name="role_name" value="hero" />
     </node>
-    <node pkg="planning" type="preplanner.py" name="PrePlanner" output="screen">
-           <param name="role_name" value="hero" />
-    </node>
+    <include file="$(find behavior_agent)/launch/behavior_agent.launch"/>
 </launch>

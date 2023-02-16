@@ -23,9 +23,9 @@ class VelocityPublisherDummy(CompatibleNode):
             Float32,
             f"/carla/{self.role_name}/max_velocity",
             qos_profile=1)
-        self.velocity = 10
+        self.velocity = 7
         self.delta_velocity = 0.25
-        self.max_velocity = 25
+        self.max_velocity = 10
         self.min_velocity = 5
         self.__dv = self.delta_velocity
 
@@ -44,7 +44,7 @@ class VelocityPublisherDummy(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-            self.loginfo('Published dummy velocity: ' + str(self.velocity))
+            # self.loginfo('Published dummy velocity: ' + str(self.velocity))
             self.velocity_pub.publish(self.velocity)
             if self.velocity > self.max_velocity:
                 self.__dv = -self.delta_velocity

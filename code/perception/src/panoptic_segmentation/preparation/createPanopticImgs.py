@@ -79,7 +79,8 @@ def convert2panoptic(cityscapesPath=None,
               .format(len(files), setName))
 
         outputBaseFile = "cityscapes_panoptic_{}".format(setName)
-        outFile = os.path.join(outputFolder, "{}.json".format(outputBaseFile))
+        outFile = os.path.join(outputFolder + "/groundtruth",
+                               "{}.json".format(outputBaseFile))
         print("Json file with the annotations in panoptic format will be saved"
               " in {}".format(outFile))
 
@@ -87,7 +88,7 @@ def convert2panoptic(cityscapesPath=None,
         annotations = []
         for progress, f in enumerate(files):
             originalFormat = np.array(Image.open(f))[..., :3]
-            # Todo Panoptisches Bild erstellen und abspeichern
+            panoptic = np.zeros(originalFormat.shape, dtype=np.uint8)
 
             fileName = os.path.basename(f)
             imageId = fileName.replace("_groundtruth.png", "")
@@ -110,6 +111,7 @@ def convert2panoptic(cityscapesPath=None,
                     instance_ids[segmentId[0]] += 1
                     isCrowd = 0
                 else:
+                    instance_id = segmentId[0]
                     isCrowd = 1
 
                 if not labelInfo.hasInstances:
@@ -119,6 +121,11 @@ def convert2panoptic(cityscapesPath=None,
                     continue
                 mask = originalFormat == segmentId
                 mask = mask.all(axis=2)
+                color = [instance_id % 256, instance_id // 256,
+                         instance_id // 256 // 256]
+                panoptic[mask] = color
+                Image.fromarray(panoptic).save(
+                    f.split(".png")[0] + "_instances.png")
                 # segment area computation
                 area = np.count_nonzero(mask)
 

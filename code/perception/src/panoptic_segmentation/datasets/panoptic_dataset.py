@@ -45,10 +45,6 @@ class PanopticDataset(Dataset):
         self.semantic_class_mapper.update({0: {
             'train_id': len(self.categories) + 1,
             'isthing': 0}})
-        self.semantic_train_id_to_eval_id = [7, 8, 11, 12, 13, 17, 19, 20, 21,
-                                             22, 23, 24, 25, 26, 27, 28, 31,
-                                             32, 33, 0]
-        self.instance_train_id_to_eval_id = [24, 25, 26, 27, 28, 31, 32, 33]
 
         # Generate a dictionary with all needed information with idx as key
         self.meta_data = {}
@@ -82,9 +78,10 @@ class PanopticDataset(Dataset):
                                   'groundtruth',
                                   self.split,
                                   img_data['file_name'].split('_')[0],
-                                  img_data['labelfile_name'])
-        panoptic = np.asarray(Image.open(path_label))[:, :, :3]
-        panoptic = rgb2id(panoptic, self.categories)
+                                  img_data['labelfile_name']
+                                  .replace(".png", "_instances.png"))
+        panoptic = np.asarray(Image.open(path_label))[..., :3]
+        panoptic = rgb2id(panoptic)
 
         # Get bbox info
         rpn_bbox = []
@@ -152,32 +149,16 @@ class PanopticDataset(Dataset):
         }
 
 
-def rgb2id(color, categories):
+def rgb2id(color):
     """ Pass the image from RGB to the instance id value
     See COCO format doc https://cocodataset.org/#format-data
     """
-    panoptic = np.zeros((color.shape[:2]), dtype=np.uint32)
-    formatted = color.reshape(-1, color.shape[2])
-    segmentIds = np.unique(formatted, axis=0)
-    instance_ids = np.zeros((max(segmentIds[:, 0]) + 1), dtype=np.uint8)
-    for segmentId in segmentIds:
-        semanticId = segmentId[0]
-        labelInfo = next(item for item in categories if item["id"] == semanticId)
-        indices = np.where(np.all(color == segmentId, axis=-1))
-        coords = zip(indices[0], indices[1])
-        if labelInfo["isthing"]:
-            instance_id = 1000 * segmentId[0] + instance_ids[
-                segmentId[0]]
-            instance_ids[segmentId[0]] += 1
-        else:
-            instance_id = segmentId
-
-        coords = list(map(list, list(coords)))
-        for coord in coords:
-            if coord[0] > 719:
-                pass
-            panoptic[coord[0], coord[1]] = instance_id
-    return panoptic
+    if isinstance(color, np.ndarray) and len(color.shape) == 3:
+        if color.dtype == np.uint8:
+            color = color.astype(np.int32)
+        return color[:, :, 0] + 256 * color[:, :, 1] + 256 * 256 * \
+            color[:, :, 2]
+    return int(color[0] + 256 * color[1] + 256 * 256 * color[2])
 
 
 def coco_to_pascal_bbox(bbox):

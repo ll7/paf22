@@ -1,6 +1,7 @@
 import os
 import logging
 import albumentations as A
+import torch.cuda
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import (
@@ -26,7 +27,7 @@ def add_custom_param(cfg):
     cfg.MODEL_CUSTOM.BACKBONE.EFFICIENTNET_ID = 5
     cfg.MODEL_CUSTOM.BACKBONE.LOAD_PRETRAIN = False
     # DATASET
-    cfg.NUM_CLASS = 19
+    cfg.NUM_CLASS = 15
     cfg.DATASET_PATH = "/home/ubuntu/Elix/cityscapes"
     cfg.TRAIN_JSON = "gtFine/cityscapes_panoptic_train.json"
     cfg.VALID_JSON = "gtFine/cityscapes_panoptic_val.json"
@@ -113,7 +114,7 @@ def main():
         shuffle=True,
         collate_fn=collate_fn,
         pin_memory=False,
-        num_workers=4
+        num_workers=1
     )
 
     valid_loader = DataLoader(
@@ -152,10 +153,11 @@ def main():
     # Create a pytorch lighting trainer
     trainer = pl.Trainer(
         # weights_summary='full',
-        gpus=1,
+        gpus=0,
         num_sanity_val_steps=0,
         # fast_dev_run=True,
-        callbacks=[early_stopping, checkpoint],
+        # callbacks=[early_stopping, checkpoint],
+        callbacks=[checkpoint],
         precision=cfg.PRECISION,
         resume_from_checkpoint=cfg.CHECKPOINT_PATH,
         gradient_clip_val=15,
@@ -167,4 +169,5 @@ def main():
 
 if __name__ == '__main__':
     CUDA_LAUNCH_BLOCKING = "1"
+    print(torch.cuda.is_available())
     main()

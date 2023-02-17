@@ -86,8 +86,8 @@ def convert2panoptic(cityscapesPath=None,
         images = []
         annotations = []
         for progress, f in enumerate(files):
-
             originalFormat = np.array(Image.open(f))[..., :3]
+            # Todo Panoptisches Bild erstellen und abspeichern
 
             fileName = os.path.basename(f)
             imageId = fileName.replace("_groundtruth.png", "")
@@ -98,21 +98,29 @@ def convert2panoptic(cityscapesPath=None,
                            "height": int(originalFormat.shape[0]),
                            "file_name": inputFileName})
 
-            segmentIds = np.unique(originalFormat.reshape(
-                -1, originalFormat.shape[2]), axis=0)
+            formatted = originalFormat.reshape(-1, originalFormat.shape[2])
+            segmentIds = np.unique(formatted, axis=0)
+            instance_ids = np.zeros((max(segmentIds[:, 0]) + 1), dtype=np.uint8)
             segmInfo = []
             for segmentId in segmentIds:
                 semanticId = segmentId[0]
-                dic = categories[semanticId - 1] if semanticId < 255 \
-                    else len(categories) - 1
-                isCrowd = 1 if dic["isthing"] == 0 else 0
                 labelInfo = id2label[semanticId]
-                categoryId = labelInfo.id
+                if labelInfo.hasInstances:
+                    instance_id = 1000 * segmentId[0] + instance_ids[segmentId[0]]
+                    instance_ids[segmentId[0]] += 1
+                    isCrowd = 0
+                else:
+                    isCrowd = 1
 
+                if not labelInfo.hasInstances:
+                    isCrowd = 0
+
+                if labelInfo.ignoreInEval:
+                    continue
                 mask = originalFormat == segmentId
-                mask = np.all(mask, axis=2)
+                mask = mask.all(axis=2)
                 # segment area computation
-                area = np.sum(mask)
+                area = np.count_nonzero(mask)
 
                 # bbox computation for a segment
                 hor = np.sum(mask, axis=0)
@@ -125,8 +133,8 @@ def convert2panoptic(cityscapesPath=None,
                 height = vert_idx[-1] - y + 1
                 bbox = [int(x), int(y), int(width), int(height)]
 
-                segmInfo.append({"id": int(semanticId),
-                                 "category_id": int(categoryId),
+                segmInfo.append({"id": int(instance_id),
+                                 "category_id": int(semanticId),
                                  "area": int(area),
                                  "bbox": bbox,
                                  "iscrowd": isCrowd})
@@ -172,13 +180,4 @@ def main():
 
 # call the main
 if __name__ == "__main__":
-    # dir = "center"
-    # folder = "/workspace/dataset/test_data/rgb/" + dir + "/"
-    #
-    # for filename in os.listdir(folder):
-    #     new = "2_" + dir + "_" + filename.split(".")[0] + ".png"
-    #     source = folder + filename
-    #     dest = "/workspace/dataset/test_data/" + dir + "/" + new
-    #     os.rename(source, dest)
-
     main()

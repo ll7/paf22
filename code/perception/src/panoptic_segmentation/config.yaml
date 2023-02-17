@@ -25,7 +25,7 @@ MODEL:
     # BATCH_SIZE_PER_IMAGE: 256 # number of proposals to sample for training
     # POSITIVE_FRACTION: 0.25 # fraction of positive (foreground) proposals to sample for training.
     IN_FEATURES: [ "P_4", "P_8", "P_16", "P_32" ]
-    NUM_CLASSES: 8 # There is 8 instance in the city scape dataset
+    NUM_CLASSES: 15 # There is 8 instance in the city scape dataset
     # PROPOSAL_APPEND_GT:
     IOU_THRESHOLDS: [ 0.5 ]
     # IOU_LABELS:
@@ -51,12 +51,12 @@ TEST:
 
 # DATA
 # Path to cityscapes dataset
-#DATASET_PATH: "/workspace/dataset/test_data/"
-#TRAIN_JSON: "groundtruth/cityscapes_panoptic_train.json"
-#VALID_JSON: "groundtruth/cityscapes_panoptic_val.json"
-DATASET_PATH: "/workspace/dataset/dataset/"
-TRAIN_JSON: "gtFine/cityscapes_panoptic_train.json"
-VALID_JSON: "gtFine/cityscapes_panoptic_val.json"
+DATASET_PATH: "/workspace/dataset/test_data/"
+TRAIN_JSON: "groundtruth/cityscapes_panoptic_train.json"
+VALID_JSON: "groundtruth/cityscapes_panoptic_val.json"
+#DATASET_PATH: "/workspace/dataset/dataset/"
+#TRAIN_JSON: "gtFine/cityscapes_panoptic_train.json"
+#VALID_JSON: "gtFine/cityscapes_panoptic_val.json"
 PRED_DIR: "preds" # Path of images generated in the dataset folder
 PRED_JSON: "cityscapes_panoptic_preds.json" # Path in the dataset folde of the prediction json created
 
@@ -87,9 +87,9 @@ CALLBACKS:
 
 # Path to load a model
 CHECKPOINT_PATH: ""
-BATCH_SIZE: 3
+BATCH_SIZE: 1
 PRECISION: 16 # Bit precision for mix precision training
-NUM_CLASS: 28
+NUM_CLASS: 15
 MODEL_CUSTOM:
   BACKBONE:
     EFFICIENTNET_ID: 5 # Id of the EfficienNet model

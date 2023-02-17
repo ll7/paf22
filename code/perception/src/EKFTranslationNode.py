@@ -3,12 +3,15 @@
 """
 This node publishes all relevant topics for the ekf node.
 """
+import math
 
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from sensor_msgs.msg import NavSatFix, Imu
 from nav_msgs.msg import Odometry
+from std_msgs.msg import Float32
 from coordinate_transformation import CoordinateTransformer, GeoRef
+from tf.transformations import euler_from_quaternion
 
 
 class EKFTranslation(CompatibleNode):
@@ -71,6 +74,12 @@ class EKFTranslation(CompatibleNode):
             "/vo",
             qos_profile=1)
 
+        self.__heading: float = 0
+        self.__heading_publisher = self.new_publisher(
+            Float32,
+            f"/carla/{self.role_name}/current_heading",
+            qos_profile=1)
+
     def update_imu_data(self, data: Imu):
         imu_data = Imu()
 
@@ -101,6 +110,24 @@ class EKFTranslation(CompatibleNode):
 
         self.ekf_imu_publisher.publish(imu_data)
 
+        # Calculate the heading based on the orientation given by the IMU
+        data_orientation_q = [data.orientation.x,
+                              data.orientation.y,
+                              data.orientation.z,
+                              data.orientation.w]
+
+        roll, pitch, yaw = euler_from_quaternion(data_orientation_q)
+        raw_heading = math.atan2(roll, pitch)
+
+        # transform raw_heading so that:
+        # ---------------------------------------------------------------
+        # | 0 = x-axis | pi/2 = y-axis | pi = -x-axis | -pi/2 = -y-axis |
+        # ---------------------------------------------------------------
+        heading = (raw_heading - (math.pi / 2)) % (2 * math.pi) - math.pi
+        self.__heading = heading
+        # self.__heading = raw_heading - math.pi / 2
+        self.__heading_publisher.publish(self.__heading)
+
     def update_gps_data(self, data: NavSatFix):
         if self.avg_gps_counter % (self.avg_gps_n + 1) != 0:
             self.avg_gps[0] += data.latitude
@@ -117,7 +144,10 @@ class EKFTranslation(CompatibleNode):
         self.avg_gps_counter = 1
 
         x, y, z = self.transformer.gnss_to_xyz(avg_lat, avg_lon, avg_alt)
-
+        # -> temporary fix todo: find reason for inaccuracy
+        x = x * 0.998
+        y = y * 1.003
+        # <-
         odom_msg = Odometry()
 
         odom_msg.header.stamp = data.header.stamp

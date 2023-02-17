@@ -114,7 +114,7 @@ def main():
         shuffle=True,
         collate_fn=collate_fn,
         pin_memory=False,
-        num_workers=1
+        num_workers=4
     )
 
     valid_loader = DataLoader(
@@ -153,11 +153,11 @@ def main():
     # Create a pytorch lighting trainer
     trainer = pl.Trainer(
         # weights_summary='full',
-        gpus=0,
+        gpus=1,
         num_sanity_val_steps=0,
         # fast_dev_run=True,
-        # callbacks=[early_stopping, checkpoint],
-        callbacks=[checkpoint],
+        callbacks=[early_stopping, checkpoint],
+        # callbacks=[checkpoint],
         precision=cfg.PRECISION,
         resume_from_checkpoint=cfg.CHECKPOINT_PATH,
         gradient_clip_val=15,

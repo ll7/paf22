@@ -6,7 +6,7 @@ from rospy import Publisher, Subscriber
 from simple_pid import PID
 from std_msgs.msg import Float32
 
-SPEED_LIMIT_DEFAULT: float = 5.0
+SPEED_LIMIT_DEFAULT: float = 36.0
 
 
 class VelocityController(CompatibleNode):

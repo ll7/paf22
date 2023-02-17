@@ -161,7 +161,7 @@ def create_canvas_thing(inter_preds, instance):
     canvas = torch.zeros_like(inter_preds)
     # Retrieve classes of all instance prediction (sorted by detectron2)
     classes = instance.pred_classes
-    instance_train_id_to_eval_id = [24, 25, 26, 27, 28, 31, 32, 33, 0]
+    instance_train_id_to_eval_id = [1, 2, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 21, 24]
     # Used to label each instance incrementally
     track_of_instance = {}
     # Loop on instance prediction

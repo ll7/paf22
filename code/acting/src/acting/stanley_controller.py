@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # from typing import List
 
-from math import atan, sqrt
+from math import atan, sqrt, sin, cos
 # import numpy as np
 import ros_compatibility as roscomp
 from carla_msgs.msg import CarlaSpeedometer
@@ -168,8 +168,8 @@ class StanleyController(CompatibleNode):
         closest_point_idx = self.__get_closest_point_index()
         closest_point: PoseStamped = self.__path.poses[closest_point_idx]
 
-        cross_err = - self.__dist_to(closest_point.pose.position)
-
+        cross_err = - self.__get_cross_err(closest_point.pose.position)
+        # cross_err = - self.__dist_to(closest_point.pose.position)
         traj_heading = self.__get_path_heading(closest_point_idx)
         heading_err = self.__heading - traj_heading
 
@@ -268,10 +268,44 @@ class StanleyController(CompatibleNode):
     def __get_cross_err(self, pos: Point) -> float:
         """
         Returns the Distance between current position and target position.
+        The distance is negative/positive based on whether the closest point
+        is to the left or right of the vehicle.
         :param pos:
         :return:
         """
-        return self.__dist_to(pos)
+        dist = self.__dist_to(pos)
+
+        x = self.__position[0]
+        y = self.__position[1]
+
+        alpha = 0
+        if self.__heading is not None:
+            alpha = self.__heading
+        v_e_0 = (0, 1)
+        v_e = (cos(alpha)*v_e_0[0] - sin(alpha)*v_e_0[1],
+               sin(alpha)*v_e_0[0] + cos(alpha)*v_e_0[1])
+
+        # define a vector (v_ab) with length 20 centered on the cur pos
+        # of the vehicle, with a heading parallel to that of the vehicle
+        a = (x + (v_e[0] * 10), y + (v_e[1] * 10))
+        b = (x - (v_e[0] * 10), y - (v_e[1] * 10))
+        v_ab = (b[0] - a[0], b[1] - a[1])
+
+        # get the sign of the determinant of vectors (AB, AM) where M(pos)
+        # (Bx - Ax) * (Y - Ay) - (By - Ay) * (X - Ax)
+        temp_sign = ((v_ab[0] * (pos.y - a[1])) - (v_ab[1] * (pos.x - a[1])))
+
+        min_sign = 0.0001  # to avoid rounding errors
+        sign: int = 0
+        if temp_sign < -min_sign:
+            sign = 1
+        else:
+            sign = -1
+
+        self.loginfo(sign)
+
+        res = dist * sign
+        return res
 
     def __dist_to(self, pos: Point) -> float:
         """

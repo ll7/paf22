@@ -157,7 +157,7 @@ class StanleyController(CompatibleNode):
         Calculates the steering angle based on the current information
         :return:
         """
-        k_ce = 0.05  # todo: tune
+        k_ce = 0.1  # todo: tune
 
         current_velocity: float
         if self.__velocity <= 1:
@@ -168,7 +168,7 @@ class StanleyController(CompatibleNode):
         closest_point_idx = self.__get_closest_point_index()
         closest_point: PoseStamped = self.__path.poses[closest_point_idx]
 
-        cross_err = self.__dist_to(closest_point.pose.position)
+        cross_err = - self.__dist_to(closest_point.pose.position)
 
         traj_heading = self.__get_path_heading(closest_point_idx)
         heading_err = self.__heading - traj_heading
@@ -241,12 +241,6 @@ class StanleyController(CompatibleNode):
 
         return heading_sum / heading_sum_args
 
-    def __get_x_vector(self, point: Point) -> Point:
-        x = point.x
-        y = point.y
-        res = Point(x+1, y, 0)
-        return res
-
     def __get_target_point_index(self, ld: float) -> int:
         """
         Get the index of the target point on the current trajectory based on
@@ -270,6 +264,14 @@ class StanleyController(CompatibleNode):
                 min_dist = dist2ld
                 min_dist_idx = i
         return min_dist_idx
+
+    def __get_cross_err(self, pos: Point) -> float:
+        """
+        Returns the Distance between current position and target position.
+        :param pos:
+        :return:
+        """
+        return self.__dist_to(pos)
 
     def __dist_to(self, pos: Point) -> float:
         """

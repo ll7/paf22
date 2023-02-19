@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # from typing import List
-
+import math
 from math import atan, sqrt, sin, cos
-# import numpy as np
+import numpy as np
 import ros_compatibility as roscomp
 from carla_msgs.msg import CarlaSpeedometer
 from geometry_msgs.msg import PoseStamped, Point  # , Pose, Quaternion
@@ -131,9 +131,9 @@ class StanleyController(CompatibleNode):
         dist = self.__dist_to(data.pose.position)
         if dist < min_diff:
             # for debugging purposes:
-            self.logwarn("New position disregarded, "
-                         f"as dist ({round(dist, 3)}) to current pos "
-                         f"< min_diff ({round(min_diff, 3)})")
+            self.logdebug("New position disregarded, "
+                          f"as dist ({round(dist, 3)}) to current pos "
+                          f"< min_diff ({round(min_diff, 3)})")
             return
 
         old_x = self.__position[0]
@@ -167,8 +167,10 @@ class StanleyController(CompatibleNode):
 
         closest_point_idx = self.__get_closest_point_index()
         closest_point: PoseStamped = self.__path.poses[closest_point_idx]
-
-        cross_err = - self.__get_cross_err(closest_point.pose.position)
+        self.loginfo(f"IDX: {closest_point_idx} || "
+                     f"X: {round(closest_point.pose.position.x, 1)} \t "
+                     f"Y: {round(closest_point.pose.position.y, 1)})")
+        cross_err = self.__get_cross_err(closest_point.pose.position)
         # cross_err = - self.__dist_to(closest_point.pose.position)
         traj_heading = self.__get_path_heading(closest_point_idx)
         heading_err = self.__heading - traj_heading
@@ -241,30 +243,6 @@ class StanleyController(CompatibleNode):
 
         return heading_sum / heading_sum_args
 
-    def __get_target_point_index(self, ld: float) -> int:
-        """
-        Get the index of the target point on the current trajectory based on
-        the look ahead distance.
-        :param ld: look ahead distance
-        :return:
-        """
-        if len(self.__path.poses) < 2:
-            return -1
-
-        min_dist = 10e1000
-        min_dist_idx = -1
-        # might be more elegant to only look at points
-        # _ahead_ of the closest point on the trajectory
-        for i in range(self.__tp_idx, len(self.__path.poses)):
-            pose: PoseStamped = self.__path.poses[i]
-            dist = self.__dist_to(pose.pose.position)
-            dist2ld = dist - ld
-            # can be optimized
-            if min_dist > dist2ld > 0:
-                min_dist = dist2ld
-                min_dist_idx = i
-        return min_dist_idx
-
     def __get_cross_err(self, pos: Point) -> float:
         """
         Returns the Distance between current position and target position.
@@ -278,36 +256,49 @@ class StanleyController(CompatibleNode):
         x = self.__position[0]
         y = self.__position[1]
 
-        self.loginfo(f"Cur_X: {round(x, 2)} \t "
-                     f"Cur_Y: {round(y, 2)} \t "
-                     f"Trj_X: {round(pos.x, 2)} \t "
-                     f"Trj_Y: {round(pos.y, 2)} \t ")
+        # self.loginfo(f"Cur_X: {round(x, 2)} \t "
+        #             f"Cur_Y: {round(y, 2)} \t "
+        #             f"Trj_X: {round(pos.x, 2)} \t "
+        #             f"Trj_Y: {round(pos.y, 2)} \t ")
 
         alpha = 0
         if self.__heading is not None:
-            alpha = self.__heading
+            alpha = self.__heading + (math.pi / 2)
         v_e_0 = (0, 1)
         v_e = (cos(alpha)*v_e_0[0] - sin(alpha)*v_e_0[1],
                sin(alpha)*v_e_0[0] + cos(alpha)*v_e_0[1])
 
-        # define a vector (v_ab) with length 20 centered on the cur pos
+        # define a vector (v_ab) with length 10 centered on the cur pos
         # of the vehicle, with a heading parallel to that of the vehicle
-        a = (x + (v_e[0] * 10), y + (v_e[1] * 10))
-        b = (x - (v_e[0] * 10), y - (v_e[1] * 10))
+        a = (x + (v_e[0] * 2.5), y + (v_e[1] * 2.5))
+        b = (x - (v_e[0] * 2.5), y - (v_e[1] * 2.5))
+
         v_ab = (b[0] - a[0], b[1] - a[1])
+        v_am = (pos.x - a[0], pos.y - a[1])
 
-        # get the sign of the determinant of vectors (AB, AM) where M(pos)
-        # (Bx - Ax) * (Y - Ay) - (By - Ay) * (X - Ax)
-        temp_sign = ((v_ab[0] * (pos.y - a[1])) - (v_ab[1] * (pos.x - a[1])))
+        c = np.array([[v_ab[0], v_am[0]],
+                      [v_ab[1], v_am[1]]])
+        temp_sign = np.linalg.det(c)
 
-        min_sign = 0.0001  # to avoid rounding errors
-        sign: int = 0
-        if temp_sign < -min_sign:
-            sign = 1
-        else:
+        min_sign = 0.01  # to avoid rounding errors
+
+        if temp_sign > -min_sign:
             sign = -1
+        else:
+            sign = 1
 
         res = dist * sign
+        self.loginfo(f"Temp_Sign: {round(temp_sign, 1)} \t"
+                     f"Sign: {round(sign, 1)} \t "
+                     f"Res; {round(res, 1)} \t "
+                     f"A: ({round(a[0], 1)}, {round(a[1], 1)}) \t "
+                     f"B: ({round(b[0], 1)}, {round(b[1], 1)}) \t "
+                     f"C: ({round(x, 1)}, {round(y, 1)}) \t "
+                     f"M: ({round(pos.x, 1)}, {round(pos.y, 1)}) \t || \t"
+                     f"AB: ({round(v_ab[0], 1)}, {round(v_ab[1], 1)}) \t "
+                     f"AM: ({round(v_am[0], 1)}, {round(v_am[1], 1)}) \t "
+                     )
+
         return res
 
     def __dist_to(self, pos: Point) -> float:

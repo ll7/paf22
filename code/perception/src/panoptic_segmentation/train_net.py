@@ -50,7 +50,7 @@ def add_custom_param(cfg):
     cfg.SOLVER.NAME = "SGD"
     cfg.SOLVER.ACCUMULATE_GRAD = 1
     # Runner
-    cfg.BATCH_SIZE = 1
+    cfg.BATCH_SIZE = 3
     cfg.CHECKPOINT_PATH = ""
     cfg.PRECISION = 32
     # Callbacks

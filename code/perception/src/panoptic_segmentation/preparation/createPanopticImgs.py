@@ -1,18 +1,14 @@
 #!/usr/bin/python
 #
-# Converts the *instanceIds.png annotations of the Cityscapes dataset
+# Converts the annotations of our generated dataset
 # to COCO-style panoptic segmentation format
 # (http://cocodataset.org/#format-data).
-# The convertion is working for 'fine' set of the annotations.
 #
-# By default with this tool uses IDs specified in labels.py. You can use flag
-# --use-train-id to get train ids for categories. 'ignoreInEval' categories are
-# removed during the conversion.
+# By default with this tool uses IDs specified in labels.py.
+# 'ignoreInEval' categories are removed during the conversion.
 #
 # In panoptic segmentation format image_id is used to match predictions and
 # ground truth.
-# For cityscapes image_id has form <city>_123456_123456 and corresponds to the
-# prefix of cityscapes image files.
 #
 
 # python imports
@@ -28,25 +24,13 @@ import numpy as np
 # Image processing
 from PIL import Image
 
-# cityscapes imports
+# dataset imports
 from labels import id2label, labels
 
 
 # The main method
-def convert2panoptic(cityscapesPath=None,
-                     outputFolder=None,
+def convert2panoptic(datasetPath=None,
                      setNames=["val", "train", "test"]):
-    # Where to look for Cityscapes
-    if cityscapesPath is None:
-        if 'CITYSCAPES_DATASET' in os.environ:
-            cityscapesPath = os.environ['CITYSCAPES_DATASET']
-        else:
-            cityscapesPath = os.path.join(
-                os.path.dirname(os.path.realpath(__file__)), '..', '..')
-        cityscapesPath = os.path.join(cityscapesPath, "gtFine")
-
-    if outputFolder is None:
-        outputFolder = cityscapesPath
 
     categories = []
     for label in labels:
@@ -61,7 +45,7 @@ def convert2panoptic(cityscapesPath=None,
     for setName in setNames:
         # how to search for all ground truth
         searchFine = os.path.join(
-            cityscapesPath, "groundtruth", setName, "*", "*.png")
+            datasetPath, "groundtruth", setName, "*", "*.png")
         # search files
         filesFine = glob.glob(searchFine)
         filesFine.sort()
@@ -78,8 +62,8 @@ def convert2panoptic(cityscapesPath=None,
         print("Converting {} annotation files for {} set."
               .format(len(files), setName))
 
-        outputBaseFile = "cityscapes_panoptic_{}".format(setName)
-        outFile = os.path.join(outputFolder + "/groundtruth",
+        outputBaseFile = "dataset_panoptic_{}".format(setName)
+        outFile = os.path.join(datasetPath + "/groundtruth",
                                "{}.json".format(outputBaseFile))
         print("Json file with the annotations in panoptic format will be saved"
               " in {}".format(outFile))
@@ -101,13 +85,15 @@ def convert2panoptic(cityscapesPath=None,
 
             formatted = originalFormat.reshape(-1, originalFormat.shape[2])
             segmentIds = np.unique(formatted, axis=0)
-            instance_ids = np.zeros((max(segmentIds[:, 0]) + 1), dtype=np.uint8)
+            instance_ids = np.zeros((max(segmentIds[:, 0]) + 1),
+                                    dtype=np.uint8)
             segmInfo = []
             for segmentId in segmentIds:
                 semanticId = segmentId[0]
                 labelInfo = id2label[semanticId]
                 if labelInfo.hasInstances:
-                    instance_id = 1000 * segmentId[0] + instance_ids[segmentId[0]]
+                    instance_id = 1000 * segmentId[0] \
+                                  + instance_ids[segmentId[0]]
                     instance_ids[segmentId[0]] += 1
                     isCrowd = 0
                 else:
@@ -165,13 +151,8 @@ def convert2panoptic(cityscapesPath=None,
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset-folder",
-                        dest="cityscapesPath",
-                        help="path to the Cityscapes dataset 'gtFine' folder",
-                        default=None,
-                        type=str)
-    parser.add_argument("--output-folder",
-                        dest="outputFolder",
-                        help="path to the output folder.",
+                        dest="datasetPath",
+                        help="path to the dataset root folder",
                         default=None,
                         type=str)
     parser.add_argument("--set-names",
@@ -182,7 +163,7 @@ def main():
                         type=str)
     args = parser.parse_args()
 
-    convert2panoptic(args.cityscapesPath, args.outputFolder, args.setNames)
+    convert2panoptic(args.datasetPath, args.setNames)
 
 
 # call the main

@@ -28,7 +28,6 @@ class PanopticDataset(Dataset):
         annotations = data['annotations']
         images = data['images']
         self.categories = data['categories']
-        # TODO Possible problem with VOID label and train_id
         # Add mapper to training id and class id
         self.categories = sorted(self.categories, key=lambda d: d["isthing"])
         index = self.categories.index(
@@ -50,7 +49,6 @@ class PanopticDataset(Dataset):
         self.meta_data = {}
         for i in range(len(images)):
             self.meta_data.update({i: {}})
-            # TODO Error Message
             assert annotations[i]['image_id'] == images[i]['id']
             self.meta_data[i].update({
                 'labelfile_name': annotations[i]['file_name']

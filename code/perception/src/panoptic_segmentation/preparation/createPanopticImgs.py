@@ -62,7 +62,7 @@ def convert2panoptic(datasetPath=None,
         print("Converting {} annotation files for {} set."
               .format(len(files), setName))
 
-        outputBaseFile = "dataset_panoptic_{}".format(setName)
+        outputBaseFile = "panoptic_{}".format(setName)
         outFile = os.path.join(datasetPath + "/groundtruth",
                                "{}.json".format(outputBaseFile))
         print("Json file with the annotations in panoptic format will be saved"

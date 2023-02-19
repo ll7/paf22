@@ -52,8 +52,8 @@ TEST:
 # DATA
 # Path to cityscapes dataset
 DATASET_PATH: "/workspace/dataset/test_data/"
-TRAIN_JSON: "groundtruth/cityscapes_panoptic_train.json"
-VALID_JSON: "groundtruth/cityscapes_panoptic_val.json"
+TRAIN_JSON: "groundtruth/panoptic_train.json"
+VALID_JSON: "groundtruth/panoptic_val.json"
 #DATASET_PATH: "/workspace/dataset/dataset/"
 #TRAIN_JSON: "gtFine/cityscapes_panoptic_train.json"
 #VALID_JSON: "gtFine/cityscapes_panoptic_val.json"

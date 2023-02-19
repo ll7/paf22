@@ -19,7 +19,7 @@ def parse_args():
                                                  'detection')
     parser.add_argument('--model',
                         default='/opt/project/code/perception/src/'
-                                'traffic_light_detection/model_weights/'
+                                'traffic_light_detection/models/'
                                 '05.12.2022_17.47/'
                                 'model_acc_99.53_val_100.0.pt',
                         help='path to pretrained model',

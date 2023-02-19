@@ -68,6 +68,9 @@ services:
       # in ``build/docker/build/Dockerfile
       - ../code:/workspace/code
       - /media/marco/HDD/Uni/Master/Autonomes_Fahren:/workspace/dataset
+      - ../:/workspace
+      # mount git config for dvc
+      - ../.gitconfig:/home/carla/.gitconfig
     networks:
       - carla
       - ros

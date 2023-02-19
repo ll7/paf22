@@ -148,6 +148,7 @@ class Acc(CompatibleNode):
         """
         Calculates the distance you have to keep to the vehicle in front to
         have t_reaction to react to the vehicle suddenly stopping
+        The formula replicates official recommendations for safe distances
         """
         t_reaction = 1  # s
         t_breaking = 1  # s

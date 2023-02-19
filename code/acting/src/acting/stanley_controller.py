@@ -167,12 +167,9 @@ class StanleyController(CompatibleNode):
 
         closest_point_idx = self.__get_closest_point_index()
         closest_point: PoseStamped = self.__path.poses[closest_point_idx]
-        self.loginfo(f"IDX: {closest_point_idx} || "
-                     f"X: {round(closest_point.pose.position.x, 1)} \t "
-                     f"Y: {round(closest_point.pose.position.y, 1)})")
-        cross_err = self.__get_cross_err(closest_point.pose.position)
-        # cross_err = - self.__dist_to(closest_point.pose.position)
         traj_heading = self.__get_path_heading(closest_point_idx)
+
+        cross_err = self.__get_cross_err(closest_point.pose.position)
         heading_err = self.__heading - traj_heading
 
         steering_angle = heading_err + atan((k_ce * cross_err) /
@@ -288,16 +285,6 @@ class StanleyController(CompatibleNode):
             sign = 1
 
         res = dist * sign
-        self.loginfo(f"Temp_Sign: {round(temp_sign, 1)} \t"
-                     f"Sign: {round(sign, 1)} \t "
-                     f"Res; {round(res, 1)} \t "
-                     f"A: ({round(a[0], 1)}, {round(a[1], 1)}) \t "
-                     f"B: ({round(b[0], 1)}, {round(b[1], 1)}) \t "
-                     f"C: ({round(x, 1)}, {round(y, 1)}) \t "
-                     f"M: ({round(pos.x, 1)}, {round(pos.y, 1)}) \t || \t"
-                     f"AB: ({round(v_ab[0], 1)}, {round(v_ab[1], 1)}) \t "
-                     f"AM: ({round(v_am[0], 1)}, {round(v_am[1], 1)}) \t "
-                     )
 
         return res
 

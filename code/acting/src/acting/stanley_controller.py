@@ -157,7 +157,7 @@ class StanleyController(CompatibleNode):
         Calculates the steering angle based on the current information
         :return:
         """
-        k_ce = 0.1  # todo: tune
+        k_ce = 0.10  # todo: tune
 
         current_velocity: float
         if self.__velocity <= 1:
@@ -278,6 +278,11 @@ class StanleyController(CompatibleNode):
         x = self.__position[0]
         y = self.__position[1]
 
+        self.loginfo(f"Cur_X: {round(x, 2)} \t "
+                     f"Cur_Y: {round(y, 2)} \t "
+                     f"Trj_X: {round(pos.x, 2)} \t "
+                     f"Trj_Y: {round(pos.y, 2)} \t ")
+
         alpha = 0
         if self.__heading is not None:
             alpha = self.__heading
@@ -301,8 +306,6 @@ class StanleyController(CompatibleNode):
             sign = 1
         else:
             sign = -1
-
-        self.loginfo(sign)
 
         res = dist * sign
         return res

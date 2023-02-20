@@ -158,6 +158,7 @@ class StanleyController(CompatibleNode):
         :return:
         """
         k_ce = 0.10  # todo: tune
+        k_v = 1.0
 
         current_velocity: float
         if self.__velocity <= 1:
@@ -173,14 +174,14 @@ class StanleyController(CompatibleNode):
         heading_err = self.__heading - traj_heading
 
         steering_angle = heading_err + atan((k_ce * cross_err) /
-                                            current_velocity)
+                                            current_velocity * k_v)
         steering_angle *= - 1
 
         # for debugging ->
         debug_msg = StanleyDebug()
         debug_msg.heading = self.__heading
         debug_msg.path_heading = traj_heading
-        debug_msg.cross_err = cross_err
+        debug_msg.cross_err = abs(cross_err)
         debug_msg.heading_err = heading_err
         debug_msg.steering_angle = steering_angle
         self.debug_publisher.publish(debug_msg)

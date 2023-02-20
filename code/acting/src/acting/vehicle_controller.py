@@ -220,7 +220,7 @@ class VehicleController(CompatibleNode):
         Chooses with steering controller to use
         :return:
         """
-        return STANLEY_CONTROLLER
+        return PURE_PURSUIT_CONTROLLER
 
 
 def main(args=None):

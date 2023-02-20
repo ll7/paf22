@@ -71,7 +71,7 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
                  the intersection
         """
         # TODO change this part to the actual source of intersection detection
-        bb = self.blackboard.get("/carla/hero/traffic_light")
+        bb = self.blackboard.get("/paf/hero/traffic_light")
         if bb is None:
             return py_trees.common.Status.FAILURE
         else:

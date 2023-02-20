@@ -21,7 +21,7 @@ class MockTrafficLightPublisher(CompatibleNode):
 
         self.traffic_light_pub: Publisher = self.new_publisher(
             Traffic_light,
-            f"/carla/{self.role_name}/traffic_light",
+            f"/paf/{self.role_name}/traffic_light",
             qos_profile=1)
         self.delta = 0.2
         self.distance = 20.0

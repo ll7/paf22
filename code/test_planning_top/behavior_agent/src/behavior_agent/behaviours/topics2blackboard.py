@@ -33,7 +33,7 @@ def create_node(role_name):
         {'name': f"/psaf/{role_name}/bt/condition/slowed_by_car_in_front",
          'msg': Bool,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/psaf/{role_name}/stopline_distance", 'msg': Float64,
+        {'name': f"/paf/{role_name}/stopline_distance", 'msg': Float32,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/psaf/{role_name}/distance_exit_roundabout", 'msg': Point,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
@@ -46,7 +46,7 @@ def create_node(role_name):
         {'name': f"/carla/{role_name}/initialpose",
          'msg': PoseWithCovarianceStamped,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/carla/{role_name}/traffic_light", 'msg': Traffic_light,
+        {'name': f"/paf/{role_name}/traffic_light", 'msg': Traffic_light,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/carla/{role_name}/max_velocity", 'msg': Float32,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER}

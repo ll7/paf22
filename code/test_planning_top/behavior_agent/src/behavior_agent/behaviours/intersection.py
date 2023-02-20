@@ -84,14 +84,14 @@ class Approach(py_trees.behaviour.Behaviour):
                  detected.
         """
         # Update Light Info
-        light_status_msg = self.blackboard.get("/carla/hero/traffic_light")
+        light_status_msg = self.blackboard.get("/paf/hero/traffic_light")
         if light_status_msg is not None:
             self.traffic_light_status = light_status_msg.color
             rospy.loginfo(f"Light Status: {self.traffic_light_status}")
             self.traffic_light_distance = light_status_msg.distance
             rospy.loginfo(f"Light distance: {self.traffic_light_distance}")
         # Update stopline Info
-        _dis = self.blackboard.get("/psaf/ego_vehicle/stopline_distance")
+        _dis = self.blackboard.get("/paf/hero/stopline_distance")
         if _dis is not None:
             self.stopline_distance = _dis.data
             rospy.loginfo(f"Stopline distance: {self.stopline_distance}")
@@ -233,7 +233,7 @@ class Wait(py_trees.behaviour.Behaviour):
                  py_trees.common.Status.SUCCESS, if the traffic light switched
                  to green or no traffic light is detected
         """
-        light_status_msg = self.blackboard.get("/carla/hero/traffic_light")
+        light_status_msg = self.blackboard.get("/paf/hero/traffic_light")
         if light_status_msg is None:
             rospy.loginfo("No traffic light detected")
             return py_trees.common.Status.SUCCESS
@@ -309,7 +309,7 @@ class Enter(py_trees.behaviour.Behaviour):
         the intersection.
         """
         rospy.loginfo("Enter Intersection")
-        light_status_msg = self.blackboard.get("/carla/hero/traffic_light")
+        light_status_msg = self.blackboard.get("/paf/hero/traffic_light")
         if light_status_msg is None:
             self.target_speed_pub.publish(50.0)
         else:

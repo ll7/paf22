@@ -88,7 +88,7 @@ class EffificientPS(pl.LightningModule):
             pred_json_file=os.path.join(self.cfg.DATASET_PATH,
                                         self.cfg.PRED_JSON),
             gt_folder=os.path.join(self.cfg.DATASET_PATH,
-                                   "gtFine/cityscapes_panoptic_val/"),
+                                   "groundtruth/val/ds/"),
             pred_folder=os.path.join(self.cfg.DATASET_PATH, self.cfg.PRED_DIR)
         )
         self.log("PQ", 100 * pq_res["All"]["pq"])

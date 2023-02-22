@@ -134,6 +134,7 @@ class VehicleController(CompatibleNode):
             message.manual_gear_shift = False
             pid.setpoint = self.__map_steering(steer)
             message.steer = pid(self.__current_steer)
+            # message.steer = 0  # zum testen mit bei gerader Fahrt
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)
@@ -164,7 +165,7 @@ class VehicleController(CompatibleNode):
             return
         if self.__emergency:  # emergency was already triggered
             return
-        self.loginfo("Emergency breaking engaged")
+        self.logerr("Emergency breaking engaged")
         self.__emergency = True
         message = CarlaEgoVehicleControl()
         message.throttle = 1

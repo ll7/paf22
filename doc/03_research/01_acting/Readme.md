@@ -2,4 +2,5 @@
 
 This folder contains all the results of our research on acting:
 
-* [Basics](./02_basics.md)
+* [Basics](./01_acting.md)
+* [Implementation](./02_acting_implementation.md)

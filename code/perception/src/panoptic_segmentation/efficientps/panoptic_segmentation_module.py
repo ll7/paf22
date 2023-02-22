@@ -191,8 +191,8 @@ def compute_output_only_semantic(semantic):
     - semantic (tensor) : Output of the semantic head (either for the full
                           batch or for one image)
     """
-    semantic_train_id_to_eval_id = [7, 8, 11, 12, 13, 17, 19, 20, 21, 22,
-                                    23, 24, 25, 26, 27, 28, 31, 32, 33, 0]
+    semantic_train_id_to_eval_id = [1, 2, 6, 7, 8, 12, 13, 14,
+                                    15, 16, 17, 18, 19, 21, 24, 255, 0]
     if len(semantic.shape) == 3:
         semantic_output = torch.argmax(semantic, dim=0)
     else:
@@ -201,7 +201,7 @@ def compute_output_only_semantic(semantic):
     for train_id in reversed(torch.unique(semantic_output)):
         mask = torch.where(semantic_output == train_id)
         # Create panoptic ids for instance thing or stuff
-        if train_id > 11:
+        if train_id > 0:
             semantic_output[mask] = semantic_train_id_to_eval_id[
                                         train_id] * 1000
         else:
@@ -223,7 +223,7 @@ def add_stuff_from_semantic(cfg, canvas, semantic):
     """
     # Link between semantic and stuff classes in semantic prediction instance
     # classes have higher class training values
-    stuff_train_id_to_eval_id = [7, 8, 11, 12, 13, 17, 19, 20, 21, 22, 23]
+    stuff_train_id_to_eval_id = [255]
     semantic_output = torch.argmax(semantic, dim=0)
     # Reverse to avoid overwrite classes information
     for train_id in reversed(torch.unique(semantic_output)):

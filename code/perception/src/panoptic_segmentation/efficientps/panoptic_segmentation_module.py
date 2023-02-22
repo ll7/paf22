@@ -42,7 +42,7 @@ def panoptic_segmentation_module(cfg, outputs, device):
         Mlb = create_mlb(semantic, instance).to(device)
         Fl = compute_fusion(Mla, Mlb)
         # First merge instances with stuff predictions
-        semantic_stuff_logits = semantic[:11, :, :]
+        semantic_stuff_logits = semantic[:1, :, :]
         inter_logits = torch.cat([semantic_stuff_logits, Fl], dim=0)
         inter_preds = torch.argmax(inter_logits, dim=0)
         # Create canvas and merge everything
@@ -168,7 +168,7 @@ def create_canvas_thing(inter_preds, instance):
     # Loop on instance prediction
     for id_instance, cls in enumerate(classes):
         # The stuff channel are the 11 first channel so we add an offset
-        id_instance += 11
+        id_instance += 1
         # Compute mask for each instance and verify that no prediction has been
         # made
         mask = torch.where((inter_preds == id_instance) & (canvas == 0))
@@ -201,7 +201,7 @@ def compute_output_only_semantic(semantic):
     for train_id in reversed(torch.unique(semantic_output)):
         mask = torch.where(semantic_output == train_id)
         # Create panoptic ids for instance thing or stuff
-        if train_id > 0:
+        if train_id >= 1:
             semantic_output[mask] = semantic_train_id_to_eval_id[
                                         train_id] * 1000
         else:

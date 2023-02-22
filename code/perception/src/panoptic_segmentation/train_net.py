@@ -47,7 +47,7 @@ def add_custom_param(cfg):
     cfg.TRANSFORM.HFLIP = CfgNode()
     cfg.TRANSFORM.HFLIP.PROB = 0.5
     # Solver
-    cfg.SOLVER.NAME = "SGD"
+    cfg.SOLVER.NAME = "Adam"
     cfg.SOLVER.ACCUMULATE_GRAD = 1
     # Runner
     cfg.BATCH_SIZE = 3
@@ -157,7 +157,6 @@ def main():
         num_sanity_val_steps=0,
         # fast_dev_run=True,
         callbacks=[early_stopping, checkpoint],
-        # callbacks=[checkpoint],
         precision=cfg.PRECISION,
         resume_from_checkpoint=cfg.CHECKPOINT_PATH,
         gradient_clip_val=15,

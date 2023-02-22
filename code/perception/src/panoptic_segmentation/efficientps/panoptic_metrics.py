@@ -33,7 +33,7 @@ def generate_pred_panoptic(cfg, outputs):
             # Resize the image to original size
             img_panoptic = F.interpolate(
                 img_panoptic.unsqueeze(0).unsqueeze(0).float(),
-                size=(1024, 2048),
+                size=(720, 1280),
                 mode='nearest'
             )[0, 0, ...]
             # Create segment_info data

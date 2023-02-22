@@ -70,7 +70,7 @@ labels = [
     Label('bridge', 26, 'construction', 2, True, True, (150, 100, 100)),
     Label('rail track', 27, 'flat', 1, True, True, (230, 150, 140)),
     Label('guard rail', 28, 'construction', 2, True, True, (180, 165, 180)),
-    Label('any', 255, 'any', 0, False, True, (0, 0, 0)),
+    Label('any', 255, 'any', 255, False, False, (0, 0, 0)),
 ]
 
 # -----------------------------------------------------------------------------

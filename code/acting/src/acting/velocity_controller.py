@@ -6,6 +6,8 @@ from rospy import Publisher, Subscriber
 from simple_pid import PID
 from std_msgs.msg import Float32
 
+SPEED_LIMIT_DEFAULT: float = 36.0
+
 
 class VelocityController(CompatibleNode):
     """
@@ -83,7 +85,10 @@ class VelocityController(CompatibleNode):
                               "publish a throttle value")
                 return
             if self.__speed_limit is None or self.__speed_limit < 0:
-                self.__speed_limit = float("inf")
+                self.logdebug("VelocityController hasn't received a acceptable"
+                              " speed_limit yet. speed_limit has been set to"
+                              f"default value {SPEED_LIMIT_DEFAULT}")
+                self.__speed_limit = SPEED_LIMIT_DEFAULT
             if self.__max_velocity < 0:
                 self.logerr("Velocity controller doesn't support backward "
                             "driving yet.")

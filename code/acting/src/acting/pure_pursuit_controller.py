@@ -11,7 +11,7 @@ from rospy import Publisher, Subscriber
 from std_msgs.msg import Float32
 from acting.msg import Debug
 
-from helper_functions import vectors_to_angle
+from helper_functions import vector_angle
 from trajectory_interpolation import points_to_vector
 
 
@@ -40,6 +40,13 @@ class PurePursuitController(CompatibleNode):
             f"/carla/{self.role_name}/Speed",
             self.__set_velocity,
             qos_profile=1)
+
+        self.heading_sub: Subscriber = self.new_subscription(
+            Float32,
+            f"/carla/{self.role_name}/current_heading",
+            self.__set_heading,
+            qos_profile=1
+        )
 
         self.pure_pursuit_steer_pub: Publisher = self.new_publisher(
             Float32,
@@ -103,7 +110,7 @@ class PurePursuitController(CompatibleNode):
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
-    def __set_position(self, data: PoseStamped, min_diff=0.05):
+    def __set_position(self, data: PoseStamped, min_diff=0.001):
         """
         Updates the current position of the vehicle
         To avoid problems when the car is stationary, new positions will only
@@ -123,9 +130,9 @@ class PurePursuitController(CompatibleNode):
         dist = self.__dist_to(data.pose.position)
         if dist < min_diff:
             # for debugging purposes:
-            self.logwarn("New position disregarded, "
-                         f"as dist ({round(dist, 3)}) to current pos "
-                         f"< min_diff ({round(min_diff, 3)})")
+            self.logdebug("New position disregarded, "
+                          f"as dist ({round(dist, 3)}) to current pos "
+                          f"< min_diff ({round(min_diff, 3)})")
             return
 
         old_x = self.__position[0]
@@ -139,37 +146,12 @@ class PurePursuitController(CompatibleNode):
     def __set_path(self, data: Path):
         self.__path = data
 
-    def __set_heading(self):
+    def __set_heading(self, data: Float32):
         """
         Updates the current heading
         :return:
         """
-        if self.__position is None:
-            self.logwarn("__get_heading: Current Position not set")
-            self.__heading = 0
-            return
-        if self.__last_pos is None:
-            self.logwarn("__get_heading: Last Position not set")
-            self.__heading = 0
-            return
-
-        cur_x, cur_y = points_to_vector(
-            (self.__last_pos[0],
-             self.__last_pos[1]),
-            (self.__position[0],
-             self.__position[1])
-        )
-        # maybe remove weight if it doesn't help (after fixing gps signal)
-        # code without weight:
-        # self.__heading = vectors_to_angle(cur_x, cur_y, 1, 0)
-        # ->
-        if self.__heading is not None:
-            old_heading: float = self.__heading
-            new_heading: float = vectors_to_angle(cur_x, cur_y, 1, 0)
-            self.__heading = (2 * new_heading + 1 * old_heading) / 3
-        else:
-            self.__heading = vectors_to_angle(cur_x, cur_y, 1, 0)
-        # <-
+        self.__heading = data.data
 
     def __set_velocity(self, data: CarlaSpeedometer):
         self.__velocity = data.speed
@@ -180,70 +162,38 @@ class PurePursuitController(CompatibleNode):
         :return:
         """
         l_vehicle = 2.85  # wheelbase
-        k_ld = 5.0  # todo: tune
+        k_ld = 2.50  # todo: tune
+        look_ahead_dist = 5.0  # offset so that ld is never zero
 
-        current_velocity: float
-        if self.__velocity == 0:
-            current_velocity = k_ld * 0.1
+        if round(self.__velocity, 1) < 0.1:
+            look_ahead_dist += 1.0
         else:
-            current_velocity = self.__velocity
+            look_ahead_dist += k_ld * self.__velocity
 
-        look_ahead_dist = k_ld * current_velocity
         self.__tp_idx = self.__get_target_point_index(look_ahead_dist)
 
         target_wp: PoseStamped = self.__path.poses[self.__tp_idx]
 
-        target_v_x, target_v_y = points_to_vector((self.__last_pos[0],
-                                                   self.__last_pos[1]),
+        target_v_x, target_v_y = points_to_vector((self.__position[0],
+                                                   self.__position[1]),
                                                   (target_wp.pose.position.x,
                                                    target_wp.pose.position.y))
 
-        zero_h_v_x, zero_h_v_y = points_to_vector((self.__last_pos[0],
-                                                   self.__last_pos[1]),
-                                                  (self.__last_pos[0] + 1,
-                                                   self.__last_pos[1]))
+        target_vector_heading = vector_angle(target_v_x, target_v_y)
 
-        target_vector_heading = vectors_to_angle(target_v_x, target_v_y,
-                                                 zero_h_v_x, zero_h_v_y)
-
-        alpha = self.__heading - target_vector_heading
-        steering_angle = atan((2 * l_vehicle * sin(math.radians(alpha))) /
-                              look_ahead_dist)
+        alpha = target_vector_heading - self.__heading
+        steering_angle = atan((2 * l_vehicle * sin(alpha)) / look_ahead_dist)
 
         # for debugging ->
         debug_msg = Debug()
         debug_msg.heading = self.__heading
         debug_msg.target_heading = target_vector_heading
         debug_msg.l_distance = look_ahead_dist
-        debug_msg.alpha = alpha
+        debug_msg.alpha = steering_angle
         self.debug_publisher.publish(debug_msg)
         # <-
 
         self.pure_pursuit_steer_target_pub.publish(target_wp.pose)
-
-        # for debugging only ->
-        # rqt_plot /carla/hero/current_pos/pose/position/x
-        # /carla/hero/pure_pursuit_steer_target_wp/position/x
-        # rqt_plot /carla/hero/current_pos/pose/position/y
-        # /carla/hero/pure_pursuit_steer_target_wp/position/y
-
-        # rqt_plot /carla/hero/pure_pursuit_steer_target_wp/orientation/x:y
-
-        # t_x = target_wp.pose.position.x
-        # t_y = target_wp.pose.position.y
-        # c_x = self.__position[0]
-        # c_y = self.__position[1]
-        # self.loginfo(
-        #             f"T_V: ({round(target_v_x, 3)},{round(target_v_y, 3)})\t"
-        #             f"T_WP: ({round(t_x,3)},{round(t_y,3)}) \t"
-        #             f"C_Pos: ({round(c_x,3)},{round(c_y,3)}) \t"
-        #             f"Target Steering angle: {round(steering_angle, 4)} \t"
-        #             f"Current alpha: {round(alpha, 3)} \t"
-        #             f"Target WP idx: {self.__tp_idx} \t"
-        #             f"Current heading: {round(self.__heading, 3)} \t"
-        #             f"Tar V Heading: {round(target_vector_heading, 3)} \t"
-        # )
-        # <-
 
         return steering_angle
 

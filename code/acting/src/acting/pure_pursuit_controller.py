@@ -141,7 +141,6 @@ class PurePursuitController(CompatibleNode):
         new_x = data.pose.position.x
         new_y = data.pose.position.y
         self.__position = (new_x, new_y)
-        self.__set_heading()
 
     def __set_path(self, data: Path):
         self.__path = data

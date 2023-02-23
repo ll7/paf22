@@ -7,7 +7,7 @@ from std_msgs.msg import Bool
 
 class MockIntersectionClearPublisher(CompatibleNode):
     """
-    This node publishes stop sign light information. It can be used for
+    This node publishes intersection clear information. It can be used for
     testing.
     """
     def __init__(self):
@@ -37,7 +37,7 @@ class MockIntersectionClearPublisher(CompatibleNode):
 
         def loop(timer_event=None):
             """
-            Publishes dummy velocity
+            Publishes dummy intersection information
             :param timer_event: Timer event from ROS
             :return:
             """

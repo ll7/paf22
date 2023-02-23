@@ -38,7 +38,7 @@ class MockStopSignPublisher(CompatibleNode):
 
         def loop(timer_event=None):
             """
-            Publishes dummy velocity
+            Publishes dummy stop signs
             :param timer_event: Timer event from ROS
             :return:
             """

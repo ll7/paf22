@@ -57,7 +57,7 @@ class Approach(py_trees.behaviour.Behaviour):
         What to do here?
             Any initialisation you need before putting your behaviour to work.
         This initializes the variables needed to save information about the
-        stop line and the traffic light.
+        stop line, stop signs and the traffic light.
         """
         rospy.loginfo("Approaching Intersection")
         # self.update_local_path(approach_intersection=True)
@@ -80,7 +80,8 @@ class Approach(py_trees.behaviour.Behaviour):
             - Triggering, checking, monitoring. Anything...but do not block!
             - Set a feedback message
             - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
-        Gets the current traffic light status and the stop line distance
+        Gets the current traffic light status, stop sign status
+        and the stop line distance
         :return: py_trees.common.Status.RUNNING, if too far from intersection
                  py_trees.common.Status.SUCCESS, if stopped in front of inter-
                  section or entered the intersection
@@ -196,8 +197,8 @@ class Approach(py_trees.behaviour.Behaviour):
 class Wait(py_trees.behaviour.Behaviour):
     """
     This behavior handles the waiting in front of the stop line at the inter-
-    section until there either is no traffic light or the traffic light is
-    green.
+    section until there either is no traffic light, the traffic light is
+    green or the intersection is clear.
     """
     def __init__(self, name):
         """
@@ -245,8 +246,8 @@ class Wait(py_trees.behaviour.Behaviour):
            - Triggering, checking, monitoring. Anything...but do not block!
            - Set a feedback message
            - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
-        Waits in front of the intersection until there is a green light or no
-        traffic light at all.
+        Waits in front of the intersection until there is a green light, the
+        intersection is clear or no traffic light at all.
         :return: py_trees.common.Status.RUNNING, while traffic light is yellow
                  or red
                  py_trees.common.Status.SUCCESS, if the traffic light switched

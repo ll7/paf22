@@ -62,8 +62,9 @@ class Approach(py_trees.behaviour.Behaviour):
         rospy.loginfo("Approaching Intersection")
         # self.update_local_path(approach_intersection=True)
         self.start_time = rospy.get_time()
-        self.stopline_detected = False
-        self.stopline_distance = np.inf
+        self.stop_sign_detected = False
+        self.stop_distance = np.inf
+        self.intersection_distance = np.inf
         self.traffic_light_detected = False
         self.traffic_light_distance = np.inf
         self.traffic_light_status = ''
@@ -93,17 +94,27 @@ class Approach(py_trees.behaviour.Behaviour):
             rospy.loginfo(f"Light Status: {self.traffic_light_status}")
             self.traffic_light_distance = light_status_msg.distance
             rospy.loginfo(f"Light distance: {self.traffic_light_distance}")
+            self.traffic_light_detected = True
+
         # Update stopline Info
-        _dis = self.blackboard.get("/paf/hero/stopline_distance")
+        _dis = self.blackboard.get("/paf/hero/intersection_distance")
         if _dis is not None:
-            self.stopline_distance = _dis.data
-            rospy.loginfo(f"Stopline distance: {self.stopline_distance}")
+            self.intersection_distance = _dis.data
+            rospy.loginfo(f"Stopline distance: {self.intersection_distance}")
+
+        # Update stop sign Info
+        stop_sign_msg = self.blackboard.get("/paf/hero/stop")
+        if stop_sign_msg is not None:
+            self.stop_sign_detected = stop_sign_msg.isStop
+            self.stop_distance = stop_sign_msg.distance
 
         # calculate virtual stopline
-        if self.stopline_distance != np.inf:
-            self.virtual_stopline_distance = self.stopline_distance
-        else:
+        if self.intersection_distance != np.inf:
+            self.virtual_stopline_distance = self.intersection_distance
+        elif self.traffic_light_detected:
             self.virtual_stopline_distance = self.traffic_light_distance
+        elif self.stop_sign_detected:
+            self.virtual_stopline_distance = self.stop_distance
 
         # calculate speed needed for stopping
         v_stop = max(5./KMH_TO_MS, ((self.virtual_stopline_distance / 30) **
@@ -112,10 +123,12 @@ class Approach(py_trees.behaviour.Behaviour):
             v_stop = 30.0/KMH_TO_MS
         if self.virtual_stopline_distance < 3.5:
             v_stop = 0.0
-        # stop when there is no or red/yellow traffic light
+        # stop when there is no or red/yellow traffic light or a stop sign is
+        # detected
         if self.traffic_light_status == '' \
                 or self.traffic_light_status == 'red' \
-                or self.traffic_light_status == 'yellow':
+                or self.traffic_light_status == 'yellow'\
+                or self.stop_sign_detected:
 
             rospy.loginfo(f"slowing down: {v_stop}")
             self.target_speed_pub.publish(v_stop)

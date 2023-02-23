@@ -25,7 +25,6 @@ def grow_a_tree(role_name):
             Selector
             ("Priorities",
                 children=[
-                    behaviours.meta.RespawnOrFinish("Respawn or Finish?"),
                     Inverter(
                         Selector("Avoid Collisions",
                                  children=[

@@ -10,6 +10,8 @@ import rospy
 Source: https://github.com/ll7/psaf2
 """
 
+KMH_TO_MS: float = 3.6
+
 
 class Approach(py_trees.behaviour.Behaviour):
     """
@@ -38,7 +40,8 @@ class Approach(py_trees.behaviour.Behaviour):
         successful
         :return: True, as the set up is successful.
         """
-        self.target_speed_pub = rospy.Publisher("/carla/hero/max_velocity",
+        self.target_speed_pub = rospy.Publisher("/carla/hero/"
+                                                "max_tree_velocity",
                                                 Float32, queue_size=1)
         # rospy.wait_for_service('update_local_path') # TODO is this necessary?
         # self.update_local_path =
@@ -65,7 +68,7 @@ class Approach(py_trees.behaviour.Behaviour):
         self.traffic_light_distance = np.inf
         self.traffic_light_status = ''
         self.virtual_stopline_distance = np.inf
-        self.target_speed_pub.publish(30.0)
+        self.target_speed_pub.publish(30.0/KMH_TO_MS)
         self.last_virtual_distance = np.inf
 
     def update(self):
@@ -103,9 +106,10 @@ class Approach(py_trees.behaviour.Behaviour):
             self.virtual_stopline_distance = self.traffic_light_distance
 
         # calculate speed needed for stopping
-        v_stop = max(5., (self.virtual_stopline_distance / 30) ** 1.5 * 50)
-        if v_stop > 30.0:
-            v_stop = 30.0
+        v_stop = max(5./KMH_TO_MS, ((self.virtual_stopline_distance / 30) **
+                                    1.5 * 50)/KMH_TO_MS)
+        if v_stop > 30.0/KMH_TO_MS:
+            v_stop = 30.0/KMH_TO_MS
         if self.virtual_stopline_distance < 3.5:
             v_stop = 0.0
         # stop when there is no or red/yellow traffic light
@@ -118,7 +122,7 @@ class Approach(py_trees.behaviour.Behaviour):
 
         # approach slowly when traffic light is green
         if self.traffic_light_status == 'green':
-            self.target_speed_pub.publish(30)
+            self.target_speed_pub.publish(30/KMH_TO_MS)
 
         # get speed
         speedometer = self.blackboard.get("/carla/hero/Speed")
@@ -129,15 +133,15 @@ class Approach(py_trees.behaviour.Behaviour):
         if self.virtual_stopline_distance > 5.0:
             # too far
             return py_trees.common.Status.RUNNING
-        elif speed < 2.0 and self.virtual_stopline_distance < 5.0:
+        elif speed < 2.0/KMH_TO_MS and self.virtual_stopline_distance < 5.0:
             # stopped
             return py_trees.common.Status.SUCCESS
-        elif speed > 5.0 and self.virtual_stopline_distance < 6.0 \
+        elif speed > 5.0/KMH_TO_MS and self.virtual_stopline_distance < 6.0 \
                 and self.traffic_light_status == "green":
 
             # drive through intersection even if traffic light turns yellow
             return py_trees.common.Status.SUCCESS
-        elif speed > 5.0 and self.virtual_stopline_distance < 3.5:
+        elif speed > 5.0/KMH_TO_MS and self.virtual_stopline_distance < 3.5:
             # running over line
             return py_trees.common.Status.SUCCESS
         elif self.last_virtual_distance == self.virtual_stopline_distance \
@@ -201,7 +205,7 @@ class Wait(py_trees.behaviour.Behaviour):
         :return: True, as the set up is successful.
         """
         self.target_speed_pub = rospy.Publisher("/carla/hero/"
-                                                "max_velocity", Float32,
+                                                "max_tree_velocity", Float32,
                                                 queue_size=1)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
@@ -290,7 +294,7 @@ class Enter(py_trees.behaviour.Behaviour):
         :return: True, as the set up is successful.
         """
         self.target_speed_pub = rospy.Publisher("/carla/hero/"
-                                                "max_velocity", Float32,
+                                                "max_tree_velocity", Float32,
                                                 queue_size=1)
         # rospy.wait_for_service('update_local_path')
         # self.update_local_path = rospy.ServiceProxy("update_local_path",
@@ -311,14 +315,14 @@ class Enter(py_trees.behaviour.Behaviour):
         rospy.loginfo("Enter Intersection")
         light_status_msg = self.blackboard.get("/paf/hero/traffic_light")
         if light_status_msg is None:
-            self.target_speed_pub.publish(50.0)
+            self.target_speed_pub.publish(50.0/KMH_TO_MS)
         else:
             traffic_light_status = light_status_msg.color
         if traffic_light_status == "":
-            self.target_speed_pub.publish(10.0)
+            self.target_speed_pub.publish(10.0/KMH_TO_MS)
         else:
             rospy.loginfo(f"Light Status: {traffic_light_status}")
-            self.target_speed_pub.publish(50.0)
+            self.target_speed_pub.publish(50.0/KMH_TO_MS)
 
     def update(self):
         """
@@ -396,7 +400,7 @@ class Leave(py_trees.behaviour.Behaviour):
         :return: True, as the set up is successful.
         """
         self.target_speed_pub = rospy.Publisher("/carla/hero/"
-                                                "max_velocity", Float32,
+                                                "max_tree_velocity", Float32,
                                                 queue_size=1)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True

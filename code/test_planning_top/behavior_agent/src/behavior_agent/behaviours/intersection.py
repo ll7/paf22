@@ -103,7 +103,7 @@ class Approach(py_trees.behaviour.Behaviour):
             rospy.loginfo(f"Stopline distance: {self.intersection_distance}")
 
         # Update stop sign Info
-        stop_sign_msg = self.blackboard.get("/paf/hero/stop")
+        stop_sign_msg = self.blackboard.get("/paf/hero/stop_sign")
         if stop_sign_msg is not None:
             self.stop_sign_detected = stop_sign_msg.isStop
             self.stop_distance = stop_sign_msg.distance
@@ -128,12 +128,14 @@ class Approach(py_trees.behaviour.Behaviour):
         if self.traffic_light_status == '' \
                 or self.traffic_light_status == 'red' \
                 or self.traffic_light_status == 'yellow'\
-                or self.stop_sign_detected:
+                or (self.stop_sign_detected and
+                    not self.traffic_light_detected):
 
             rospy.loginfo(f"slowing down: {v_stop}")
             self.target_speed_pub.publish(v_stop)
 
-        # approach slowly when traffic light is green
+        # approach slowly when traffic light is green as traffic lights are
+        # higher priority than traffic signs this behavior is desired
         if self.traffic_light_status == 'green':
             self.target_speed_pub.publish(30/KMH_TO_MS)
 
@@ -251,17 +253,28 @@ class Wait(py_trees.behaviour.Behaviour):
                  to green or no traffic light is detected
         """
         light_status_msg = self.blackboard.get("/paf/hero/traffic_light")
-        if light_status_msg is None:
-            rospy.loginfo("No traffic light detected")
-            return py_trees.common.Status.SUCCESS
+        intersection_clear_msg = self.blackboard.get("/paf/hero/"
+                                                     "intersection_clear")
+        if intersection_clear_msg is not None:
+            intersection_clear = intersection_clear_msg.data
         else:
+            intersection_clear = False
+
+        if light_status_msg is not None:
             traffic_light_status = light_status_msg.color
-        if traffic_light_status == "red" or traffic_light_status == "yellow":
-            rospy.loginfo(f"Light Status: {traffic_light_status}")
-            self.target_speed_pub.publish(0)
+            if traffic_light_status == "red" or \
+                    traffic_light_status == "yellow":
+                rospy.loginfo(f"Light Status: {traffic_light_status}")
+                self.target_speed_pub.publish(0)
+                return py_trees.common.Status.RUNNING
+            else:
+                rospy.loginfo(f"Light Status: {traffic_light_status}")
+                return py_trees.common.Status.SUCCESS
+        elif not intersection_clear:
+            rospy.loginfo("Intersection blocked")
             return py_trees.common.Status.RUNNING
         else:
-            rospy.loginfo(f"Light Status: {traffic_light_status}")
+            rospy.loginfo("Intersection clear")
             return py_trees.common.Status.SUCCESS
 
     def terminate(self, new_status):
@@ -326,16 +339,7 @@ class Enter(py_trees.behaviour.Behaviour):
         the intersection.
         """
         rospy.loginfo("Enter Intersection")
-        light_status_msg = self.blackboard.get("/paf/hero/traffic_light")
-        if light_status_msg is None:
-            self.target_speed_pub.publish(50.0/KMH_TO_MS)
-        else:
-            traffic_light_status = light_status_msg.color
-        if traffic_light_status == "":
-            self.target_speed_pub.publish(10.0/KMH_TO_MS)
-        else:
-            rospy.loginfo(f"Light Status: {traffic_light_status}")
-            self.target_speed_pub.publish(50.0/KMH_TO_MS)
+        self.target_speed_pub.publish(50.0/KMH_TO_MS)
 
     def update(self):
         """

@@ -18,8 +18,6 @@ from helper_functions import vector_angle
 from trajectory_interpolation import points_to_vector
 
 
-# todo: docs
-# todo: test
 class StanleyController(CompatibleNode):
     def __init__(self):
         super(StanleyController, self).__init__('stanley_controller')
@@ -155,7 +153,8 @@ class StanleyController(CompatibleNode):
     def __calculate_steer(self) -> float:
         """
         Calculates the steering angle based on the current information
-        :return:
+        using the Stanly algorithm
+        :return: steering angle
         """
         k_ce = 0.10  # todo: tune
         k_v = 1.0
@@ -190,6 +189,10 @@ class StanleyController(CompatibleNode):
         return steering_angle
 
     def __get_closest_point_index(self) -> int:
+        """
+        Returns index of the nearest point of the trajectory
+        :return: Index of the closest point
+        """
         if len(self.__path.poses) < 2:
             return -1
 

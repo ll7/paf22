@@ -73,5 +73,5 @@ To do so, enable the `AccDistancePublisherDummy` in the acting launch file.
 
 ## Also see
 
-* [Dev round 4](../dev_rounds/sprint_4.md)
+* [Dev round 4](../07_dev_talks/sprint_4.md)
 * [research](../03_research/01_acting/Readme.md)

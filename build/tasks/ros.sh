@@ -104,3 +104,11 @@ task:rosversion() {
 task:rqt_graph() {
   task:roscommand "rqt_graph ${@}"
 }
+
+task:rqt_plot() {
+  task:roscommand "rqt_plot ${@}"
+}
+
+task:rqt_topic() {
+  task:roscommand "rqt_topic ${@}"
+}

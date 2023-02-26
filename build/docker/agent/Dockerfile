@@ -109,7 +109,7 @@ RUN sudo mkdir /opt/leaderboard-py3 && sudo chown $USERNAME:$USERNAME /opt/leade
     ln -s $LEADERBOARD_ROOT/leaderboard /opt/leaderboard-py3/leaderboard && \
     ln -s $SCENARIO_RUNNER_ROOT/srunner /opt/leaderboard-py3/srunner
 
-RUN python -m pip install roslibpy
+RUN python -m pip install roslibpy lxml
 
 
 # environment variables for the leaderboard_evaluator

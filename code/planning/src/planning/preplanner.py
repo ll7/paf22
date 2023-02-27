@@ -24,7 +24,6 @@ class PrePlanner(CompatibleNode):
         super(PrePlanner, self).__init__('DevGlobalRoute')
 
         self.path_backup = Path()
-        self.driving = False
 
         self.odc = None
         self.global_route_backup = None
@@ -230,7 +229,6 @@ class PrePlanner(CompatibleNode):
         # self.path_pub.publish(path)
         self.path_pub.publish(self.path_backup)
         self.loginfo("PrePlanner: published trajectory")
-        self.driving = True
 
     def world_info_callback(self, data: CarlaWorldInfo) -> None:
         """
@@ -277,8 +275,19 @@ class PrePlanner(CompatibleNode):
                          "route preplanning")
             self.global_route_callback(self.global_route_backup)
 
-        if self.driving:
-            self.loginfo(f"current pos = {self.agent_pos}")
+    def run(self):
+        """
+        Control loop
+        :return:
+        """
+
+        def loop(timer_event=None):
+            # Continuously update paths time to update car position in rviz
+            self.path_backup.header.stamp = rospy.Time.now()
+            self.path_pub.publish(self.path_backup)
+
+        self.new_timer(1, loop)
+        self.spin()
 
 
 if __name__ == "__main__":
@@ -289,9 +298,8 @@ if __name__ == "__main__":
     roscomp.init('PrePlanner')
 
     try:
-        PrePlanner()
-        while True:
-            pass
+        node = PrePlanner()
+        node.run()
     except KeyboardInterrupt:
         pass
     finally:

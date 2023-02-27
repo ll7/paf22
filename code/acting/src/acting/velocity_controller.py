@@ -26,7 +26,7 @@ class VelocityController(CompatibleNode):
 
         self.max_velocity_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/max_velocity",
+            f"/paf/{self.role_name}/max_velocity",
             self.__get_max_velocity,
             qos_profile=1)
 
@@ -38,20 +38,20 @@ class VelocityController(CompatibleNode):
 
         self.speed_limit_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/speed_limit",
+            f"/paf/{self.role_name}/speed_limit",
             self.__get_speed_limit,
             qos_profile=1)
 
         self.throttle_pub: Publisher = self.new_publisher(
             Float32,
-            f"/carla/{self.role_name}/throttle",
+            f"/paf/{self.role_name}/throttle",
             qos_profile=1)
 
         # rqt_plot can't read the speed data provided by the rosbridge
         # Therefore, the speed is published again as a float value
         self.velocity_pub: Publisher = self.new_publisher(
             Float32,
-            f"/carla/{self.role_name}/velocity_as_float",
+            f"/paf/{self.role_name}/velocity_as_float",
             qos_profile=1)
 
         self.__current_velocity: float = None

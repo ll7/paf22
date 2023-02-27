@@ -77,7 +77,7 @@ class EKFTranslation(CompatibleNode):
         self.__heading: float = 0
         self.__heading_publisher = self.new_publisher(
             Float32,
-            f"/carla/{self.role_name}/current_heading",
+            f"/paf/{self.role_name}/current_heading",
             qos_profile=1)
 
     def update_imu_data(self, data: Imu):

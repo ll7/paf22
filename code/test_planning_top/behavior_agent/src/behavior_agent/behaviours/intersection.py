@@ -210,7 +210,7 @@ class Wait(py_trees.behaviour.Behaviour):
         successful
         :return: True, as the set up is successful.
         """
-        self.target_speed_pub = rospy.Publisher("/carla/hero/"
+        self.target_speed_pub = rospy.Publisher("/paf/hero/"
                                                 "max_tree_velocity", Float32,
                                                 queue_size=1)
         self.blackboard = py_trees.blackboard.Blackboard()
@@ -299,7 +299,7 @@ class Enter(py_trees.behaviour.Behaviour):
         successful
         :return: True, as the set up is successful.
         """
-        self.target_speed_pub = rospy.Publisher("/carla/hero/"
+        self.target_speed_pub = rospy.Publisher("/paf/hero/"
                                                 "max_tree_velocity", Float32,
                                                 queue_size=1)
         # rospy.wait_for_service('update_local_path')
@@ -405,7 +405,7 @@ class Leave(py_trees.behaviour.Behaviour):
         successful
         :return: True, as the set up is successful.
         """
-        self.target_speed_pub = rospy.Publisher("/carla/hero/"
+        self.target_speed_pub = rospy.Publisher("/paf/hero/"
                                                 "max_tree_velocity", Float32,
                                                 queue_size=1)
         self.blackboard = py_trees.blackboard.Blackboard()

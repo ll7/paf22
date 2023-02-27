@@ -1,4 +1,3 @@
-<!-- TODO: Insert components of component -->
 <launch>
     <node pkg="planning" type="dev_global_route.py" name="DevGlobalRoute" output="screen">
            <param name="from_txt" value="True" />

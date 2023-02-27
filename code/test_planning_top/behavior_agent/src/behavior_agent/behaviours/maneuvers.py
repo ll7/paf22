@@ -101,10 +101,34 @@ class SwitchLaneLeft(py_trees.behaviour.Behaviour):
 
 
 class SwitchLaneRight(py_trees.behaviour.Behaviour):
+    """
+    This behavior triggers the replanning of the path in the local planner to
+    switch to the lane to the right. A check if the lane is free might be added
+    in the future.
+    """
     def __init__(self, name):
+        """
+        Minimal one-time initialisation. A good rule of thumb is to only
+        include the initialisation relevant for being able to insert this
+        behaviour in a tree for offline rendering to dot graphs.
+
+        Other one-time initialisation requirements should be met via the
+        setup() method.
+
+         :param name: name of the behaviour
+        """
         super(SwitchLaneRight, self).__init__(name)
 
     def setup(self, timeout):
+        """
+        Delayed one-time initialisation that would otherwise interfere with
+        offline rendering of this behaviour in a tree to dot graph or
+        validation of the behaviour's configuration.
+
+        :param timeout: an initial timeout to see if the tree generation is
+        successful
+        :return: True, as there is nothing to set up.
+        """
         # rospy.wait_for_service('update_local_path')
         # self.update_local_path = rospy.ServiceProxy("update_local_path",
         # UpdateLocalPath)
@@ -112,12 +136,40 @@ class SwitchLaneRight(py_trees.behaviour.Behaviour):
         return True
 
     def initialise(self):
+        """
+        When is this called?
+        The first time your behaviour is ticked and anytime the status is not
+        RUNNING thereafter.
+
+        What to do here?
+            Any initialisation you need before putting your behaviour to work.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
+        """
         # self.update_local_path(change_lane_right=True)
-        lane_status = self.blackboard.get("/psaf/ego_vehicle/lane_status")
+        lane_status = self.blackboard.get("/paf/hero/lane_status")
         self.lanelet_id_before_lane_change = lane_status.currentLaneId
 
     def update(self):
-        lane_status = self.blackboard.get("/psaf/ego_vehicle/lane_status")
+        """
+        When is this called?
+        Every time your behaviour is ticked.
+
+        What to do here?
+            - Triggering, checking, monitoring. Anything...but do not block!
+            - Set a feedback message
+            - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
+
+        This behaviour runs until the agent is on a different lane as in the
+        start of this behavior
+
+        :return: py_trees.common.Status.RUNNING, while the lane hasn't changed
+                 py_trees.common.Status.SUCCESS, if the agent changed the lane
+                 py_trees.common.Status.FAILURE, if the agent is on an unknown
+                 lane
+        """
+        lane_status = self.blackboard.get("/paf/hero/lane_status")
         if lane_status.currentLaneId == -1:
             return py_trees.common.Status.FAILURE
         elif self.lanelet_id_before_lane_change != lane_status.currentLaneId:
@@ -135,14 +187,14 @@ class Overtake(py_trees.behaviour.Behaviour):
         super(Overtake, self).__init__(name)
 
     def setup(self, timeout):
-        self.Successs = False
+        self.Success = False
         return True
 
     def initialise(self):
         self.blackboard = py_trees.blackboard.Blackboard()
 
     def update(self):
-        if self.Successs:
+        if self.Success:
             return py_trees.common.Status.SUCCESS
         else:
             return py_trees.common.Status.RUNNING

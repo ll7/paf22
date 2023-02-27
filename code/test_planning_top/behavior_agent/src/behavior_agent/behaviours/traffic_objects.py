@@ -94,22 +94,72 @@ class NotSlowedByCarInFront(py_trees.behaviour.Behaviour):
 
 
 class WaitLeftLaneFree(py_trees.behaviour.Behaviour):
+    """
+    This behavior checks if it is safe to change to the lane on the left.
+    """
     def __init__(self, name):
+        """
+        Minimal one-time initialisation. A good rule of thumb is to only
+        include the initialisation relevant for being able to insert this
+        behaviour in a tree for offline rendering to dot graphs.
+
+        Other one-time initialisation requirements should be met via the
+        setup() method.
+
+         :param name: name of the behaviour
+        """
         super(WaitLeftLaneFree, self).__init__(name)
 
     def setup(self, timeout):
+        """
+        Delayed one-time initialisation that would otherwise interfere with
+        offline rendering of this behaviour in a tree to dot graph or
+        validation of the behaviour's configuration.
+
+        :param timeout: an initial timeout to see if the tree generation is
+        successful
+        :return: True, as there is nothing to set up.
+        """
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
+        """
+        When is this called?
+        The first time your behaviour is ticked and anytime the status is not
+        RUNNING thereafter.
+
+        What to do here?
+            Any initialisation you need before putting your behaviour to work.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics. Also the time when this behavior started is recorded
+        """
         self.timer = rospy.get_time()
 
     def update(self):
-        self.car_left = self.blackboard.get("/psaf/ego_vehicle/"
-                                            "obstacle_on_left_lane")
-        if self.car_left is None:
+        """
+        When is this called?
+        Every time your behaviour is ticked.
+
+        What to do here?
+            - Triggering, checking, monitoring. Anything...but do not block!
+            - Set a feedback message
+            - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
+
+        This part checks if the left lane is free. It is deemed free, if there
+        is nothing or the distance to the obstacle is more than 20 m.
+
+        :return: py_trees.common.Status.SUCCESS, if the lane change can be
+                 performed
+                 py_trees.common.Status.FAILURE, in case of error
+                 py_trees.common.Status.RUNNING, while there will be waited for
+                 the left lane to be free.
+        """
+        car_left = self.blackboard.get("/paf/hero/Obstacle_on_left_lane")
+        if car_left is None:
             return py_trees.common.Status.SUCCESS
-        elif self.car_left.data is None or self.car_left.data > 20:
+        elif car_left.data is None or car_left.data > 20:
             return py_trees.common.Status.SUCCESS
         elif (self.timer + 2) < rospy.get_time():
             return py_trees.common.Status.RUNNING
@@ -117,27 +167,86 @@ class WaitLeftLaneFree(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.FAILURE
 
     def terminate(self, new_status):
+        """
+        When is this called?
+        Whenever your behaviour switches to a non-running state.
+           - SUCCESS || FAILURE : your behaviour's work cycle has finished
+           - INVALID : a higher priority branch has interrupted, or shutting
+           down
+
+        writes a status message to the console when the behaviour terminates
+        """
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
                           (self.name, self.status, new_status))
 
 
 class WaitRightLaneFree(py_trees.behaviour.Behaviour):
+    """
+    This behavior checks if it is safe to change to the lane on the left.
+    """
     def __init__(self, name):
+        """
+        Minimal one-time initialisation. A good rule of thumb is to only
+        include the initialisation relevant for being able to insert this
+        behaviour in a tree for offline rendering to dot graphs.
+
+        Other one-time initialisation requirements should be met via the
+        setup() method.
+
+         :param name: name of the behaviour
+        """
         super(WaitRightLaneFree, self).__init__(name)
 
     def setup(self, timeout):
+        """
+        Delayed one-time initialisation that would otherwise interfere with
+        offline rendering of this behaviour in a tree to dot graph or
+        validation of the behaviour's configuration.
+
+        :param timeout: an initial timeout to see if the tree generation is
+        successful
+        :return: True, as there is nothing to set up.
+        """
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
+        """
+        When is this called?
+        The first time your behaviour is ticked and anytime the status is not
+        RUNNING thereafter.
+
+        What to do here?
+            Any initialisation you need before putting your behaviour to work.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics. Also the time when this behavior started is recorded
+        """
         self.timer = rospy.get_time()
 
     def update(self):
-        self.car_right = self.blackboard.get("/psaf/ego_vehicle/"
-                                             "obstacle_on_right_lane")
-        if self.car_right is None:
+        """
+        When is this called?
+        Every time your behaviour is ticked.
+
+        What to do here?
+            - Triggering, checking, monitoring. Anything...but do not block!
+            - Set a feedback message
+            - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
+
+        This part checks if the right lane is free. It is deemed free, if there
+        is nothing or the distance to the obstacle is more than 40 m.
+
+        :return: py_trees.common.Status.SUCCESS, if the lane change can be
+                 performed
+                 py_trees.common.Status.FAILURE, in case of error
+                 py_trees.common.Status.RUNNING, while there will be waited for
+                 the right lane to be free.
+        """
+        car_right = self.blackboard.get("/paf/hero/obstacle_on_right_lane")
+        if car_right is None:
             return py_trees.common.Status.SUCCESS
-        elif self.car_right.data is None or self.car_right.data > 40:
+        elif car_right.data is None or car_right.data > 40:
             return py_trees.common.Status.SUCCESS
         elif (self.timer + 2) < rospy.get_time():
             return py_trees.common.Status.RUNNING
@@ -145,6 +254,15 @@ class WaitRightLaneFree(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.FAILURE
 
     def terminate(self, new_status):
+        """
+        When is this called?
+        Whenever your behaviour switches to a non-running state.
+           - SUCCESS || FAILURE : your behaviour's work cycle has finished
+           - INVALID : a higher priority branch has interrupted, or shutting
+           down
+
+        writes a status message to the console when the behaviour terminates
+        """
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
                           (self.name, self.status, new_status))
 
@@ -154,14 +272,14 @@ class NotSlowedByCarInFrontRight(py_trees.behaviour.Behaviour):
         super(NotSlowedByCarInFrontRight, self).__init__(name)
 
     def setup(self, timeout):
-        self.Successs = True
+        self.Success = True
         return True
 
     def initialise(self):
         self.blackboard = py_trees.blackboard.Blackboard()
 
     def update(self):
-        if self.Successs:
+        if self.Success:
             return py_trees.common.Status.SUCCESS
         else:
             return py_trees.common.Status.RUNNING
@@ -172,18 +290,19 @@ class NotSlowedByCarInFrontRight(py_trees.behaviour.Behaviour):
 
 
 class OvertakingPossible(py_trees.behaviour.Behaviour):
+    # TODO not sure if this is needed
     def __init__(self, name):
         super(OvertakingPossible, self).__init__(name)
 
     def setup(self, timeout):
-        self.Successs = False
+        self.Success = False
         return True
 
     def initialise(self):
         self.blackboard = py_trees.blackboard.Blackboard()
 
     def update(self):
-        if self.Successs:
+        if self.Success:
             return py_trees.common.Status.SUCCESS
         else:
             return py_trees.common.Status.RUNNING

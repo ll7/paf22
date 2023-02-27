@@ -9,7 +9,6 @@ from mock.msg import Traffic_light
 class MockTrafficLightPublisher(CompatibleNode):
     """
     This node publishes traffic light information. It can be used for testing.
-    TODO functionality
     """
     def __init__(self):
         super(MockTrafficLightPublisher, self).\

@@ -102,10 +102,10 @@ def calc_path_yaw(path: Path, idx: int) -> float:
     point_current = path.poses[idx]
     point_next: PoseStamped
     point_next = path.poses[idx + 1]
-    angle = math.atan2(point_next.pose.position.y
-                       - point_current.pose.position.y,
-                       point_next.pose.position.x
-                       - point_current.pose.position.x)
+    angle = math.atan2(point_next.pose.position.y -
+                       point_current.pose.position.y,
+                       point_next.pose.position.x -
+                       point_current.pose.position.x)
     return normalize_angle(angle)
 
 

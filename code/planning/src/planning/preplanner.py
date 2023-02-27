@@ -8,7 +8,7 @@ from xml.etree import ElementTree as eTree
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from carla_msgs.msg import CarlaRoute, CarlaWorldInfo
 from nav_msgs.msg import Path
-from std_msgs.msg import Header
+# from std_msgs.msg import Header
 from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 
 from preplanning_trajectory import OpenDriveConverter
@@ -22,6 +22,9 @@ class PrePlanner(CompatibleNode):
 
     def __init__(self):
         super(PrePlanner, self).__init__('DevGlobalRoute')
+
+        self.path_backup = Path()
+        self.driving = False
 
         self.odc = None
         self.global_route_backup = None
@@ -97,7 +100,7 @@ class PrePlanner(CompatibleNode):
         y_start_ = self.agent_pos.y
         # after PR 191 is merged it should work without the manual position
         x_start = 983.5
-        y_start = -5373.2
+        y_start = -5433.2
         # z_start = self.agent_pos.z
         """ roll_start, pitch_start, yaw_start = \
             tf.transformations.euler_from_quaternion(
@@ -120,13 +123,13 @@ class PrePlanner(CompatibleNode):
         self.loginfo(f"y_target = {y_target}")
 
         self.loginfo(f"Road Options: {data.road_options}")
-        for i in range(20):
+        """for i in range(20):
             x_t = data.poses[i].position.x
             y_t = data.poses[i].position.y
             self.loginfo(f"x_target = {x_t}")
             self.loginfo(f"y_target = {y_t}")
             self.loginfo("\n")
-
+"""
         # get the first turn command (1, 2, or 3)
         ind = 0
         for i, opt in enumerate(data.road_options):
@@ -195,28 +198,39 @@ class PrePlanner(CompatibleNode):
         way_x = waypoints[0]
         way_y = waypoints[1]
         way_yaw = waypoints[2]
-        way_speed = waypoints[3]
+        # way_speed = waypoints[3]
 
         # Transforming the calculated waypoints into a Path msg
         # speed is the z coordinate of the path message
         stamped_poses = []
         for i in range(len(way_x)):
             # TODO: add z, roll and pitch
-            position = Point(way_x[i], way_y[i], way_speed[i])
+            position = Point(way_x[i], way_y[i], 0)  # way_speed[i])
             quaternion = tf.transformations.quaternion_from_euler(0,
                                                                   0,
                                                                   way_yaw[i])
             orientation = Quaternion(x=quaternion[0], y=quaternion[1],
                                      z=quaternion[2], w=quaternion[3])
             pose = Pose(position, orientation)
-            header = Header(self.seq, rospy.Time.now(), "path_pose")
+#            header = Header(self.seq, rospy.Time.now(), "path_pose")
             self.seq += 1
-            stamped_poses.append(PoseStamped(header, pose))
+            pos = PoseStamped()
+            pos.header.stamp = rospy.Time.now()
+            pos.header.frame_id = "global"
+            pos.pose = pose
+            # stamped_poses.append(PoseStamped(header, pose))
+            stamped_poses.append(pos)
 
-        header = Header(self.seq, rospy.Time.now(), "path")
+#        header = Header(self.seq, rospy.Time.now(), "path")
         self.seq += 1
-        self.path_pub.publish(Path(header, stamped_poses))
+#        path = Path(header, stamped_poses)
+        self.path_backup.header.stamp = rospy.Time.now()
+        self.path_backup.header.frame_id = "global"
+        self.path_backup.poses = stamped_poses
+        # self.path_pub.publish(path)
+        self.path_pub.publish(self.path_backup)
         self.loginfo("PrePlanner: published trajectory")
+        self.driving = True
 
     def world_info_callback(self, data: CarlaWorldInfo) -> None:
         """
@@ -262,6 +276,9 @@ class PrePlanner(CompatibleNode):
             self.loginfo("PrePlanner: Received a pose update retrying "
                          "route preplanning")
             self.global_route_callback(self.global_route_backup)
+
+        if self.driving:
+            self.loginfo(f"current pos = {self.agent_pos}")
 
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@ class VelocityPublisherDummy(CompatibleNode):
             qos_profile=1)
         self.velocity = 4.0
         self.delta_velocity = 0.125
-        self.max_velocity = 5.5
+        self.max_velocity = 5.0
         self.min_velocity = 4
         self.__dv = self.delta_velocity
 

@@ -181,11 +181,10 @@ print("current", conv.road_id)
 # print("Follow", conv.follow_id)
 print()
 
-
 # visualize the whole trajectory and the reference line
 # Two red points are the start and the endpoint of the first part
 # of the trajectory
-vis = TestVisualizer((conv.pt[0][2], conv.pt[1][2]),
+vis = TestVisualizer((conv.pt[0][-2], conv.pt[1][-2]),
                      [end_x, end_y],
                      conv.waypoints[0], conv.waypoints[1],
                      conv.reference[0], conv.reference[1])

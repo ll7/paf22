@@ -171,6 +171,7 @@ class StanleyController(CompatibleNode):
 
         cross_err = self.__get_cross_err(closest_point.pose.position)
         heading_err = self.__heading - traj_heading
+        heading_err = ((heading_err + math.pi) % (2 * math.pi)) - math.pi
 
         steering_angle = heading_err + atan((k_ce * cross_err) /
                                             current_velocity * k_v)

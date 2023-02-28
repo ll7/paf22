@@ -252,11 +252,11 @@ class OpenDriveConverter:
         # two possible other roads and current not a junction
         else:
             dist = self.get_dist_list(pred, current, succ, agent)
-            print(dist)
+            # print(dist)
             min_dist = self.get_min_dist(dist)
             if len(min_dist) == 1:
                 ind = dist.index(min_dist)
-                print(ind)
+                # print(ind)
                 if ind == 0 or ind == 1:
                     id_value = pred
                 elif ind == 2 or ind == 3:
@@ -447,7 +447,7 @@ class OpenDriveConverter:
         # and so on
         """ direction = self.right_or_left(points, x_agent, y_agent,
                                        self.width) """
-        print("length: ", len(points[0]))
+        # print("length: ", len(points[0]))
         # Calculate points in the middle of the road
         points = self.update_points(points, self.direction, self.width)
         return points
@@ -480,7 +480,7 @@ class OpenDriveConverter:
                     dist = help_functions.euclid_dist(point, target)
                     if dist < TARGET_DIFF:
                         # Trajectory still calculated
-                        print("still calculated")
+                        # print("still calculated")
                         still_calculated = True
                         break
             if still_calculated is True:
@@ -519,12 +519,14 @@ class OpenDriveConverter:
                                                  self.follow_section,
                                                  self.pt, widths,
                                                  self.direction, False)
-                    start = len(self.waypoints[0]) - len(points)
+                    points = copy.deepcopy(points)
+                    start = len(self.waypoints[0]) - len(points[0])
                     for i in range(len(points)):
                         self.waypoints[0][start + i] = points[0][i]
                         self.waypoints[1][start + i] = points[1][i]
                         self.waypoints[2][start + i] = points[2][i]
                         self.waypoints[3][start + i] = points[3][i]
+                    self.pt = points
                     self.point_size = len(points[0])
                     break
             else:
@@ -692,6 +694,8 @@ class OpenDriveConverter:
                                                  target_x, target_y,
                                                  direction,
                                                  new_width)
+                # print(i+1)
+                # print("LLLLL", len(points_calc[0]))
                 points_calc[0][i + 1] = point[0]
                 points_calc[1][i + 1] = point[1]
             # change lane right
@@ -699,8 +703,8 @@ class OpenDriveConverter:
                 # print(widths)
                 points = reference_line
                 last_width = self.width
-                print(last_width)
-                print(widths)
+                # print(last_width)
+                # print(widths)
                 step_size = STEP_SIZE
                 ind = widths.index(last_width)
                 if ind == len(widths) - 1:
@@ -960,7 +964,7 @@ class OpenDriveConverter:
         if dist_1 > dist_2:
             # print("DIRECTION")
             direction = False
-        print(direction)
+        # print(direction)
         return direction
 
     def update_one_point(self, point1_x: float, point1_y: float,
@@ -1154,6 +1158,10 @@ class OpenDriveConverter:
                 speed.append(max_speed)
         points = [x, y, yaw, speed]
         # Delete duplicates and very close points
+        points = self.remove_outliner(points)
+        return points
+
+    def remove_outliner(self, points):
         delete_index = []
         for i in range(0, len(points[0]) - 1):
             p = (points[0][i], points[1][i])
@@ -1163,11 +1171,11 @@ class OpenDriveConverter:
             # point is to close to the following point (0.5m)
             if dist < 0.5:
                 # print("SMALL")
-                delete_index.append(i)
+                delete_index.append(i+1)
             # outliner point
             elif dist > 3:
                 # print("BIG")
-                delete_index.append(i)
+                delete_index.append(i+1)
         # delete the points with the calculated indices
         number = 0
         for i in delete_index:

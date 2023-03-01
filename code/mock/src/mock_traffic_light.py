@@ -63,7 +63,7 @@ def main(args=None):
     Main function starts the node
     :param args:
     """
-    roscomp.init('velocity_publisher_dummy', args=args)
+    roscomp.init('traffic_light_publisher_dummy', args=args)
 
     try:
         node = MockTrafficLightPublisher()

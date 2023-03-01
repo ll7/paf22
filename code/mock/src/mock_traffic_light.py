@@ -9,7 +9,6 @@ from mock.msg import Traffic_light
 class MockTrafficLightPublisher(CompatibleNode):
     """
     This node publishes traffic light information. It can be used for testing.
-    TODO functionality
     """
     def __init__(self):
         super(MockTrafficLightPublisher, self).\
@@ -64,7 +63,7 @@ def main(args=None):
     Main function starts the node
     :param args:
     """
-    roscomp.init('velocity_publisher_dummy', args=args)
+    roscomp.init('traffic_light_publisher_dummy', args=args)
 
     try:
         node = MockTrafficLightPublisher()

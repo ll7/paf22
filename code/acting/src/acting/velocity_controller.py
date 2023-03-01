@@ -42,6 +42,12 @@ class VelocityController(CompatibleNode):
             self.__get_speed_limit,
             qos_profile=1)
 
+        self.max_tree_v_sub: Subscriber = self.new_subscription(
+            Float32,
+            f"/paf/{self.role_name}/max_tree_velocity",
+            self.__set_max_tree_v,
+            qos_profile=1)
+
         self.throttle_pub: Publisher = self.new_publisher(
             Float32,
             f"/carla/{self.role_name}/throttle",
@@ -56,6 +62,7 @@ class VelocityController(CompatibleNode):
 
         self.__current_velocity: float = None
         self.__max_velocity: float = None
+        self.__max_tree_v: float = None
         self.__speed_limit: float = None
 
     def run(self):
@@ -79,21 +86,32 @@ class VelocityController(CompatibleNode):
                               " yet and can therefore not publish a "
                               "throttle value")
                 return
+
             if self.__current_velocity is None:
                 self.logdebug("VehicleController hasn't received "
                               "current_velocity yet and can therefore not"
                               "publish a throttle value")
                 return
+
             if self.__speed_limit is None or self.__speed_limit < 0:
                 self.logdebug("VelocityController hasn't received a acceptable"
                               " speed_limit yet. speed_limit has been set to"
                               f"default value {SPEED_LIMIT_DEFAULT}")
                 self.__speed_limit = SPEED_LIMIT_DEFAULT
+
+            if self.__max_tree_v is None or self.__max_tree_v < 0:
+                self.logdebug("VelocityController hasn't received a acceptable"
+                              " max_tree_v yet. speed_limit has been set to"
+                              f"default value {SPEED_LIMIT_DEFAULT}")
+                self.__max_tree_v = SPEED_LIMIT_DEFAULT
+
             if self.__max_velocity < 0:
                 self.logerr("Velocity controller doesn't support backward "
                             "driving yet.")
                 return
-            v = min(self.__max_velocity, self.__speed_limit)
+
+            v = min(self.__max_velocity, self.__max_tree_v)
+            v = min(v, self.__speed_limit)
 
             pid.setpoint = v
             throttle = pid(self.__current_velocity)
@@ -107,6 +125,9 @@ class VelocityController(CompatibleNode):
     def __get_current_velocity(self, data: CarlaSpeedometer):
         self.__current_velocity = float(data.speed)
         self.velocity_pub.publish(self.__current_velocity)
+
+    def __set_max_tree_v(self, data: Float32):
+        self.__max_tree_v = float(data.data)
 
     def __get_max_velocity(self, data: Float32):
         self.__max_velocity = float(data.data)

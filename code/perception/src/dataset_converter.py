@@ -5,6 +5,7 @@ from shutil import rmtree, copyfile
 import math
 from imageio import v3 as iio
 import numpy as np
+import random
 
 
 def create_argparse():
@@ -21,6 +22,13 @@ def create_argparse():
         default=False,
         action='store_true',
         help='Overwrite output if already exists')
+    argparser.add_argument(
+        '--shuffle',
+        default=False,
+        action='store_true',
+        help='Shuffle the dataset before splitting it'
+             ' into train, test and validation sets'
+    )
     return argparser
 
 
@@ -93,6 +101,12 @@ def main():
         rgb_images = rgb_files[side]
         instance_images = instance_files[side]
         count_files = min(len(rgb_images), len(instance_images))
+
+        if args.shuffle:
+            # shuffle images
+            shuffled = list(zip(rgb_images, instance_images))
+            random.shuffle(shuffled)
+            rgb_images, instance_images = zip(*shuffled)
 
         for split, name in zip(splits, split_names):
             rgb_target_dir = output_dir / side / name / "ds"

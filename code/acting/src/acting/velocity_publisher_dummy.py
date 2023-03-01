@@ -28,6 +28,7 @@ class VelocityPublisherDummy(CompatibleNode):
         self.delta_velocity = 0.125
         self.max_velocity = 5.5
         self.min_velocity = 4
+
         self.__dv = self.delta_velocity
 
     def run(self):

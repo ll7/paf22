@@ -159,7 +159,7 @@ class Approach(py_trees.behaviour.Behaviour):
 
         if next_waypoint_msg is None:
             return py_trees.common.Status.FAILURE
-        if next_waypoint_msg.data < 12:
+        if next_waypoint_msg.data < 5:
             rospy.loginfo("Leave intersection!")
             # self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS
@@ -350,7 +350,7 @@ class Enter(py_trees.behaviour.Behaviour):
 
         if next_waypoint_msg is None:
             return py_trees.common.Status.FAILURE
-        if next_waypoint_msg.data < 12:
+        if next_waypoint_msg.data < 5:
             rospy.loginfo("Leave intersection!")
             # self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS

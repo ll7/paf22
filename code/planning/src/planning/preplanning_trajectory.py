@@ -418,8 +418,8 @@ class OpenDriveConverter:
         # agent is on initial road or road before and for the next road
         # is this initial road the old road
         self.point_size = len(points[0])
-        print("inital road: ", self.road_id)
-        print("intial follow ", self.follow_id)
+        # print("inital road: ", self.road_id)
+        # print("intial follow ", self.follow_id)
         self.pt = points
         # self.direction = direction
         self.follow_section = follow_section_id
@@ -642,7 +642,7 @@ class OpenDriveConverter:
                 step_size = STEP_SIZE
                 ind = widths.index(last_width)
                 if ind == 0:
-                    print("Change not possible")
+                    # print("Change not possible")
                     return points_calc
                 """self.follow_id = self.next_action_id(x_next_t, y_next_t,
                                                      follow_section_id,
@@ -708,7 +708,7 @@ class OpenDriveConverter:
                 step_size = STEP_SIZE
                 ind = widths.index(last_width)
                 if ind == len(widths) - 1:
-                    print("Change not possible")
+                    # print("Change not possible")
                     return points_calc
                 """self.follow_id = self.next_action_id(x_next_t, y_next_t,
                                                      follow_section_id,

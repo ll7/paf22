@@ -46,13 +46,13 @@ class PrePlanner(CompatibleNode):
 
         self.current_pos_sub = self.new_subscription(
             msg_type=PoseStamped,
-            topic="/carla/" + self.role_name + "/current_pos",
+            topic="/paf/" + self.role_name + "/current_pos",
             callback=self.position_callback,
             qos_profile=1)
 
         self.path_pub = self.new_publisher(
             msg_type=Path,
-            topic='/carla/' + self.role_name + '/trajectory',
+            topic='/paf/' + self.role_name + '/trajectory',
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
@@ -93,10 +93,9 @@ class PrePlanner(CompatibleNode):
             return
 
         self.global_route_backup = None
-        # wrong start coordinates from  -> PR 191 solves it
-#        x_start_ = self.agent_pos.x
-#        y_start_ = self.agent_pos.y
-        # after PR 191 is merged it should work without the manual position
+        # TODO: use current instead of manual start position
+#        x_start = round(self.agent_pos.x)
+#        y_start = round(self.agent_pos.y)
         x_start = 983.5
         y_start = -5433.2
 

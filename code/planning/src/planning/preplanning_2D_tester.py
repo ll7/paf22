@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import preplanning_trajectory as pt
 from visualizer import TestVisualizer
 

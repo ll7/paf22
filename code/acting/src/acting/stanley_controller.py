@@ -29,13 +29,13 @@ class StanleyController(CompatibleNode):
         # Subscriber
         self.position_sub: Subscriber = self.new_subscription(
             Path,
-            f"/carla/{self.role_name}/trajectory",
+            f"/paf/{self.role_name}/trajectory",
             self.__set_path,
             qos_profile=1)
 
         self.path_sub: Subscriber = self.new_subscription(
             PoseStamped,
-            f"/carla/{self.role_name}/current_pos",
+            f"/paf/{self.role_name}/current_pos",
             self.__set_position,
             qos_profile=1)
 

@@ -35,26 +35,32 @@ class DummyTrajectoryPub(CompatibleNode):
         self.path_msg.header.frame_id = "global"
 
         # Static trajectory for testing purposes
-        initial_trajectory = [
-            (985.0, -5374.2),
-            (985.0, -5394.2),
+        self.initial_trajectory = [
+            (986.0, -5430.0),
+            (986.0, -5463.2),
+            (984.5, -5493.2),
 
-            (985.0, -5555.5),
-            (985.0, -5563.2),
-            (985.3, -5565.5),
-            (986.3, -5567.5),
-            (987.5, -5569.0),
-            (990.5, -5569.8),
-            (1000.0, -5570.2),
+            (984.5, -5563.5),
+            (985.0, -5573.2),
+            (986.3, -5576.5),
+            (987.3, -5578.5),
+            (988.7, -5579.0),
+            (990.5, -5579.8),
+            (1000.0, -5580.2),
 
-            (1040.0, -5570.2),
-            (1050.0, -5570.2),
-            (1060.0, -5567.5),
-            (1090.0, -5567.5),
-            (1130.0, -5570.2),
-            (1164.6, -5570.2),
-            (1264.6, -5570.0)]
-        self.updated_trajectory(initial_trajectory)
+            (1040.0, -5580.0),
+            (1070.0, -5580.0),
+            (1080.0, -5582.0),
+            (1090.0, -5582.0),
+            (1100.0, -5580.0),
+            (1110.0, -5578.0),
+            (1120.0, -5578.0),
+            (1130.0, -5580.0),
+            (1464.6, -5580.0),
+            (1664.6, -5580.0)
+        ]
+
+        self.updated_trajectory(self.initial_trajectory)
         # request for a new interpolated dummy trajectory
         # self.dummy_trajectory_request_subscriber = self.new_subscription(
         #     DummyTrajectoryRequest,
@@ -65,7 +71,7 @@ class DummyTrajectoryPub(CompatibleNode):
         # publisher for the current trajectory
         self.trajectory_publisher = self.new_publisher(
             Path,
-            "/carla/" + self.role_name + "/trajectory",
+            "/paf/" + self.role_name + "/trajectory",
             qos_profile=1)
 
     def updated_trajectory(self, target_trajectory):

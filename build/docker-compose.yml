@@ -66,6 +66,9 @@ services:
       # if you change the volume here also change the copy command
       # in ``build/docker/build/Dockerfile
       - ../code:/workspace/code
+      # mount git config for dvc
+      - ../.gitconfig:/home/carla/.gitconfig
+      - ../:/workspace/
     networks:
       - carla
       - ros

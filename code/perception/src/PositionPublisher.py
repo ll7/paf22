@@ -8,10 +8,7 @@ It therefore receives a nav_msgs/Path msg.
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
-from std_msgs.msg import Float32
-
-from coordinate_transformation import CoordinateTransformer, GeoRef, \
-    quat2heading
+from coordinate_transformation import CoordinateTransformer, GeoRef
 import rospy
 
 
@@ -40,8 +37,6 @@ class PositionPublisher(CompatibleNode):
         self.current_pos_gps: PoseWithCovarianceStamped = \
             PoseWithCovarianceStamped()
 
-        self.current_heading: float = 0.0
-
         # basic info
         self.role_name = self.get_param("role_name", "hero")
         self.control_loop_rate = self.get_param("control_loop_rate", "0.05")
@@ -57,12 +52,7 @@ class PositionPublisher(CompatibleNode):
         # Publisher
         self.pos_publisher = self.new_publisher(
             PoseStamped,
-            "/carla/" + self.role_name + "/current_pos",
-            qos_profile=1)
-
-        self.heading_publisher = self.new_publisher(
-            Float32,
-            "/carla/" + self.role_name + "/current_heading",
+            "/paf/" + self.role_name + "/current_pos",
             qos_profile=1)
 
     def update_pos_filtered_data(self, data: PoseWithCovarianceStamped):
@@ -81,10 +71,6 @@ class PositionPublisher(CompatibleNode):
         # x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
 
         orientation_quat = self.current_pos_gps.pose.pose.orientation
-        self.current_heading = quat2heading([orientation_quat.x,
-                                            orientation_quat.y,
-                                            orientation_quat.z,
-                                            orientation_quat.w])[0]
         # self.loginfo(self.current_heading)
 
         temp_pose: PoseStamped = PoseStamped()
@@ -107,7 +93,6 @@ class PositionPublisher(CompatibleNode):
         # self.loginfo("publishing data")
         temp_pos = self.update_current_pos()
         self.pos_publisher.publish(temp_pos)
-        self.heading_publisher.publish(self.current_heading)
 
     def run(self):
         """

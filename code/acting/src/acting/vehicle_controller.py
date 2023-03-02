@@ -39,7 +39,7 @@ class VehicleController(CompatibleNode):
         )
         self.status_pub: Publisher = self.new_publisher(
             Bool,
-            f"/carla/{self.role_name}/status",
+            f"/paf/{self.role_name}/status",
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
@@ -47,14 +47,14 @@ class VehicleController(CompatibleNode):
 
         self.emergency_pub: Publisher = self.new_publisher(
             Bool,
-            f"/carla/{self.role_name}/emergency",
+            f"/paf/{self.role_name}/emergency",
             qos_profile=QoSProfile(depth=10,
                                    durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
         self.emergency_sub: Subscriber = self.new_subscription(
             Bool,
-            f"/carla/{self.role_name}/emergency",
+            f"/paf/{self.role_name}/emergency",
             self.__emergency_break,
             qos_profile=QoSProfile(depth=10,
                                    durability=DurabilityPolicy.TRANSIENT_LOCAL)
@@ -68,19 +68,19 @@ class VehicleController(CompatibleNode):
 
         self.throttle_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/throttle",
+            f"/paf/{self.role_name}/throttle",
             self.__set_throttle,
             qos_profile=1)
 
         self.pure_pursuit_steer_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/pure_pursuit_steer",
+            f"/paf/{self.role_name}/pure_pursuit_steer",
             self.__set_pure_pursuit_steer,
             qos_profile=1)
 
         self.stanley_steer_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/stanley_steer",
+            f"/paf/{self.role_name}/stanley_steer",
             self.__set_stanley_steer,
             qos_profile=1)
 
@@ -134,6 +134,7 @@ class VehicleController(CompatibleNode):
             message.manual_gear_shift = False
             pid.setpoint = self.__map_steering(steer)
             message.steer = pid(self.__current_steer)
+            # message.steer = 0  # zum testen mit bei gerader Fahrt
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)
@@ -164,7 +165,7 @@ class VehicleController(CompatibleNode):
             return
         if self.__emergency:  # emergency was already triggered
             return
-        self.loginfo("Emergency breaking engaged")
+        self.logerr("Emergency breaking engaged")
         self.__emergency = True
         message = CarlaEgoVehicleControl()
         message.throttle = 1
@@ -219,7 +220,7 @@ class VehicleController(CompatibleNode):
         Chooses with steering controller to use
         :return:
         """
-        return PURE_PURSUIT_CONTROLLER
+        return STANLEY_CONTROLLER
 
 
 def main(args=None):

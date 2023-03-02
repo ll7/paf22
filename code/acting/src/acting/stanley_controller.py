@@ -47,14 +47,14 @@ class StanleyController(CompatibleNode):
 
         self.heading_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/current_heading",
+            f"/paf/{self.role_name}/current_heading",
             self.__set_heading,
             qos_profile=1)
 
         # Publisher
         self.stanley_steer_pub: Publisher = self.new_publisher(
             Float32,
-            f"/carla/{self.role_name}/stanley_steer",
+            f"/paf/{self.role_name}/stanley_steer",
             qos_profile=1)
 
         self.debug_publisher: Publisher = self.new_publisher(

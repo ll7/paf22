@@ -43,24 +43,24 @@ class PurePursuitController(CompatibleNode):
 
         self.heading_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/current_heading",
+            f"/paf/{self.role_name}/current_heading",
             self.__set_heading,
             qos_profile=1
         )
 
         self.pure_pursuit_steer_pub: Publisher = self.new_publisher(
             Float32,
-            f"/carla/{self.role_name}/pure_pursuit_steer",
+            f"/paf/{self.role_name}/pure_pursuit_steer",
             qos_profile=1)
 
         self.pure_pursuit_steer_target_pub: Publisher = self.new_publisher(
             Pose,
-            f"/carla/{self.role_name}/pure_pursuit_steer_target_wp",
+            f"/paf/{self.role_name}/pure_pursuit_steer_target_wp",
             qos_profile=1)
 
         self.debug_publisher: Publisher = self.new_publisher(
             Debug,
-            f"/carla/{self.role_name}/debug",
+            f"/paf/{self.role_name}/debug",
             qos_profile=1)
 
         self.__position: (float, float) = None  # x, y

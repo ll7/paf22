@@ -42,7 +42,7 @@ class Approach(py_trees.behaviour.Behaviour):
         successful
         :return: True, as the set up is successful.
         """
-        self.target_speed_pub = rospy.Publisher("/carla/hero/"
+        self.target_speed_pub = rospy.Publisher("/paf/hero/"
                                                 "max_tree_velocity",
                                                 Float32, queue_size=1)
         # rospy.wait_for_service('update_local_path') # TODO is this necessary?
@@ -422,7 +422,7 @@ class Leave(py_trees.behaviour.Behaviour):
         the street speed limit.
         """
         rospy.loginfo("Leave Intersection")
-        street_speed_msg = self.blackboard.get("/carla/hero/street_limit")
+        street_speed_msg = self.blackboard.get("/paf/hero/street_limit")
         if street_speed_msg is not None:
             self.target_speed_pub.publish(street_speed_msg.speed)
         return True

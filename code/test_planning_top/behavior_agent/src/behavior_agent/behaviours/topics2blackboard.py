@@ -48,7 +48,7 @@ def create_node(role_name):
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/paf/{role_name}/traffic_light", 'msg': Traffic_light,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/carla/{role_name}/max_velocity", 'msg': Float32,
+        {'name': f"/paf/{role_name}/max_velocity", 'msg': Float32,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER}
     ]
 

@@ -1,9 +1,5 @@
 <launch>
-    <include file="$(find planning)/launch/global_planner.launch">
-<!--        <arg name="from_txt" value="True" /> -->
-<!--        <arg name="sampling_resolution" value="75.0" /> -->
-<!--        <arg name="routes" value="/opt/leaderboard/data/routes_devtest.xml" /> -->
-<!--        <arg name="global_route_txt" value="/code/planning/src/planning/global_route.txt" /> -->
-<!--        <arg name="role_name" value="hero" /> -->
-    </include>
+    <include file="$(find planning)/launch/global_planner.launch"/>
+
+    <include file="$(find behavior_agent)/launch/behavior_agent.launch"/>
 </launch>

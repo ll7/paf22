@@ -23,7 +23,7 @@ class AccDistancePublisherDummy(CompatibleNode):
 
         self.distance_pub: Publisher = self.new_publisher(
             Float32,
-            f"/carla/{self.role_name}/acc_distance",
+            f"/paf/{self.role_name}/acc_distance",
             qos_profile=1)
 
         self.speed_sub: Subscriber = self.new_subscription(

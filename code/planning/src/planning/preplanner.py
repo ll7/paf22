@@ -40,19 +40,19 @@ class PrePlanner(CompatibleNode):
 
         self.global_plan_sub = self.new_subscription(
             msg_type=CarlaRoute,
-            topic='/carla/' + self.role_name + '/global_plan',
+            topic='/paf/' + self.role_name + '/global_plan',
             callback=self.global_route_callback,
             qos_profile=10)
 
         self.current_pos_sub = self.new_subscription(
             msg_type=PoseStamped,
-            topic="/carla/" + self.role_name + "/current_pos",
+            topic="/paf/" + self.role_name + "/current_pos",
             callback=self.position_callback,
             qos_profile=1)
 
         self.path_pub = self.new_publisher(
             msg_type=Path,
-            topic='/carla/' + self.role_name + '/trajectory',
+            topic='/paf/' + self.role_name + '/trajectory',
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)

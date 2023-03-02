@@ -155,15 +155,13 @@ class Approach(py_trees.behaviour.Behaviour):
             # ran over line
             return py_trees.common.Status.SUCCESS
 
-        next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/"
-                                               "next_lanelet")
-        # TODO should be replaced by the next glob path point, adjust values
-        if next_lanelet_msg is None:
+        next_waypoint_msg = self.blackboard.get("/paf/hero/waypoint_distance")
+
+        if next_waypoint_msg is None:
             return py_trees.common.Status.FAILURE
-        if next_lanelet_msg.distance < 12 and not next_lanelet_msg.\
-                isInIntersection:
+        if next_waypoint_msg.data < 12:
             rospy.loginfo("Leave intersection!")
-            self.update_local_path(leave_intersection=True)
+            # self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS
         else:
             return py_trees.common.Status.RUNNING
@@ -322,8 +320,10 @@ class Enter(py_trees.behaviour.Behaviour):
         light_status_msg = self.blackboard.get("/paf/hero/traffic_light")
         if light_status_msg is None:
             self.target_speed_pub.publish(convert_to_ms(50.0))
+            return True
         else:
             traffic_light_status = light_status_msg.color
+
         if traffic_light_status == "":
             self.target_speed_pub.publish(convert_to_ms(10.0))
         else:
@@ -346,23 +346,16 @@ class Enter(py_trees.behaviour.Behaviour):
                  py_trees.common.Status.FAILURE, if no next path point can be
                  detected.
         """
-        # TODO this part needs to be refurbished when we have a publisher for
-        # the next global way point
-        # next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/"
-        #                                        "next_lanelet")
+        next_waypoint_msg = self.blackboard.get("/paf/hero/waypoint_distance")
 
-        rospy.loginfo("Through intersection")
-        return py_trees.common.Status.SUCCESS
-
-        # if next_lanelet_msg is None:
-        #     return py_trees.common.Status.FAILURE
-        # if next_lanelet_msg.distance < 12 and not next_lanelet_msg.\
-        #         isInIntersection:
-        #     rospy.loginfo("Leave intersection!")
-        #     self.update_local_path(leave_intersection=True)
-        #     return py_trees.common.Status.SUCCESS
-        # else:
-        #     return py_trees.common.Status.RUNNING
+        if next_waypoint_msg is None:
+            return py_trees.common.Status.FAILURE
+        if next_waypoint_msg.data < 12:
+            rospy.loginfo("Leave intersection!")
+            # self.update_local_path(leave_intersection=True)
+            return py_trees.common.Status.SUCCESS
+        else:
+            return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
         """

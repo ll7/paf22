@@ -44,7 +44,7 @@ class GlobalPlanDistance(CompatibleNode):
 
         self.global_plan_subscriber = self.new_subscription(
             CarlaRoute,
-            "/carla/" + self.role_name + "/global_plan",
+            "/paf/" + self.role_name + "/global_plan",
             self.update_global_route,
             qos_profile=1)
 
@@ -75,21 +75,19 @@ class GlobalPlanDistance(CompatibleNode):
                           position.x) ** 2
             distance_y = (self.global_route[0].position.y - self.current_pos.
                           position.y) ** 2
-            distance_z = (self.global_route[0].position.z - self.current_pos.
-                          position.z) ** 2
 
-            distance = math.sqrt(distance_x + distance_y + distance_z)
-
-            self.waypoint_distance_publisher.publish(distance)
+            distance = math.sqrt(distance_x + distance_y)
 
             # if the road option indicates an intersection, the distance to the
             # next waypoint is also the distance to the stop line
             if self.road_options[0] < 4:
                 self.stopline_publisher.publish(distance)
+            else:
+                self.waypoint_distance_publisher.publish(distance)
 
             # if we reached the next waypoint, pop it and the next point will
             # be published
-            if distance < 5:
+            if distance < 2:
                 self.road_options.pop(0)
                 self.global_route.pop(0)
 
@@ -103,6 +101,8 @@ class GlobalPlanDistance(CompatibleNode):
         if self.global_route is None:
             self.global_route = list(route.poses)
             self.road_options = list(route.road_options)
+            self.road_options.pop(0)
+            self.global_route.pop(0)
 
     def run(self):
         """

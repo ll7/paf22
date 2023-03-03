@@ -142,6 +142,10 @@ class StanleyController(CompatibleNode):
         self.__position = (new_x, new_y)
 
     def __set_path(self, data: Path):
+        path_len = len(data.poses)
+        if path_len < 1:
+            self.loginfo("Stanley: Empty path received and disregarded")
+            return
         self.__path = data
 
     def __set_heading(self, data: Float32):

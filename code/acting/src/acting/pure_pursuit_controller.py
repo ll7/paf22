@@ -162,10 +162,10 @@ class PurePursuitController(CompatibleNode):
         """
         l_vehicle = 2.85  # wheelbase
         k_ld = 1.0  # 2.0 # todo: tune
-        look_ahead_dist = 1.0  # 5.0 # offset so that ld is never zero
+        look_ahead_dist = 0.5  # 5.0 # offset so that ld is never zero
 
         if round(self.__velocity, 1) < 0.1:
-            look_ahead_dist += 1.0
+            look_ahead_dist += 0.25  # 1.0
         else:
             look_ahead_dist += k_ld * self.__velocity
 

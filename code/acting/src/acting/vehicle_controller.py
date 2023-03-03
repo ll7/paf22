@@ -39,7 +39,7 @@ class VehicleController(CompatibleNode):
         )
         self.status_pub: Publisher = self.new_publisher(
             Bool,
-            f"/paf/{self.role_name}/status",
+            f"/carla/{self.role_name}/status",
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
@@ -220,8 +220,8 @@ class VehicleController(CompatibleNode):
         Chooses with steering controller to use
         :return:
         """
-        return STANLEY_CONTROLLER
-        # return PURE_PURSUIT_CONTROLLER
+        # return STANLEY_CONTROLLER
+        return PURE_PURSUIT_CONTROLLER
 
 
 def main(args=None):

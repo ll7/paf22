@@ -11,9 +11,15 @@ from pytorch_lightning.callbacks import (
 from detectron2.config import get_cfg, CfgNode
 from detectron2.utils.events import _CURRENT_STORAGE_STACK, EventStorage
 
-from efficientps.model import EffificientPS
-from datasets.panoptic_dataset import PanopticDataset, \
-    collate_fn
+try:
+    from panoptic_segmentation \
+        .efficientps import EffificientPS
+    from panoptic_segmentation \
+        .datasets.panoptic_dataset import PanopticDataset, \
+        collate_fn
+except ImportError:
+    from efficientps import EffificientPS
+    from datasets.panoptic_dataset import PanopticDataset, collate_fn
 
 
 def add_custom_param(cfg):
@@ -143,9 +149,9 @@ def main():
 
     logger.info(efficientps.print)
     # Callbacks / Hooks
-    early_stopping = EarlyStopping('PQ', patience=5, mode='max')
-    checkpoint = ModelCheckpoint(monitor='PQ',
-                                 mode='max',
+    early_stopping = EarlyStopping('val_loss', patience=10, mode='min')
+    checkpoint = ModelCheckpoint(monitor='val_loss',
+                                 mode='min',
                                  dirpath=cfg.CALLBACKS.CHECKPOINT_DIR,
                                  save_last=True,
                                  verbose=True, )

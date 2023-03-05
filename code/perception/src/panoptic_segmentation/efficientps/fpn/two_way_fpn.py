@@ -4,7 +4,13 @@ from torch.nn import Conv2d
 import torch.nn.functional as F
 from inplace_abn import InPlaceABN
 
-from efficientps.utils.depthwise_separable_conv import DepthwiseSeparableConv
+try:
+    from panoptic_segmentation. \
+        efficientps.utils.depthwise_separable_conv import \
+        DepthwiseSeparableConv
+except ImportError:
+    from efficientps.utils.depthwise_separable_conv import \
+        DepthwiseSeparableConv
 
 
 class TwoWayFpn(nn.Module):

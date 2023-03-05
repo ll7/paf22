@@ -4,7 +4,13 @@ import torch.nn as nn
 from torch.nn import functional as F
 from inplace_abn import InPlaceABN
 
-from efficientps.utils.depthwise_separable_conv import DepthwiseSeparableConv
+try:
+    from panoptic_segmentation. \
+        efficientps.utils.depthwise_separable_conv import \
+        DepthwiseSeparableConv
+except ImportError:
+    from efficientps.utils.depthwise_separable_conv import \
+        DepthwiseSeparableConv
 
 
 class SemanticHead(nn.Module):

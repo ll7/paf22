@@ -10,7 +10,13 @@ from detectron2.layers import ShapeSpec
 from detectron2.structures import Instances
 from inplace_abn import InPlaceABN
 
-from efficientps.utils.depthwise_separable_conv import DepthwiseSeparableConv
+try:
+    from panoptic_segmentation. \
+        efficientps.utils.depthwise_separable_conv import \
+        DepthwiseSeparableConv
+except ImportError:
+    from efficientps.utils.depthwise_separable_conv import \
+        DepthwiseSeparableConv
 
 
 @ROI_HEADS_REGISTRY.register()
@@ -39,15 +45,15 @@ class CustomROIHeads(ROIHeads):
 
     @configurable
     def __init__(
-            self,
-            *,
-            in_features: List[str],
-            box_pooler: ROIPooler,
-            box_head: nn.Module,
-            box_predictor: nn.Module,
-            mask_pooler: ROIPooler,
-            mask_head: nn.Module,
-            **kwargs
+        self,
+        *,
+        in_features: List[str],
+        box_pooler: ROIPooler,
+        box_head: nn.Module,
+        box_predictor: nn.Module,
+        mask_pooler: ROIPooler,
+        mask_head: nn.Module,
+        **kwargs
     ):
         super().__init__(**kwargs)
         self.in_features = in_features
@@ -89,10 +95,10 @@ class CustomROIHeads(ROIHeads):
         return ret
 
     def forward(
-            self,
-            features: Dict[str, torch.Tensor],
-            proposals: List[Instances],
-            targets: Optional[List[Instances]] = None,
+        self,
+        features: Dict[str, torch.Tensor],
+        proposals: List[Instances],
+        targets: Optional[List[Instances]] = None,
     ) -> Tuple[List[Instances], Dict[str, torch.Tensor]]:
         """
         See :class:`ROIHeads.forward`.
@@ -196,7 +202,7 @@ class CustomROIHeads(ROIHeads):
             return pred_instances
 
     def forward_with_given_boxes(
-            self, features: Dict[str, torch.Tensor], instances: List[Instances]
+        self, features: Dict[str, torch.Tensor], instances: List[Instances]
     ) -> List[Instances]:
         """
         Use the given boxes in `instances` to produce other (non-box)

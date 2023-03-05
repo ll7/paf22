@@ -101,6 +101,10 @@ class EffificientPS(pl.LightningModule):
         self.log("SQ_st", 100 * pq_res["Stuff"]["sq"])
         self.log("RQ_st", 100 * pq_res["Stuff"]["rq"])
 
+        # get average loss over all batches, and log it
+        avg_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
+        self.log('val_loss', avg_loss)
+
     def configure_optimizers(self):
         if self.cfg.SOLVER.NAME == "Adam":
             self.optimizer = torch.optim.Adam(self.parameters(),

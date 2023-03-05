@@ -51,7 +51,7 @@ TEST:
 
 # DATA
 # Path to cityscapes dataset
-DATASET_PATH: "/workspace/dataset/test_data/"
+DATASET_PATH: "/workspace/code/output/leaderboard_dataset_converted/"
 TRAIN_JSON: "groundtruth/panoptic_train.json"
 VALID_JSON: "groundtruth/panoptic_val.json"
 #DATASET_PATH: "/workspace/dataset/dataset/"
@@ -83,12 +83,12 @@ SOLVER:
   ACCUMULATE_GRAD: 1 # Number of accumulated epochs for accumulated gradient
 
 CALLBACKS:
-  CHECKPOINT_DIR: "logs/test"
+  CHECKPOINT_DIR: "logs/32-test-10-patience"
 
 # Path to load a model
 CHECKPOINT_PATH: ""
 BATCH_SIZE: 1
-PRECISION: 16 # Bit precision for mix precision training
+PRECISION: 32 # Bit precision for mix precision training
 NUM_CLASS: 16
 MODEL_CUSTOM:
   BACKBONE:

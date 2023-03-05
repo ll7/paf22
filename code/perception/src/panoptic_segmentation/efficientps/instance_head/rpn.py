@@ -8,7 +8,13 @@ from detectron2.modeling.proposal_generator import (
     PROPOSAL_GENERATOR_REGISTRY
 )
 
-from efficientps.utils.depthwise_separable_conv import DepthwiseSeparableConv
+try:
+    from panoptic_segmentation \
+        .efficientps.utils.depthwise_separable_conv import \
+        DepthwiseSeparableConv
+except ImportError:
+    from efficientps.utils.depthwise_separable_conv import \
+        DepthwiseSeparableConv
 
 print("HELLO WORLD")
 

@@ -31,7 +31,6 @@ class PrePlanner(CompatibleNode):
     - current agent position: /carla/{role_name}/current_pos
     Published topics:
     - preplanned trajectory:  /paf/{role_name}/trajectory
-    -
     """
 
     def __init__(self):
@@ -74,6 +73,7 @@ class PrePlanner(CompatibleNode):
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
+        # TODO: velocity pub only here for debugging... remove later
         self.velocity_pub = self.new_publisher(
             Float32,
             f"/paf/{self.role_name}/max_velocity",
@@ -87,7 +87,7 @@ class PrePlanner(CompatibleNode):
         """
         when the global route gets updated a new trajectory is calculated with
         the help of OpenDriveConverter and published into
-        '/carla/ self.role_name /trajectory'
+        '/paf/ self.role_name /trajectory'
         :param data: global Route
         """
         if data is None:
@@ -116,11 +116,10 @@ class PrePlanner(CompatibleNode):
             return
 
         self.global_route_backup = None
-        # TODO: use current instead of manual start position
         x_start = self.agent_pos.x
         y_start = self.agent_pos.y
-#        x_start_ = 983.5
-#        y_start_ = -5433.2
+#        x_start = 983.5
+#        y_start = -5433.2
 
         x_target = data.poses[0].position.x
         y_target = data.poses[0].position.y
@@ -200,7 +199,7 @@ class PrePlanner(CompatibleNode):
         self.path_backup.poses = stamped_poses
         self.path_pub.publish(self.path_backup)
 
-        self.velocity_pub.publish(0.5)
+        self.velocity_pub.publish(2.0)
         self.loginfo("PrePlanner: published trajectory")
 
 #    def world_info_callback(self, data: CarlaWorldInfo) -> None:
@@ -257,6 +256,7 @@ class PrePlanner(CompatibleNode):
 
         def loop(timer_event=None):
             # Continuously update paths time to update car position in rviz
+            # TODO: remove next lines when local planner exists
             self.path_backup.header.stamp = rospy.Time.now()
             self.path_pub.publish(self.path_backup)
 

@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 import ros_compatibility as roscomp
 from carla_msgs.msg import CarlaSpeedometer
+from geometry_msgs.msg import PoseStamped
 from ros_compatibility.node import CompatibleNode
 from rospy import Publisher, Subscriber
 from simple_pid import PID
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Float32MultiArray
+from nav_msgs.msg import Path
 
 SPEED_LIMIT_DEFAULT: float = 36.0
 
@@ -60,10 +62,34 @@ class VelocityController(CompatibleNode):
             f"/paf/{self.role_name}/velocity_as_float",
             qos_profile=1)
 
+        # needed to prevent the car from driving before a path to follow is
+        # available. Might be needed later to slow down in curves
+        self.trajectory_sub: Subscriber = self.new_subscription(
+            Path,
+            f"/paf/{self.role_name}/trajectory",
+            self.__set_trajectory,
+            qos_profile=1)
+
+        # TODO: does this replace paf/hero/speed_limit?
+        self.speed_limit_OD_sub: Subscriber = self.new_subscription(
+            Float32MultiArray,
+            f"/paf/{self.role_name}/speed_limits_OpenDrive",
+            self.__set_speed_limits_opendrive,
+            qos_profile=1)
+
+        self.current_pos_sub: Subscriber = self.new_subscription(
+            msg_type=PoseStamped,
+            topic="/paf/" + self.role_name + "/current_pos",
+            callback=self.__current_position_callback,
+            qos_profile=1)
+
         self.__current_velocity: float = None
         self.__max_velocity: float = None
         self.__max_tree_v: float = None
         self.__speed_limit: float = None
+        self.__trajectory: Path = None
+        self.__speed_limits_OD: [float] = []
+        self.__current_wp_index: int = 0
 
     def run(self):
         """
@@ -91,6 +117,12 @@ class VelocityController(CompatibleNode):
                 self.logdebug("VehicleController hasn't received "
                               "current_velocity yet and can therefore not"
                               "publish a throttle value")
+                return
+
+            if self.__trajectory is None:
+                self.logdebug("VehicleController hasn't received "
+                              "trajectory yet and can therefore not"
+                              "publish a throttle value (to prevent stupid)")
                 return
 
             if self.__speed_limit is None or self.__speed_limit < 0:
@@ -134,6 +166,31 @@ class VelocityController(CompatibleNode):
 
     def __get_speed_limit(self, data: Float32):
         self.__speed_limit = float(data.data)
+
+    def __set_trajectory(self, data: Path):
+        self.__trajectory = data
+
+    def __set_speed_limits_opendrive(self, data: Float32MultiArray):
+        self.__speed_limits_OD = data.data
+
+    def __current_position_callback(self, data: PoseStamped):
+        if len(self.__speed_limits_OD) < 1:
+            return
+
+        agent = data.pose.position
+        current_wp = self.__trajectory.poses[self.__current_wp_index].\
+            pose.position
+        next_wp = self.__trajectory.poses[self.__current_wp_index + 1].\
+            pose.position
+
+        # distances from agent to current and next waypoint
+        d_old = abs(agent.x - current_wp.x) + abs(agent.y - current_wp.y)
+        d_new = abs(agent.x - next_wp.x) + abs(agent.y - next_wp.y)
+        if d_new < d_old:
+            # update current waypoint and corresponding speed limit
+            self.__current_wp_index += 1
+            self.__speed_limit = \
+                self.__speed_limits_OD[self.__current_wp_index]
 
 
 def main(args=None):

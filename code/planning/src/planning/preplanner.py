@@ -9,8 +9,7 @@ from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from carla_msgs.msg import CarlaRoute   # , CarlaWorldInfo
 from nav_msgs.msg import Path
 from std_msgs.msg import String
-from ros_compatibility.qos import QoSProfile, DurabilityPolicy
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32MultiArray
 
 from preplanning_trajectory import OpenDriveConverter
 
@@ -31,6 +30,7 @@ class PrePlanner(CompatibleNode):
     - current agent position: /carla/{role_name}/current_pos
     Published topics:
     - preplanned trajectory:  /paf/{role_name}/trajectory
+    - prevailing speed limit: /paf/{role_name}/speed_limit
     """
 
     def __init__(self):
@@ -44,6 +44,9 @@ class PrePlanner(CompatibleNode):
         self.agent_ori = None
 
         self.role_name = self.get_param("role_name", "hero")
+        self.control_loop_rate = self.get_param("control_loop_rate", 1)
+        self.distance_spawn_to_first_wp = self.get_param(
+            "distance_spawn_to_first_wp", 100)
 
         self.map_sub = self.new_subscription(
             # msg_type=CarlaWorldInfo,
@@ -68,19 +71,12 @@ class PrePlanner(CompatibleNode):
         self.path_pub = self.new_publisher(
             msg_type=Path,
             topic='/paf/' + self.role_name + '/trajectory',
-            qos_profile=QoSProfile(
-                depth=1,
-                durability=DurabilityPolicy.TRANSIENT_LOCAL)
-        )
-
-        # TODO: velocity pub only here for debugging... remove later
-        self.velocity_pub = self.new_publisher(
-            Float32,
-            f"/paf/{self.role_name}/max_velocity",
             qos_profile=1)
 
-        self.velocity_pub.publish(0.0)
-
+        self.speed_limit_pub = self.new_publisher(
+            msg_type=Float32MultiArray,
+            topic=f"/paf/{self.role_name}/speed_limits_OpenDrive",
+            qos_profile=1)
         self.loginfo('PrePlanner-Node started')
 
     def global_route_callback(self, data: CarlaRoute) -> None:
@@ -107,22 +103,18 @@ class PrePlanner(CompatibleNode):
             self.global_route_backup = data
             return
 
-        # TODO: this isnt clean... replace this
-        if abs(self.agent_pos.x - data.poses[0].position.x) > 100 or \
-           abs(self.agent_pos.y - data.poses[0].position.y) > 100:
+        x_start = self.agent_pos.x      # 983.5
+        y_start = self.agent_pos.y      # -5433.2
+        x_target = data.poses[0].position.x
+        y_target = data.poses[0].position.y
+        if abs(x_start - x_target) > self.distance_spawn_to_first_wp or \
+           abs(y_start - y_target) > self.distance_spawn_to_first_wp:
             self.logwarn("PrePlanner: current agent-pose doesnt match the "
                          "given global route")
             self.global_route_backup = data
             return
 
         self.global_route_backup = None
-        x_start = self.agent_pos.x
-        y_start = self.agent_pos.y
-#        x_start = 983.5
-#        y_start = -5433.2
-
-        x_target = data.poses[0].position.x
-        y_target = data.poses[0].position.y
 
         # get the first turn command (1, 2, or 3)
         ind = 0
@@ -146,41 +138,38 @@ class PrePlanner(CompatibleNode):
                                          x_turn_follow, y_turn_follow,
                                          x_target, y_target,
                                          0, data.road_options[0])
-        n = len(data.poses)
 
+        n = len(data.poses)
         # iterating through global route to create trajectory
-        for i in range(1, n):
+        for i in range(1, n-1):
             # self.loginfo(f"Preplanner going throug global plan {i+1}/{n}")
 
             x_target = data.poses[i].position.x
             y_target = data.poses[i].position.y
             action = data.road_options[i]
 
-            # last target reached -> has no follower
-            if i == len(data.road_options) - 1:
-                break
             x_target_next = data.poses[i+1].position.x
             y_target_next = data.poses[i+1].position.y
             self.odc.target_road_trajectory(x_target, y_target,
                                             x_target_next, y_target_next,
                                             action)
 
-        self.odc.target_road_trajectory(x_target, y_target,
+        self.odc.target_road_trajectory(data.poses[n-1].position.x,
+                                        data.poses[n-1].position.y,
                                         None, None,
-                                        action)
+                                        data.road_options[n-1])
         # trajectory is now stored in the waypoints
         # waypoints = self.odc.waypoints
         waypoints = self.odc.remove_outliner(self.odc.waypoints)
         way_x = waypoints[0]
         way_y = waypoints[1]
         way_yaw = waypoints[2]
-        # way_speed = waypoints[3]
+        speed_limits = Float32MultiArray(data=waypoints[3])
+        self.speed_limit_pub.publish(speed_limits)
 
         # Transforming the calculated waypoints into a Path msg
-        # speed is the z coordinate of the path message
         stamped_poses = []
         for i in range(len(way_x)):
-            # TODO: add z, roll and pitch
             position = Point(way_x[i], way_y[i], 0)  # way_speed[i])
             quaternion = tf.transformations.quaternion_from_euler(0,
                                                                   0,
@@ -199,7 +188,6 @@ class PrePlanner(CompatibleNode):
         self.path_backup.poses = stamped_poses
         self.path_pub.publish(self.path_backup)
 
-        self.velocity_pub.publish(2.0)
         self.loginfo("PrePlanner: published trajectory")
 
 #    def world_info_callback(self, data: CarlaWorldInfo) -> None:
@@ -255,12 +243,15 @@ class PrePlanner(CompatibleNode):
         """
 
         def loop(timer_event=None):
+            if len(self.path_backup.poses) < 1:
+                return
+
             # Continuously update paths time to update car position in rviz
             # TODO: remove next lines when local planner exists
             self.path_backup.header.stamp = rospy.Time.now()
             self.path_pub.publish(self.path_backup)
 
-        self.new_timer(1, loop)
+        self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
 

@@ -26,8 +26,8 @@ class VelocityPublisherDummy(CompatibleNode):
 
         self.velocity = 4.0
         self.delta_velocity = 0.125
-        self.max_velocity = 5.0
-        self.min_velocity = 4
+        self.max_velocity = 1.5
+        self.min_velocity = 1.0
 
         self.__dv = self.delta_velocity
 

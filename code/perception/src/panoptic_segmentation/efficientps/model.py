@@ -14,7 +14,7 @@ from .panoptic_metrics import generate_pred_panoptic
 from panopticapi.evaluation import pq_compute
 
 
-class EffificientPS(pl.LightningModule):
+class EfficientPS(pl.LightningModule):
     """
     EfficientPS model see http://panoptic.cs.uni-freiburg.de/
     Here pytorch lightning is used

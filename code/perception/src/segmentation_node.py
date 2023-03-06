@@ -8,7 +8,7 @@ from rospy.numpy_msg import numpy_msg
 from ros_compatibility.node import CompatibleNode
 from sensor_msgs.msg import Image
 
-from panoptic_segmentation.efficientps import EffificientPS as EfficientPS
+from panoptic_segmentation.efficientps import EfficientPS as EfficientPS
 from panoptic_segmentation.train_net import add_custom_param
 
 from detectron2.config import get_cfg

@@ -13,12 +13,12 @@ from detectron2.utils.events import _CURRENT_STORAGE_STACK, EventStorage
 
 try:
     from panoptic_segmentation \
-        .efficientps import EffificientPS
+        .efficientps import EfficientPS
     from panoptic_segmentation \
         .datasets.panoptic_dataset import PanopticDataset, \
         collate_fn
 except ImportError:
-    from efficientps import EffificientPS
+    from efficientps import EfficientPS
     from datasets.panoptic_dataset import PanopticDataset, collate_fn
 
 
@@ -137,14 +137,14 @@ def main():
         print('""""""""""""""""""""""""""""""""""""""""""""""')
         print("Loading model from {}".format(cfg.CHECKPOINT_PATH))
         print('""""""""""""""""""""""""""""""""""""""""""""""')
-        efficientps = EffificientPS.load_from_checkpoint(
+        efficientps = EfficientPS.load_from_checkpoint(
             cfg=cfg,
             checkpoint_path=cfg.CHECKPOINT_PATH)
     else:
         print('""""""""""""""""""""""""""""""""""""""""""""""')
         print("Creating a new model")
         print('""""""""""""""""""""""""""""""""""""""""""""""')
-        efficientps = EffificientPS(cfg)
+        efficientps = EfficientPS(cfg)
         cfg.CHECKPOINT_PATH = None
 
     logger.info(efficientps.print)

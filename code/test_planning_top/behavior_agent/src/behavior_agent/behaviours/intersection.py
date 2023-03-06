@@ -135,6 +135,7 @@ class Approach(py_trees.behaviour.Behaviour):
             rospy.logwarn("no speedometer connected")
         if self.virtual_stopline_distance > 5.0:
             # too far
+            print("still approaching")
             return py_trees.common.Status.RUNNING
         elif speed < convert_to_ms(2.0) and \
                 self.virtual_stopline_distance < 5.0:
@@ -143,7 +144,7 @@ class Approach(py_trees.behaviour.Behaviour):
         elif speed > convert_to_ms(5.0) and \
                 self.virtual_stopline_distance < 6.0 and \
                 self.traffic_light_status == "green":
-
+            # TODO here is something wrong
             # drive through intersection even if traffic light turns yellow
             return py_trees.common.Status.SUCCESS
         elif speed > convert_to_ms(5.0) and \
@@ -158,6 +159,7 @@ class Approach(py_trees.behaviour.Behaviour):
         next_waypoint_msg = self.blackboard.get("/paf/hero/waypoint_distance")
 
         if next_waypoint_msg is None:
+            print("no waypoint")
             return py_trees.common.Status.FAILURE
         if next_waypoint_msg.data < 5:
             rospy.loginfo("Leave intersection!")
@@ -443,6 +445,7 @@ class Leave(py_trees.behaviour.Behaviour):
         writes a status message to the console when the behaviour terminates
         :param new_status: new state after this one is terminated
         """
+        self.blackboard.unset("/paf/hero/stopline_distance")
         self.logger.debug(
             "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
                                                              self.status,

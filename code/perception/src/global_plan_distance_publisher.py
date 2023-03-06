@@ -70,7 +70,7 @@ class GlobalPlanDistance(CompatibleNode):
         # check if the global route has been published and that there are still
         # points to navigate to
         if self.global_route is not None and self.global_route:
-            print(len(self.global_route))
+            # print(len(self.global_route))
             distance_x = (self.global_route[0].position.x - self.current_pos.
                           position.x) ** 2
             distance_y = (self.global_route[0].position.y - self.current_pos.

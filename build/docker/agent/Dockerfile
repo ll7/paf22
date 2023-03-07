@@ -40,7 +40,10 @@ RUN wget https://github.com/libgit2/libgit2/archive/refs/tags/v1.5.0.tar.gz -O l
     && cd libgit2-1.5.0/ \
     && cmake . \
     && make -j$(nproc --ignore=2) \
-    && make install
+    && make install \
+    && cd ../ \
+    && rm libgit2-1.5.0.tar.gz \
+    && rm -r libgit2-1.5.0/ 
 
 # CUDA installation
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin \
@@ -49,7 +52,8 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86
     && dpkg -i cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb \
     && cp /var/cuda-repo-ubuntu2004-11-7-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
     && apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get -y install cuda
+    && DEBIAN_FRONTEND=noninteractive apt-get -y install cuda \
+    && rm cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb
 ENV CUDA_HOME=/usr/local/cuda-11.7
 
 # override python path, carla pip package path didn't exist and was using Python 3.7 instead of 2.7
@@ -120,7 +124,6 @@ RUN sudo mkdir /opt/leaderboard-py3 && sudo chown $USERNAME:$USERNAME /opt/leade
     ln -s $SCENARIO_RUNNER_ROOT/srunner /opt/leaderboard-py3/srunner
 
 RUN python -m pip install roslibpy
-
 
 # environment variables for the leaderboard_evaluator
 ENV ROUTES=$LEADERBOARD_ROOT/data/routes_devtest.xml

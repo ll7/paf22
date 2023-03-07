@@ -30,7 +30,7 @@ class PrePlanner(CompatibleNode):
     - current agent position: /carla/{role_name}/current_pos
     Published topics:
     - preplanned trajectory:  /paf/{role_name}/trajectory
-    - prevailing speed limit: /paf/{role_name}/speed_limit
+    - prevailing speed limits:/paf/{role_name}/speed_limits_OpenDrive
     """
 
     def __init__(self):

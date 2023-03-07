@@ -43,7 +43,7 @@ RUN wget https://github.com/libgit2/libgit2/archive/refs/tags/v1.5.0.tar.gz -O l
     && make install \
     && cd ../ \
     && rm libgit2-1.5.0.tar.gz \
-    && rm -r libgit2-1.5.0/ 
+    && rm -r libgit2-1.5.0/
 
 # CUDA installation
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin \
@@ -52,8 +52,15 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86
     && dpkg -i cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb \
     && cp /var/cuda-repo-ubuntu2004-11-7-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
     && apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get -y install cuda \
-    && rm cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb
+    && DEBIAN_FRONTEND=noninteractive apt-get -y install cuda-nvcc-11-7 \
+    && rm cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb \
+    && apt-get -y remove cuda-repo-ubuntu2004-11-7-local \
+    && cat /etc/apt/sources.list \
+    && rm /etc/apt/preferences.d/cuda-repository-pin-600 \
+    && rm -rf /var/cuda-repo-ubuntu1804-11-7-local/ \
+    && rm /etc/apt/sources.list.d/cuda-ubuntu2004-11-7-local.list \
+    && apt-get clean
+
 ENV CUDA_HOME=/usr/local/cuda-11.7
 
 # override python path, carla pip package path didn't exist and was using Python 3.7 instead of 2.7

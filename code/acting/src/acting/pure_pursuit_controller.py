@@ -25,13 +25,13 @@ class PurePursuitController(CompatibleNode):
 
         self.position_sub: Subscriber = self.new_subscription(
             Path,
-            f"/carla/{self.role_name}/trajectory",
+            f"/paf/{self.role_name}/trajectory",
             self.__set_path,
             qos_profile=1)
 
         self.path_sub: Subscriber = self.new_subscription(
             PoseStamped,
-            f"/carla/{self.role_name}/current_pos",
+            f"/paf/{self.role_name}/current_pos",
             self.__set_position,
             qos_profile=1)
 
@@ -43,24 +43,24 @@ class PurePursuitController(CompatibleNode):
 
         self.heading_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/current_heading",
+            f"/paf/{self.role_name}/current_heading",
             self.__set_heading,
             qos_profile=1
         )
 
         self.pure_pursuit_steer_pub: Publisher = self.new_publisher(
             Float32,
-            f"/carla/{self.role_name}/pure_pursuit_steer",
+            f"/paf/{self.role_name}/pure_pursuit_steer",
             qos_profile=1)
 
         self.pure_pursuit_steer_target_pub: Publisher = self.new_publisher(
             Pose,
-            f"/carla/{self.role_name}/pure_pursuit_steer_target_wp",
+            f"/paf/{self.role_name}/pure_pursuit_steer_target_wp",
             qos_profile=1)
 
         self.debug_publisher: Publisher = self.new_publisher(
             Debug,
-            f"/carla/{self.role_name}/debug",
+            f"/paf/{self.role_name}/debug",
             qos_profile=1)
 
         self.__position: (float, float) = None  # x, y
@@ -161,7 +161,7 @@ class PurePursuitController(CompatibleNode):
         :return:
         """
         l_vehicle = 2.85  # wheelbase
-        k_ld = 2.50  # todo: tune
+        k_ld = 2.0  # todo: tune
         look_ahead_dist = 5.0  # offset so that ld is never zero
 
         if round(self.__velocity, 1) < 0.1:

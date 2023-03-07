@@ -21,12 +21,14 @@ class VelocityPublisherDummy(CompatibleNode):
 
         self.velocity_pub: Publisher = self.new_publisher(
             Float32,
-            f"/carla/{self.role_name}/max_velocity",
+            f"/paf/{self.role_name}/max_velocity",
             qos_profile=1)
+
         self.velocity = 4.0
         self.delta_velocity = 0.125
         self.max_velocity = 5.5
         self.min_velocity = 4
+
         self.__dv = self.delta_velocity
 
     def run(self):

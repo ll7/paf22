@@ -30,12 +30,12 @@ def vectors_to_angle_abs(x1: float, y1: float, x2: float, y2: float) -> float:
 
 def vector_angle(x1: float, y1: float) -> float:
     """
-    Returns the angle (radians) between the two given vectors
+    Returns the angle (radians) of a given vectors
     :param x1: v1[x]
     :param y1: v1[y]
     :return: angle between v1 and x-axis [-pi/2, pi/2]
     """
-    # v_0 is a vector parallel on the x-axis
+    # v_0 is a vector parallel to the x-axis
     l_v = math.sqrt(x1**2 + y1**2)
     x_0 = x1 + l_v
     y_0 = 0
@@ -45,13 +45,13 @@ def vector_angle(x1: float, y1: float) -> float:
     if y1 < 0:
         sign = -1
     else:
-        sign = 0
+        sign = 1
     return alpha * sign
 
 
 def vector_to_direction(x1, y1, x2, y2) -> float:
     """
-    Returns the direction (angle to x-axis) of a vector.
+    Returns the direction (angle to y-axis) of a vector.
     :param x1: tail of the vector [x]
     :param y1: tail of the vector [y]
     :param x2: head of the vector [x]
@@ -102,10 +102,10 @@ def calc_path_yaw(path: Path, idx: int) -> float:
     point_current = path.poses[idx]
     point_next: PoseStamped
     point_next = path.poses[idx + 1]
-    angle = math.atan2(point_next.pose.position.y
-                       - point_current.pose.position.y,
-                       point_next.pose.position.x
-                       - point_current.pose.position.x)
+    angle = math.atan2(point_next.pose.position.y -
+                       point_current.pose.position.y,
+                       point_next.pose.position.x -
+                       point_current.pose.position.x)
     return normalize_angle(angle)
 
 

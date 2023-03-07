@@ -52,7 +52,7 @@ class PositionPublisher(CompatibleNode):
         # Publisher
         self.pos_publisher = self.new_publisher(
             PoseStamped,
-            "/carla/" + self.role_name + "/current_pos",
+            "/paf/" + self.role_name + "/current_pos",
             qos_profile=1)
 
     def update_pos_filtered_data(self, data: PoseWithCovarianceStamped):

@@ -36,10 +36,11 @@ class DummyTrajectoryPub(CompatibleNode):
 
         # Static trajectory for testing purposes
         self.initial_trajectory = [
-            (985.5, -5433.2),
-            (983.5, -5443.2),
+            (986.0, -5430.0),
+            (986.0, -5463.2),
+            (984.5, -5493.2),
 
-            (983.5, -5563.5),
+            (984.5, -5563.5),
             (985.0, -5573.2),
             (986.3, -5576.5),
             (987.3, -5578.5),
@@ -47,12 +48,16 @@ class DummyTrajectoryPub(CompatibleNode):
             (990.5, -5579.8),
             (1000.0, -5580.2),
 
-            (1040.0, -5580.2),
-            (1050.0, -5580.2),
-            (1060.0, -5580.5),
-            (1090.0, -5580.5),
-            (1164.6, -5583.0),
-            (1264.6, -5583.0)
+            (1040.0, -5580.0),
+            (1070.0, -5580.0),
+            (1080.0, -5582.0),
+            (1090.0, -5582.0),
+            (1100.0, -5580.0),
+            (1110.0, -5578.0),
+            (1120.0, -5578.0),
+            (1130.0, -5580.0),
+            (1464.6, -5580.0),
+            (1664.6, -5580.0)
         ]
 
         self.updated_trajectory(self.initial_trajectory)
@@ -66,7 +71,7 @@ class DummyTrajectoryPub(CompatibleNode):
         # publisher for the current trajectory
         self.trajectory_publisher = self.new_publisher(
             Path,
-            "/carla/" + self.role_name + "/trajectory",
+            "/paf/" + self.role_name + "/trajectory",
             qos_profile=1)
 
     def updated_trajectory(self, target_trajectory):

@@ -174,7 +174,7 @@ class VelocityController(CompatibleNode):
         self.__speed_limits_OD = data.data
 
     def __current_position_callback(self, data: PoseStamped):
-        if len(self.__speed_limits_OD) < 1:
+        if len(self.__speed_limits_OD) < 1 or self.__trajectory is None:
             return
 
         agent = data.pose.position

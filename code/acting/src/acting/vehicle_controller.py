@@ -11,6 +11,8 @@ from simple_pid import PID
 
 PURE_PURSUIT_CONTROLLER: int = 1
 STANLEY_CONTROLLER: int = 2
+STANLEY_CONTROLLER_MIN_V: float = 2.79  # ~10kph
+STANLEY_CONTROLLER_MAX_V: float = 13.89  # ~50kph
 MAX_STEER_ANGLE: float = 0.75
 
 
@@ -85,10 +87,11 @@ class VehicleController(CompatibleNode):
             qos_profile=1)
 
         self.__emergency: bool = False
-        self.__throttle: float = 0
-        self.__pure_pursuit_steer: float = 0
-        self.__stanley_steer: float = 0
-        self.__current_steer: float = 0  # todo: check emergency behaviour
+        self.__throttle: float = 0.0
+        self.__velocity: float = 0.0
+        self.__pure_pursuit_steer: float = 0.0
+        self.__stanley_steer: float = 0.0
+        self.__current_steer: float = 0.0  # todo: check emergency behaviour
 
     def run(self):
         """
@@ -134,7 +137,6 @@ class VehicleController(CompatibleNode):
             message.manual_gear_shift = False
             pid.setpoint = self.__map_steering(steer)
             message.steer = pid(self.__current_steer)
-            # message.steer = 0  # zum testen mit bei gerader Fahrt
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)
@@ -185,6 +187,7 @@ class VehicleController(CompatibleNode):
         :param data:
         :return:
         """
+        self.__velocity = data.speed
         if not self.__emergency:  # nothing to do in this case
             return
         if data.speed < 0.1:  # vehicle has come to a stop
@@ -220,7 +223,15 @@ class VehicleController(CompatibleNode):
         Chooses with steering controller to use
         :return:
         """
-        return STANLEY_CONTROLLER
+        controller = None
+        v = self.__velocity
+        if STANLEY_CONTROLLER_MIN_V < v < STANLEY_CONTROLLER_MAX_V:
+            controller = STANLEY_CONTROLLER
+        else:
+            controller = PURE_PURSUIT_CONTROLLER
+        self.loginfo(f"Current controller: {controller} "
+                     f"\t Current Velocity: {v}")
+        return controller
 
 
 def main(args=None):

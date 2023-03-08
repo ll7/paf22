@@ -14,6 +14,8 @@ from acting.msg import Debug
 from helper_functions import vector_angle
 from trajectory_interpolation import points_to_vector
 
+MIN_LD_V: float = 2.0
+
 
 class PurePursuitController(CompatibleNode):
     def __init__(self):
@@ -161,13 +163,16 @@ class PurePursuitController(CompatibleNode):
         :return:
         """
         l_vehicle = 2.85  # wheelbase
-        k_ld = 2.0  # todo: tune
-        look_ahead_dist = 5.0  # offset so that ld is never zero
+        k_ld = 1.0  # todo: tune
+        look_ahead_dist = 1.0  # offset so that ld is never zero
 
-        if round(self.__velocity, 1) < 0.1:
-            look_ahead_dist += 1.0
+        if self.__velocity < 0:
+            # backwards driving is not supported
+            return 0.0
+        elif round(self.__velocity, 1) < MIN_LD_V:
+            look_ahead_dist += 0.0
         else:
-            look_ahead_dist += k_ld * self.__velocity
+            look_ahead_dist += k_ld * (self.__velocity - MIN_LD_V)
 
         self.__tp_idx = self.__get_target_point_index(look_ahead_dist)
 

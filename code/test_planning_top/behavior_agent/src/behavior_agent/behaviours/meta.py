@@ -3,7 +3,7 @@
 import rospy
 import py_trees
 import numpy as np
-from std_msgs.msg import Float64
+from std_msgs.msg import Float32
 # from custom_carla_msgs.srv import UpdateGlobalPath, UpdateLocalPath
 
 """
@@ -23,9 +23,9 @@ class Start(py_trees.behaviour.Behaviour):
         # rospy.wait_for_service('update_local_path')
         # self.update_local_path = rospy.ServiceProxy("update_local_path",
         # UpdateLocalPath)
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
-                                                "target_speed",
-                                                Float64, queue_size=1)
+        self.target_speed_pub = rospy.Publisher("paf/hero/"
+                                                "max_velocity",
+                                                Float32, queue_size=1)
         return True
 
     def initialise(self):
@@ -65,9 +65,9 @@ class End(py_trees.behaviour.Behaviour):
 
     def setup(self, timeout):
         self.blackboard = py_trees.blackboard.Blackboard()
-        self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
-                                                "target_speed",
-                                                Float64, queue_size=1)
+        self.target_speed_pub = rospy.Publisher("/paf/hero/"
+                                                "max_velocity",
+                                                Float32, queue_size=1)
         return True
 
     def initialise(self):
@@ -138,9 +138,9 @@ class RespawnOrFinish(py_trees.behaviour.Behaviour):
         init_pose = self.blackboard.get("/initialpose")
         if init_pose is not None:
             if init_pose != self.last_init_pose:
-                self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
-                                                        "target_speed",
-                                                        Float64, queue_size=1)
+                self.target_speed_pub = rospy.Publisher("/paf/hero/"
+                                                        "max_velocity",
+                                                        Float32, queue_size=1)
                 self.target_speed_pub.publish(0.0)
                 rospy.loginfo(f"New spawn at {init_pose.pose.pose}")
                 self.last_init_pose = init_pose
@@ -153,9 +153,9 @@ class RespawnOrFinish(py_trees.behaviour.Behaviour):
         init_pose = self.blackboard.get("/carla/ego_vehicle/initialpose")
         if init_pose is not None:
             if init_pose != self.last_init_pose_carla:
-                self.target_speed_pub = rospy.Publisher("/psaf/ego_vehicle/"
-                                                        "target_speed",
-                                                        Float64, queue_size=1)
+                self.target_speed_pub = rospy.Publisher("/paf/hero/"
+                                                        "max_velocity",
+                                                        Float32, queue_size=1)
                 self.target_speed_pub.publish(0.0)
                 rospy.loginfo(f"New spawn at {init_pose.pose.pose}")
                 self.last_init_pose_carla = init_pose

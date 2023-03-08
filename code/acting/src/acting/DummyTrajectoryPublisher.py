@@ -71,7 +71,7 @@ class DummyTrajectoryPub(CompatibleNode):
         # publisher for the current trajectory
         self.trajectory_publisher = self.new_publisher(
             Path,
-            "/carla/" + self.role_name + "/trajectory",
+            "/paf/" + self.role_name + "/trajectory",
             qos_profile=1)
 
     def updated_trajectory(self, target_trajectory):

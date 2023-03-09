@@ -149,6 +149,7 @@ class Approach(py_trees.behaviour.Behaviour):
             speed = speedometer.speed
         else:
             rospy.logwarn("no speedometer connected")
+            return py_trees.common.Status.RUNNING
         if self.virtual_stopline_distance > 5.0:
             # too far
             return py_trees.common.Status.RUNNING
@@ -349,6 +350,7 @@ class Enter(py_trees.behaviour.Behaviour):
         light_status_msg = self.blackboard.get("/paf/hero/traffic_light")
         if light_status_msg is None:
             self.target_speed_pub.publish(convert_to_ms(50.0))
+            return True
         else:
             traffic_light_status = light_status_msg.color
         if traffic_light_status == "":

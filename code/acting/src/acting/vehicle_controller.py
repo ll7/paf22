@@ -11,8 +11,8 @@ from simple_pid import PID
 
 PURE_PURSUIT_CONTROLLER: int = 1
 STANLEY_CONTROLLER: int = 2
-STANLEY_CONTROLLER_MIN_V: float = 2.79  # ~10kph
-STANLEY_CONTROLLER_MAX_V: float = 13.89  # ~50kph
+STANLEY_CONTROLLER_MIN_V: float = 4.0  # ~14kph
+# STANLEY_CONTROLLER_MAX_V: float = 13.89  # ~50kph
 MAX_STEER_ANGLE: float = 0.75
 
 
@@ -45,6 +45,13 @@ class VehicleController(CompatibleNode):
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        )
+
+        self.controller_pub: Publisher = self.new_publisher(
+            Float32,
+            f"/paf/{self.role_name}/controller",
+            qos_profile=QoSProfile(depth=10,
+                                   durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
         self.emergency_pub: Publisher = self.new_publisher(
@@ -112,17 +119,15 @@ class VehicleController(CompatibleNode):
             if self.__emergency:  # emergency is already handled in
                 # __emergency_break()
                 return
-            controller = self.__choose_controller()
-            if controller == PURE_PURSUIT_CONTROLLER:
+            p_stanley = self.__choose_controller()
+            if p_stanley < 0.5:
                 self.logdebug('Using PURE_PURSUIT_CONTROLLER')
-                steer = self.__pure_pursuit_steer
-            elif controller == STANLEY_CONTROLLER:
+            elif p_stanley >= 0.5:
                 self.logdebug('Using STANLEY_CONTROLLER')
-                steer = self.__stanley_steer
-            else:
-                self.logerr("Vehicle Controller couldn't find requested "
-                            "controller.")
-                raise Exception("Requested Controller not found")
+
+            f_stanley = p_stanley * self.__stanley_steer
+            f_pure_p = (1-p_stanley) * self.__pure_pursuit_steer
+            steer = f_stanley + f_pure_p
 
             message = CarlaEgoVehicleControl()
             message.reverse = False
@@ -218,20 +223,24 @@ class VehicleController(CompatibleNode):
     def __set_stanley_steer(self, data: Float32):
         self.__stanley_steer = data.data
 
-    def __choose_controller(self) -> int:
+    def sigmoid(self, x: float):
+        temp_x = min(-25 * x, 25)
+        res = 1 / (1 + math.exp(temp_x))
+        return res
+
+    def __choose_controller(self) -> float:
         """
-        Chooses with steering controller to use
+        Returns the proportion of stanley to use.
+        Publishes the currently used controller
         :return:
         """
-        controller = None
-        v = self.__velocity
-        if STANLEY_CONTROLLER_MIN_V < v < STANLEY_CONTROLLER_MAX_V:
-            controller = STANLEY_CONTROLLER
-        else:
-            controller = PURE_PURSUIT_CONTROLLER
-        self.loginfo(f"Current controller: {controller} "
-                     f"\t Current Velocity: {v}")
-        return controller
+        res = self.sigmoid(self.__velocity - STANLEY_CONTROLLER_MIN_V)
+        if res >= 0.5:
+            self.controller_pub.publish(float(STANLEY_CONTROLLER))
+        elif res < 0.5:
+            self.controller_pub.publish(float(PURE_PURSUIT_CONTROLLER))
+        # todo maybe add logic to deal with MAX_V
+        return res
 
 
 def main(args=None):

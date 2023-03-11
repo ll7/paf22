@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 import ros_compatibility as roscomp
+import rospy
 from ros_compatibility.node import CompatibleNode
 from rospy import Publisher
 from std_msgs.msg import Float32
+
+
+PARKING_V: float = 2.0
 
 
 class VelocityPublisherDummy(CompatibleNode):
@@ -24,10 +28,10 @@ class VelocityPublisherDummy(CompatibleNode):
             f"/paf/{self.role_name}/max_velocity",
             qos_profile=1)
 
-        self.velocity = 4.0
-        self.delta_velocity = 0.125
-        self.max_velocity = 5.5
-        self.min_velocity = 4
+        self.velocity = 3.0
+        self.delta_velocity = 0.05
+        self.max_velocity = 7.0
+        self.min_velocity = 3.0
 
         self.__dv = self.delta_velocity
 
@@ -39,6 +43,8 @@ class VelocityPublisherDummy(CompatibleNode):
         if not self.enabled:
             return
         self.loginfo('VelocityPublisherDummy node running')
+        start_time = rospy.get_time()
+        self.loginfo(f"Start Time: {start_time}")
 
         def loop(timer_event=None):
             """
@@ -46,13 +52,18 @@ class VelocityPublisherDummy(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-            # self.loginfo('Published dummy velocity: ' + str(self.velocity))
-            self.velocity_pub.publish(self.velocity)
-            if self.velocity > self.max_velocity:
-                self.__dv = -self.delta_velocity
-            if self.velocity < self.min_velocity:
-                self.__dv = self.delta_velocity
-            self.velocity += self.__dv
+            elapsed_time = rospy.get_time() - start_time
+
+            if elapsed_time < 40:
+                self.velocity_pub.publish(PARKING_V)
+            else:
+                # self.loginfo('Published velocity: ' + str(self.velocity))
+                self.velocity_pub.publish(self.velocity)
+                if self.velocity > self.max_velocity:
+                    self.__dv = -self.delta_velocity
+                if self.velocity < self.min_velocity:
+                    self.__dv = self.delta_velocity
+                self.velocity += self.__dv
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 

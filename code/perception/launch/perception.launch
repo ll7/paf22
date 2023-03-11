@@ -26,4 +26,6 @@
     <param name="debug" value="true"/>
     <param name="self_diagnose" value="true"/>
   </node>
+
+  <node pkg="perception" type="lidar_distance.py" name="lidar_distance" output="screen"></node>
 </launch>

@@ -122,8 +122,10 @@ class VehicleController(CompatibleNode):
             p_stanley = self.__choose_controller()
             if p_stanley < 0.5:
                 self.logdebug('Using PURE_PURSUIT_CONTROLLER')
+                self.controller_pub.publish(float(PURE_PURSUIT_CONTROLLER))
             elif p_stanley >= 0.5:
                 self.logdebug('Using STANLEY_CONTROLLER')
+                self.controller_pub.publish(float(STANLEY_CONTROLLER))
 
             f_stanley = p_stanley * self.__stanley_steer
             f_pure_p = (1-p_stanley) * self.__pure_pursuit_steer
@@ -224,6 +226,11 @@ class VehicleController(CompatibleNode):
         self.__stanley_steer = data.data
 
     def sigmoid(self, x: float):
+        """
+        Evaluates the sigmoid function s(x) = 1 / (1+e^-25x)
+        :param x: x
+        :return: s(x) = 1 / (1+e^-25x)
+        """
         temp_x = min(-25 * x, 25)
         res = 1 / (1 + math.exp(temp_x))
         return res
@@ -235,11 +242,6 @@ class VehicleController(CompatibleNode):
         :return:
         """
         res = self.sigmoid(self.__velocity - STANLEY_CONTROLLER_MIN_V)
-        if res >= 0.5:
-            self.controller_pub.publish(float(STANLEY_CONTROLLER))
-        elif res < 0.5:
-            self.controller_pub.publish(float(PURE_PURSUIT_CONTROLLER))
-        # todo maybe add logic to deal with MAX_V
         return res
 
 

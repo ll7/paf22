@@ -163,14 +163,15 @@ class PurePursuitController(CompatibleNode):
         :return:
         """
         l_vehicle = 2.85  # wheelbase
-        k_ld = 1.0  # todo: tune
+        k_ld = 1.0
         look_ahead_dist = 3.5  # offset so that ld is never zero
 
         if self.__velocity < 0:
             # backwards driving is not supported
             return 0.0
         elif round(self.__velocity, 1) < MIN_LD_V:
-            look_ahead_dist += 0.0
+            # Offset for low velocity state
+            look_ahead_dist += 0.0  # no offset
         else:
             look_ahead_dist += k_ld * (self.__velocity - MIN_LD_V)
 

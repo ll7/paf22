@@ -36,7 +36,7 @@ class DummyTrajectoryPub(CompatibleNode):
 
         # Static trajectory for testing purposes
         self.initial_trajectory = [
-            (986.0, -5430.0),
+            (986.0, -5442.0),
             (986.0, -5463.2),
             (984.5, -5493.2),
 

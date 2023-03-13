@@ -96,13 +96,14 @@ class Approach(py_trees.behaviour.Behaviour):
             self.traffic_light_distance = light_status_msg.distance
             rospy.loginfo(f"Light distance: {self.traffic_light_distance}")
         # Update stopline Info
-        _dis = self.blackboard.get("/paf/hero/stopline_distance")
+        _dis = self.blackboard.get("/paf/hero/waypoint_distance")
         if _dis is not None:
-            self.stopline_distance = _dis.data
+            self.stopline_distance = _dis.distance
+            self.stopline_detected = _dis.isStopLine
             rospy.loginfo(f"Stopline distance: {self.stopline_distance}")
 
         # calculate virtual stopline
-        if self.stopline_distance != np.inf:
+        if self.stopline_distance != np.inf and self.stopline_detected:
             self.virtual_stopline_distance = self.stopline_distance
         else:
             self.virtual_stopline_distance = self.traffic_light_distance
@@ -133,6 +134,7 @@ class Approach(py_trees.behaviour.Behaviour):
             speed = speedometer.speed
         else:
             rospy.logwarn("no speedometer connected")
+            return py_trees.common.Status.RUNNING
         if self.virtual_stopline_distance > 5.0:
             # too far
             print("still approaching")
@@ -140,6 +142,7 @@ class Approach(py_trees.behaviour.Behaviour):
         elif speed < convert_to_ms(2.0) and \
                 self.virtual_stopline_distance < 5.0:
             # stopped
+            print("stopped")
             return py_trees.common.Status.SUCCESS
         elif speed > convert_to_ms(5.0) and \
                 self.virtual_stopline_distance < 6.0 and \
@@ -156,12 +159,7 @@ class Approach(py_trees.behaviour.Behaviour):
             # ran over line
             return py_trees.common.Status.SUCCESS
 
-        next_waypoint_msg = self.blackboard.get("/paf/hero/waypoint_distance")
-
-        if next_waypoint_msg is None:
-            print("no waypoint")
-            return py_trees.common.Status.FAILURE
-        if next_waypoint_msg.data < 5:
+        if self.stopline_distance.data < 5 and not self.stopline_detected:
             rospy.loginfo("Leave intersection!")
             # self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS
@@ -352,7 +350,7 @@ class Enter(py_trees.behaviour.Behaviour):
 
         if next_waypoint_msg is None:
             return py_trees.common.Status.FAILURE
-        if next_waypoint_msg.data < 5:
+        if next_waypoint_msg.distance < 5 and not next_waypoint_msg.isStopLine:
             rospy.loginfo("Leave intersection!")
             # self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS
@@ -445,7 +443,6 @@ class Leave(py_trees.behaviour.Behaviour):
         writes a status message to the console when the behaviour terminates
         :param new_status: new state after this one is terminated
         """
-        self.blackboard.unset("/paf/hero/stopline_distance")
         self.logger.debug(
             "  %s [Foo::terminate().terminate()][%s->%s]" % (self.name,
                                                              self.status,

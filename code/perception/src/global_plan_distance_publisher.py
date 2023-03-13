@@ -2,9 +2,9 @@
 
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
-from std_msgs.msg import Float32
 from geometry_msgs.msg import PoseStamped
 from carla_msgs.msg import CarlaRoute
+from perception.msg import Waypoint
 import math
 # import rospy
 
@@ -49,13 +49,13 @@ class GlobalPlanDistance(CompatibleNode):
             qos_profile=1)
 
         # Publisher
-        self.stopline_publisher = self.new_publisher(
-            Float32,
-            "/paf/" + self.role_name + "/stopline_distance",
-            qos_profile=1)
+        # self.stopline_publisher = self.new_publisher(
+        #     Float32,
+        #     "/paf/" + self.role_name + "/stopline_distance",
+        #     qos_profile=1)
 
-        self.waypoint_distance_publisher = self.new_publisher(
-            Float32,
+        self.waypoint_publisher = self.new_publisher(
+            Waypoint,
             "/paf/" + self.role_name + "/waypoint_distance",
             qos_profile=1)
 
@@ -81,13 +81,13 @@ class GlobalPlanDistance(CompatibleNode):
             # if the road option indicates an intersection, the distance to the
             # next waypoint is also the distance to the stop line
             if self.road_options[0] < 4:
-                self.stopline_publisher.publish(distance)
+                # print("publish waypoint")
+                self.waypoint_publisher.publish(Waypoint(distance, True))
             else:
-                self.waypoint_distance_publisher.publish(distance)
-
+                self.waypoint_publisher.publish(Waypoint(distance, False))
             # if we reached the next waypoint, pop it and the next point will
             # be published
-            if distance < 2:
+            if distance < 2.5:
                 self.road_options.pop(0)
                 self.global_route.pop(0)
 

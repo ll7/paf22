@@ -10,6 +10,7 @@ from carla_msgs.msg import CarlaSpeedometer
 
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from mock.msg import Traffic_light
+from perception.msg import Waypoint
 
 """
 Source: https://github.com/ll7/psaf2
@@ -35,7 +36,7 @@ def create_node(role_name):
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/paf/{role_name}/stopline_distance", 'msg': Float32,
          'clearing-policy': py_trees.common.ClearingPolicy.ON_INITIALISE},
-        {'name': f"/paf/{role_name}/waypoint_distance", 'msg': Float32,
+        {'name': f"/paf/{role_name}/waypoint_distance", 'msg': Waypoint,
          'clearing-policy': py_trees.common.ClearingPolicy.ON_INITIALISE},
         {'name': f"/psaf/{role_name}/obstacle_on_left_lane", 'msg': Float64,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},

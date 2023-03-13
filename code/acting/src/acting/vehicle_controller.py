@@ -41,7 +41,7 @@ class VehicleController(CompatibleNode):
         )
         self.status_pub: Publisher = self.new_publisher(
             Bool,
-            f"/paf/{self.role_name}/status",
+            f"/carla/{self.role_name}/status",
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
@@ -49,7 +49,7 @@ class VehicleController(CompatibleNode):
 
         self.controller_pub: Publisher = self.new_publisher(
             Float32,
-            f"/paf/{self.role_name}/controller",
+            f"/carla/{self.role_name}/controller",
             qos_profile=QoSProfile(depth=10,
                                    durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )

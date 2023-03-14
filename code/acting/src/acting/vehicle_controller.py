@@ -42,7 +42,7 @@ class VehicleController(CompatibleNode):
         )
         self.status_pub: Publisher = self.new_publisher(
             Bool,
-            "/carla/hero/status",
+            f"/carla/{self.role_name}/status",
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)

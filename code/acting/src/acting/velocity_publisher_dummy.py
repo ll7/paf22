@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import math
-
 import ros_compatibility as roscomp
 import rospy
 from carla_msgs.msg import CarlaSpeedometer
@@ -10,7 +9,6 @@ from rospy import Publisher, Subscriber
 from std_msgs.msg import Float32
 from nav_msgs.msg import Path
 from helper_functions import vector_angle
-
 from trajectory_interpolation import points_to_vector
 
 
@@ -24,6 +22,7 @@ def dist_between_points(a: PoseStamped, b: PoseStamped) -> float:
 
 PARKING_V: float = 2.0
 PARKING_DUR: float = 15.0
+MAX_VELOCITY: float = 25  # = 90 km/h
 
 
 class VelocityPublisherDummy(CompatibleNode):
@@ -32,8 +31,9 @@ class VelocityPublisherDummy(CompatibleNode):
     Published velocities move up and down in steps of delta_velocity between
     min_velocity and max_velocity.
     """
+
     def __init__(self):
-        super(VelocityPublisherDummy, self).\
+        super(VelocityPublisherDummy, self). \
             __init__('velocity_publisher_dummy')
 
         self.control_loop_rate = self.get_param('control_loop_rate', 10)
@@ -68,29 +68,19 @@ class VelocityPublisherDummy(CompatibleNode):
             self.__set_heading,
             qos_profile=1
         )
+        self.velocity_sub: Subscriber = self.new_subscription(
+            CarlaSpeedometer,
+            f"/carla/{self.role_name}/Speed",
+            self.__get_current_velocity,
+            qos_profile=1)
 
-        self.__cur_v: float = 0.0
         self.__is_moving: bool = False
         self.__is_parking: bool = True
         self.__start_time = None
         self.__current_point_id_id = -1
         self.__path = None
         self.__position: (float, float) = None  # x, y
-
-        self.velocity = 3.0
-        self.delta_velocity = 0.05
-        self.max_velocity = 7.0
-        self.min_velocity = 3.0
-
-        self.__dv = self.delta_velocity
-
-    def __set_velocity(self, data: CarlaSpeedometer) -> None:
-        new_v = data.speed
-        if not self.__is_moving and new_v > 0.125:
-            # vehicle starts moving
-            self.__is_moving = True
-            self.__start_time = rospy.get_time()
-        self.__cur_v = new_v
+        self.alphas = [0] * 10
 
     def run(self):
         """
@@ -121,20 +111,23 @@ class VelocityPublisherDummy(CompatibleNode):
                 self.velocity_pub.publish(PARKING_V)
             else:
                 # Normal state
-                # self.loginfo('Published velocity: ' + str(self.velocity))
-                self.velocity_pub.publish(self.velocity)
-                if self.velocity > self.max_velocity:
-                    self.__dv = -self.delta_velocity
-                if self.velocity < self.min_velocity:
-                    self.__dv = self.delta_velocity
-                self.velocity += self.__dv
+                self.velocity_pub.publish(self.__get_max_curve_velocity())
+                self.loginfo(self.__get_max_curve_velocity() * 3.6)
+
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
+    def __set_velocity(self, data: CarlaSpeedometer) -> None:
+        new_v = data.speed
+        if not self.__is_moving and new_v > 0.125:
+            # vehicle starts moving
+            self.__is_moving = True
+            self.__start_time = rospy.get_time()
+
     def __get_max_curve_velocity(self) -> float:
         if self.__path is None:
-            return 30  # 108km/h
-        look_ahead_d = max(self.velocity * 2, 1)  # in m
+            return MAX_VELOCITY
+        look_ahead_d = max(self.__current_velocity * 2, 1)  # in m
         self.__current_point_id_id = self.__get_target_point_index(0)
         target_id = self.__get_target_point_index(look_ahead_d)
         target: PoseStamped = self.__path.poses[target_id]
@@ -148,14 +141,16 @@ class VelocityPublisherDummy(CompatibleNode):
 
         alpha = target_vector_heading - self.__heading
         alpha = abs(math.degrees(alpha))
-        self.loginfo(str(look_ahead_d) + "; " + str(alpha))
-        if alpha > 10:
-            return 14  # = 50 km/h
-        if alpha > 25:
-            return 8  # = 30 km/h
-        if alpha > 50:
+        self.__put_alpha(alpha)
+        alpha_sum = sum(self.alphas)
+        self.loginfo(str(look_ahead_d) + "; " + str(alpha_sum))
+        if alpha_sum > 50:
             return 3  # = 10 km/h
-        return 35  # = 130 km/h
+        if alpha_sum > 30:
+            return 8  # = 30 km/h
+        if alpha_sum > 20:
+            return 14  # = 50 km/h
+        return MAX_VELOCITY
 
         # self.loginfo(self.__heading)
 
@@ -183,6 +178,11 @@ class VelocityPublisherDummy(CompatibleNode):
                 min_dist_idx = i
         return min_dist_idx
 
+    def __put_alpha(self, v: float):
+        for i in range(0, 8):
+            self.alphas[i] = self.alphas[i + 1]
+        self.alphas[9] = v
+
     def __dist_to(self, pos: Point) -> float:
         """
         Distance between current position and target position (only (x,y))
@@ -206,6 +206,9 @@ class VelocityPublisherDummy(CompatibleNode):
 
     def __set_heading(self, data: Float32):
         self.__heading = data.data
+
+    def __get_current_velocity(self, data: CarlaSpeedometer):
+        self.__current_velocity = float(data.speed)
 
 
 def main(args=None):

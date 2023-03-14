@@ -8,6 +8,7 @@ from rospy import Publisher, Subscriber
 from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from std_msgs.msg import Bool, Float32
 from simple_pid import PID
+import rospy
 
 PURE_PURSUIT_CONTROLLER: int = 1
 STANLEY_CONTROLLER: int = 2
@@ -105,7 +106,17 @@ class VehicleController(CompatibleNode):
         Starts the main loop of the node and send a status msg.
         :return:
         """
-        self.status_pub.publish(True)
+        ctrl_c = False
+        rate = rospy.Rate(10)
+        while not ctrl_c:
+            connections = self.status_pub.get_num_connections()
+            if connections > 1:
+                self.pub.publish(True)
+                print(True)
+                ctrl_c = True
+            else:
+                rate.sleep()
+
         self.loginfo('VehicleController node running')
         pid = PID(0.85, 0.1, 0.1, setpoint=0)  # random values -> todo: tune
         pid.output_limits = (-MAX_STEER_ANGLE, MAX_STEER_ANGLE)

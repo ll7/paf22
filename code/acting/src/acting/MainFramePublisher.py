@@ -29,7 +29,7 @@ class MainFramePublisher(CompatibleNode):
 
         self.current_pos_subscriber = self.new_subscription(
             PoseStamped,
-            "/carla/" + self.role_name + "/current_pos",
+            "/paf/" + self.role_name + "/current_pos",
             self.get_current_pos,
             qos_profile=1)
 

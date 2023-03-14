@@ -47,7 +47,7 @@ class DummyTrajectorySub(CompatibleNode):
         # Subscriber
         self.dummy_trajectory_subscriber = self.new_subscription(
             Path,
-            "/carla/" + self.role_name + "/trajectory",
+            "/paf/" + self.role_name + "/trajectory",
             self.update_trajectory,
             qos_profile=1)
 

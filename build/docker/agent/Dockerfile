@@ -52,7 +52,8 @@ RUN apt-get update && apt-get install -y \
         ros-noetic-ackermann-msgs ros-noetic-derived-object-msgs \
         ros-noetic-carla-msgs ros-noetic-pcl-conversions \
         ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server \
-        ros-noetic-robot-pose-ekf
+        ros-noetic-robot-pose-ekf \
+        ros-noetic-py-trees-ros ros-noetic-rqt-py-trees ros-noetic-rqt-reconfigure
 
 SHELL ["/bin/bash", "-c"]
 
@@ -108,7 +109,7 @@ RUN sudo mkdir /opt/leaderboard-py3 && sudo chown $USERNAME:$USERNAME /opt/leade
     ln -s $LEADERBOARD_ROOT/leaderboard /opt/leaderboard-py3/leaderboard && \
     ln -s $SCENARIO_RUNNER_ROOT/srunner /opt/leaderboard-py3/srunner
 
-RUN python -m pip install roslibpy
+RUN python -m pip install roslibpy lxml
 
 
 # environment variables for the leaderboard_evaluator

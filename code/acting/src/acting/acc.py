@@ -23,13 +23,13 @@ class Acc(CompatibleNode):
 
         self.dist_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/acc_distance",
+            f"/paf/{self.role_name}/acc_distance",
             self.__get_current_dist,
             qos_profile=1)
 
         self.velocity_pub: Publisher = self.new_publisher(
             Float32,
-            f"/carla/{self.role_name}/max_velocity",
+            f"/paf/{self.role_name}/max_velocity",
             qos_profile=1)
 
         # Use for testing
@@ -46,7 +46,7 @@ class Acc(CompatibleNode):
 
         self.emergency_pub: Publisher = self.new_publisher(
             Bool,
-            f"/carla/{self.role_name}/emergency",
+            f"/paf/{self.role_name}/emergency",
             qos_profile=QoSProfile(depth=10,
                                    durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
@@ -148,6 +148,7 @@ class Acc(CompatibleNode):
         """
         Calculates the distance you have to keep to the vehicle in front to
         have t_reaction to react to the vehicle suddenly stopping
+        The formula replicates official recommendations for safe distances
         """
         t_reaction = 1  # s
         t_breaking = 1  # s

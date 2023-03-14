@@ -131,6 +131,82 @@ class VelocityPublisherDummy(CompatibleNode):
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
+    def __get_max_curve_velocity(self) -> float:
+        if self.__path is None:
+            return 30  # 108km/h
+        look_ahead_d = max(self.velocity * 2, 1)  # in m
+        self.__current_point_id_id = self.__get_target_point_index(0)
+        target_id = self.__get_target_point_index(look_ahead_d)
+        target: PoseStamped = self.__path.poses[target_id]
+
+        target_v_x, target_v_y = points_to_vector((self.__position[0],
+                                                   self.__position[1]),
+                                                  (target.pose.position.x,
+                                                   target.pose.position.y))
+
+        target_vector_heading = vector_angle(target_v_x, target_v_y)
+
+        alpha = target_vector_heading - self.__heading
+        alpha = abs(math.degrees(alpha))
+        self.loginfo(str(look_ahead_d) + "; " + str(alpha))
+        if alpha > 10:
+            return 14  # = 50 km/h
+        if alpha > 25:
+            return 8  # = 30 km/h
+        if alpha > 50:
+            return 3  # = 10 km/h
+        return 35  # = 130 km/h
+
+        # self.loginfo(self.__heading)
+
+    def __get_target_point_index(self, ld: float) -> int:
+        """
+        Get the index of the target point on the current trajectory based on
+        the look ahead distance.
+        :param ld: look ahead distance
+        :return:
+        """
+        if len(self.__path.poses) < 2:
+            return -1
+
+        min_dist = 10e1000
+        min_dist_idx = -1
+        # might be more elegant to only look at points
+        # _ahead_ of the closest point on the trajectory
+        for i in range(self.__current_point_id_id, len(self.__path.poses)):
+            pose: PoseStamped = self.__path.poses[i]
+            dist = self.__dist_to(pose.pose.position)
+            dist2ld = dist - ld
+            # can be optimized
+            if min_dist > dist2ld > 0:
+                min_dist = dist2ld
+                min_dist_idx = i
+        return min_dist_idx
+
+    def __dist_to(self, pos: Point) -> float:
+        """
+        Distance between current position and target position (only (x,y))
+        :param pos: targeted position
+        :return: distance
+        """
+        x_current = self.__position[0]
+        y_current = self.__position[1]
+        x_target = pos.x
+        y_target = pos.y
+        d = (x_target - x_current) ** 2 + (y_target - y_current) ** 2
+        return math.sqrt(d)
+
+    def __set_path(self, data: Path):
+        self.__path = data
+
+    def __set_position(self, data: PoseStamped):
+        x = data.pose.position.x
+        y = data.pose.position.y
+        self.__position = (x, y)
+
+    def __set_heading(self, data: Float32):
+        self.__heading = data.data
+
 
 def main(args=None):
     """

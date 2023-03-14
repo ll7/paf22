@@ -84,34 +84,20 @@ class VelocityPublisherDummy(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-            self.__get_max_curve_velocity()
+            self.velocity = self.__get_max_curve_velocity()
             # self.loginfo('Published dummy velocity: ' + str(self.velocity))
-            self.velocity_pub.publish(self.velocity)
-            if self.velocity > self.max_velocity:
-                self.__dv = -self.delta_velocity
-            if self.velocity < self.min_velocity:
-                self.__dv = self.delta_velocity
-            self.velocity += self.__dv
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
     def __get_max_curve_velocity(self) -> float:
-        curve_dist = 3
         if self.__path is None:
             return 30  # 108km/h
-        look_ahead_d = max(self.velocity * 1.1, 1)  # in m
+        look_ahead_d = max(self.velocity * 2, 1)  # in m
         self.__current_point_id_id = self.__get_target_point_index(0)
         target_id = self.__get_target_point_index(look_ahead_d)
-        a_id = self.__get_target_point_index(look_ahead_d - curve_dist)
-        b_id = self.__get_target_point_index(look_ahead_d + curve_dist)
-        a: PoseStamped = self.__path.poses[a_id]
-        b: PoseStamped = self.__path.poses[b_id]
         target: PoseStamped = self.__path.poses[target_id]
-        dist = dist_between_points(a, b)
-        #   angle = 2 * math.asin(max(min(dist / (2 * curve_dist), 1), -1))
-        if dist:
-            pass
+
         target_v_x, target_v_y = points_to_vector((self.__position[0],
                                                    self.__position[1]),
                                                   (target.pose.position.x,
@@ -120,8 +106,17 @@ class VelocityPublisherDummy(CompatibleNode):
         target_vector_heading = vector_angle(target_v_x, target_v_y)
 
         alpha = target_vector_heading - self.__heading
+        alpha = abs(math.degrees(alpha))
+        self.loginfo(str(look_ahead_d) + "; " + str(alpha))
+        if alpha > 10:
+            return 14  # = 50 km/h
+        if alpha > 25:
+            return 8  # = 30 km/h
+        if alpha > 50:
+            return 3  # = 10 km/h
+        return 35  # = 130 km/h
+
         # self.loginfo(self.__heading)
-        self.loginfo(str(look_ahead_d) + "; " + str(math.degrees(alpha)))
 
     def __get_target_point_index(self, ld: float) -> int:
         """

@@ -80,34 +80,41 @@ If there is an intersection coming up, the agent executes the following sequence
 
 ### Overtaking
 
-The Overtaking subtree is quite big to accommodate for different overtaking scenarios.
+The Overtaking subtree is quite big to accommodate for different overtaking scenarios. Here is an overview of that subtree further refining it.
+
+![Overtaking](../../../doc/00_assets/overtaking_overview.png)
+
 Please have a look at the [tree-description](../../../doc/07_planning/behaviortree.xml) and the [bt-specs](../../../doc/07_planning/behavior_tree_spec.md) for a more detailed description. The Multi-Lane Overtaking Subtree looks like this:
-![BT Overtaking](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/bt-overtaking.svg)
+
+![BT Overtaking](../../../doc/00_assets/multi_lane.png)
 
 * Multi Lane?
 
     Checks the map data: does the current road have more than one lane?
+
 * Left Lane available?
 
-    Checks the map data: is there a lane available to the left of the ego vehicle?
+    The lane detection checks if there is a lane to the left
+
 * Wait for Left Lane free
 
     Waits for the left lane to be free. This has a timeout.
+
 * Switch Lane Left
 
-    Triggers a Laneswitch to the left by calling the local planner
+    Triggers a lane switch to the left by calling the local planner
 
 ### Right-Hand Driving
 
 This subtree makes the ego vehicle switch back to the right lane, if the road ahead is free enough. It is quite similar to the Multi-Lane Overtaking Subtree, just with reversed directions.
 
-![BT Right Hand](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/bt-right-hand.svg)
+![BT Right Hand](../../../doc/00_assets/Right_lane.png)
 
 ## Developing guide
 
 ### Tree Definition
 
-The tree is defined in the `grow_a_tree()`-function inside `src/behavior_agent/behavior_tree.py`, which is also the main node. It can be visualized using an [rqt-Plugin](https://wiki.ros.org/rqt_py_trees). This is also the Place to change the execution rate of the tree:
+The tree is defined in the `grow_a_tree()`-function inside `code/planning/behavior_agent/behavior_tree.py`, which is also the main node. It can be visualized using an [rqt-Plugin](https://wiki.ros.org/rqt_py_trees). This is also the place to change the execution rate of the tree:
 
 ``` python
 ...
@@ -117,16 +124,16 @@ behaviour_tree.tick_tock(500)
 
 ### Behaviours
 
-_Behaviours_ are implemented in the `src/behavior_agent/behaviours/` directory. All the behaviours used in the current Version of the tree are contained as skeletons.
+_Behaviours_ are implemented in the `code/planning/behavior_agent/behaviours/` directory. All the behaviours used in the current version of the tree are contained as skeletons.
 
 #### Blackboard
 
-To deal with the asynchronity of ROS, all the Topics this Tree subscribes to, should be written to the Blackboard at the beginning of each tick. I wrote a Node, that automates this Task. Just add your Node to the list in `src/behavior_agent/behaviours/topics2blackboard.py`:
+To deal with the asynchronicity of ROS, all the topics this tree subscribes to, should be written to the Blackboard at the beginning of each tick. A node is available, that automates this task. Just add your node to the list in `src/behavior_agent/behaviours/topics2blackboard.py`:
 
 ``` python
 ...
 topics =[
-    {'name':f"/carla/{role_name}/odometry", 'msg':Odometry, 'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+    {'name':f"/carla/{role_name}/Speed", 'msg':CarlaSpeedoMeter, 'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
     ...
     ]
 ...
@@ -138,7 +145,7 @@ After that you can access them from everywhere in your Behaviour-Code using:
 ...
 self.blackboard = py_trees.blackboard.Blackboard()
 ...
-odo = self.blackboard.get("/carla/ego_vehicle/odometry")
+speed = self.blackboard.get("/carla/hero/Speed")
 ...
 ```
 
@@ -150,13 +157,13 @@ When implementing new behaviours you should adhere to the following guidelines:
 
 #### Non-Blocking
 
-You should avoid doing complicated calculations inside the behaviours. Use asynchronous Callbacks instead, and return ```RUNNING``` while another Node does the computing.
+You should avoid doing complicated calculations inside the behaviours. Use asynchronous Callbacks instead, and return ```RUNNING``` while another node does the computing.
 
-Generally Conditions should never return ```RUNNING``` and Action-Behaviours should only return ```FAILURE``` in special cases.
+Generally conditions should never return ```RUNNING``` and Action-Behaviours should only return ```FAILURE``` in special cases.
 
 #### Functions
 
-Behaviours generally provide five Functions (you can define more of course). Short Explanation when they get called and how to use them:
+Behaviours generally provide five functions (you can define more of course). Short explanation when they get called and how to use them:
 
 ##### `__init__()`
 
@@ -164,20 +171,20 @@ You should probably never use this.
 
 ##### `setup()`
 
-Gets called whenever the tree gets set up for the first time. Use this to setup local variables that dont need to change, like ```self.blackboard = py_trees.blackboard.Blackboard()``` or Middleware like ROS-Publishers (Subscribers should be setup using the method mentioned above).
+Gets called whenever the tree gets set up for the first time. Use this to setup local variables that don't need to change, like ```self.blackboard = py_trees.blackboard.Blackboard()``` or middleware like ROS-Publishers (Subscribers should be setup using the method mentioned above).
 
 ##### `initialise()`
 
-Gets called everytime the Behaviour is entered for a new execution. Add Code that only needs to called once at the beginning of a behaviour (i.e. publishing a new target speed).
+Gets called everytime the behaviour is entered for a new execution. Add code that only needs to called once at the beginning of a behaviour (i.e. publishing a new target speed).
 
 ##### `update()`
 
-Main Function of a behaviour, that gets called everytime the behaviour is ticked. Here you need to return ```SUCCESS```, ```RUNNING``` or ```FAILURE```.
+Main function of a behaviour, that gets called everytime the behaviour is ticked. Here you need to return ```SUCCESS```, ```RUNNING``` or ```FAILURE```.
 
 ##### `terminate()`
 
-This gets called, whenever a behaviour is cancelled by a higher priority branch. Use to terminate Middleware-Connections or Asynchronous Calculations, whose Results are not needed anymore.
+This gets called, whenever a behaviour is cancelled by a higher priority branch. Use to terminate middleware connections or asynchronous Calculations, whose results are not needed anymore.
 
 ## Authors
 
-Valentin Höpfner
+Josef Kircher

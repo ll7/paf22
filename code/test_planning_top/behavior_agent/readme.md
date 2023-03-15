@@ -9,12 +9,12 @@
 
 ## About
 
-This Package implements a behaviour agent for our autonomous car using __Behaviour Trees__. It uses the _py_trees_ Framework, that works well with ROS. All the dependencies for that library should be included in the installation instructions (wiki).
+This Package implements a behaviour agent for our autonomous car using __Behaviour Trees__. It uses the _py_trees_ Framework, that works well with ROS.
 For visualization at runtime you might want to also install this [rqt-Plugin](https://wiki.ros.org/rqt_py_trees).
 
 ## Our behaviour tree
 
-The following section describes the behaviour tree we use for normal driving with all traffic rules. In the actual implementation this is part of a bigger tree, that handles things like writing topics to the blackboard, switching modes and respawning.
+The following section describes the behaviour tree we use for normal driving using all functionality provided by the agent. In the actual implementation this is part of a bigger tree, that handles things like writing topics to the blackboard, starting and finishing the decision tree.
 The following description is not complete, it just contains the most common behaviours and subtrees. For a complete description have a look at the [tree-description](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/behaviortree.xml)
 (you can open it with [Groot](https://github.com/BehaviorTree/Groot)) and the [bt-specs](https://github.com/ll7/psaf2/blob/main/documentation/BTSpecs.md).
 Note that we didnt actually implement all of the behaviours from this design, due to time limitations.

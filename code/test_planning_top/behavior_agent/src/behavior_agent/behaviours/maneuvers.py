@@ -1,7 +1,4 @@
 import py_trees
-# import rospy
-
-# from custom_carla_msgs.srv import UpdateLocalPath
 
 """
 Source: https://github.com/ll7/psaf2
@@ -36,9 +33,6 @@ class SwitchLaneLeft(py_trees.behaviour.Behaviour):
         successful
         :return: True, as there is nothing to set up.
         """
-        # rospy.wait_for_service('update_local_path')
-        # self.update_local_path = rospy.ServiceProxy("update_local_path",
-        # UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
@@ -52,7 +46,6 @@ class SwitchLaneLeft(py_trees.behaviour.Behaviour):
             Any initialisation you need before putting your behaviour to work.
         Get the current lane ID
         """
-        # self.update_local_path(change_lane_left=True)
         lane_status = self.blackboard.get("/paf/hero/lane_status")
         self.lanelet_id_before_lane_change = lane_status.currentLaneId
 
@@ -124,9 +117,6 @@ class SwitchLaneRight(py_trees.behaviour.Behaviour):
         successful
         :return: True, as there is nothing to set up.
         """
-        # rospy.wait_for_service('update_local_path')
-        # self.update_local_path = rospy.ServiceProxy("update_local_path",
-        # UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
@@ -141,7 +131,6 @@ class SwitchLaneRight(py_trees.behaviour.Behaviour):
 
         Get the current lane ID
         """
-        # self.update_local_path(change_lane_right=True)
         lane_status = self.blackboard.get("/paf/hero/lane_status")
         self.lanelet_id_before_lane_change = lane_status.currentLaneId
 
@@ -319,7 +308,6 @@ class Cruise(py_trees.behaviour.Behaviour):
         :return: py_trees.common.Status.RUNNING, keeps the decision tree from
         finishing
         """
-        # rospy.loginfo("Cruising around")
         return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):

@@ -4,7 +4,6 @@ import rospy
 import py_trees
 import numpy as np
 from std_msgs.msg import Float32
-# from custom_carla_msgs.srv import UpdateGlobalPath, UpdateLocalPath
 
 """
 Source: https://github.com/ll7/psaf2

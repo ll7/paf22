@@ -3,9 +3,6 @@
 
 
 import py_trees
-# from std_msgs.msg import Float64
-# from nav_msgs.msg import Odometry
-# import numpy as np
 
 """
 Source: https://github.com/ll7/psaf2

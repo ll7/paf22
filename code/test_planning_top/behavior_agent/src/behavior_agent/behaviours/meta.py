@@ -132,7 +132,9 @@ class End(py_trees.behaviour.Behaviour):
             - Set a feedback message
             - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
         Returns SUCCESS
-        :return:  py_trees.common.Status.SUCCESS, as the start up is successful
+        :return:  py_trees.common.Status.RUNNING, if too far from last way
+                  point
+                  py_trees.common.Status.FAILURE, if last point reached
         """
         odo = self.blackboard.get("/carla/ego_vehicle/odometry")
         # TODO finish this part

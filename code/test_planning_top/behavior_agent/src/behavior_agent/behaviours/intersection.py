@@ -241,6 +241,7 @@ class Wait(py_trees.behaviour.Behaviour):
         What to do here?
             Any initialisation you need before putting your behaviour to work.
         This just prints a state status message.
+        :return: True
         """
         rospy.loginfo("Wait Intersection")
         return True
@@ -369,11 +370,8 @@ class Enter(py_trees.behaviour.Behaviour):
            - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
         Continues driving through the intersection until the vehicle gets
         close enough to the next global way point.
-        :return: py_trees.common.Status.RUNNING, if too far from intersection
-                 py_trees.common.Status.SUCCESS, if stopped in front of inter-
-                 section or entered the intersection
-                 py_trees.common.Status.FAILURE, if no next path point can be
-                 detected.
+        :return: py_trees.common.Status.SUCCESS, if the agent entered the
+                 intersection
         """
         # TODO this part needs to be refurbished when we have a publisher for
         # the next global way point
@@ -449,6 +447,7 @@ class Leave(py_trees.behaviour.Behaviour):
             Any initialisation you need before putting your behaviour to work.
         This prints a state status message and changes the driving speed to
         the street speed limit.
+        :return: True
         """
         rospy.loginfo("Leave Intersection")
         street_speed_msg = self.blackboard.get("/paf/hero/street_limit")

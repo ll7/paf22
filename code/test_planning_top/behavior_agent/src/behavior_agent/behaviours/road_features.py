@@ -14,7 +14,7 @@ Source: https://github.com/ll7/psaf2
 
 class IntersectionAhead(py_trees.behaviour.Behaviour):
     """
-    This behaviour checkes wheather there is an intersection in front of the
+    This behaviour checks whether there is an intersection in front of the
     ego vehicle or not and triggers the rest of the decision tree handling the
      intersection.
     """
@@ -23,8 +23,7 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
         Minimal one-time initialisation. A good rule of thumb is to only
         include the initialisation relevant for being able to insert this
         behaviour in a tree for offline rendering to dot graphs.
-        Other one-time initialisation requirements should be met via the
-        setup() method.
+
          :param name: name of the behaviour
         """
         super(IntersectionAhead, self).__init__(name)
@@ -36,7 +35,7 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
         validation of the behaviour's configuration.
 
         This initializes the blackboard to be able to access data written to it
-        by the ROS topics and the target speed publisher.
+        by the ROS topics.
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as the set up is successful.
@@ -99,7 +98,7 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
 class MultiLane(py_trees.behaviour.Behaviour):
     """
     This behavior decides if the road the agent is currently on, has more than
-    one lane for the driving direction. This could be used to change lanes to
+    one lane in the driving direction. This could be used to change lanes to
     the right to perhaps evade an emergency vehicle.
     """
     def __init__(self, name):
@@ -107,9 +106,6 @@ class MultiLane(py_trees.behaviour.Behaviour):
         Minimal one-time initialisation. A good rule of thumb is to only
         include the initialisation relevant for being able to insert this
         behaviour in a tree for offline rendering to dot graphs.
-
-        Other one-time initialisation requirements should be met via the
-        setup() method.
 
          :param name: name of the behaviour
         """
@@ -138,6 +134,7 @@ class MultiLane(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
+        :return: True
         """
         return True
 
@@ -153,7 +150,7 @@ class MultiLane(py_trees.behaviour.Behaviour):
 
         This part checks if the agent is on a multi-lane and corresponding
         overtaking behavior should be triggered. If we are not on a multi-lane
-        it is check if overtaking on a single lane is possible. Otherwise, the
+        it checks if overtaking on a single lane is possible. Otherwise, the
         overtaking process will be canceled.
 
         :return: py_trees.common.Status.SUCCESS, if the agent is on a multi-
@@ -194,9 +191,6 @@ class SingleLineDotted(py_trees.behaviour.Behaviour):
         include the initialisation relevant for being able to insert this
         behaviour in a tree for offline rendering to dot graphs.
 
-        Other one-time initialisation requirements should be met via the
-        setup() method.
-
          :param name: name of the behaviour
         """
         super(SingleLineDotted, self).__init__(name)
@@ -225,6 +219,7 @@ class SingleLineDotted(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
+        :return: True
         """
         return True
 
@@ -276,9 +271,6 @@ class RightLaneAvailable(py_trees.behaviour.Behaviour):
         include the initialisation relevant for being able to insert this
         behaviour in a tree for offline rendering to dot graphs.
 
-        Other one-time initialisation requirements should be met via the
-        setup() method.
-
          :param name: name of the behaviour
         """
         super(RightLaneAvailable, self).__init__(name)
@@ -307,7 +299,7 @@ class RightLaneAvailable(py_trees.behaviour.Behaviour):
         What to do here?
            Any initialisation you need before putting your behaviour to work.
         """
-        pass
+        return True
 
     def update(self):
         """
@@ -359,9 +351,6 @@ class LeftLaneAvailable(py_trees.behaviour.Behaviour):
         include the initialisation relevant for being able to insert this
         behaviour in a tree for offline rendering to dot graphs.
 
-        Other one-time initialisation requirements should be met via the
-        setup() method.
-
          :param name: name of the behaviour
         """
         super(LeftLaneAvailable, self).__init__(name)
@@ -389,6 +378,8 @@ class LeftLaneAvailable(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
+
+        :return: True
         """
         return True
 

@@ -55,6 +55,7 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
         stop line.
         """
         self.dist = 0
+        return True
 
     def update(self):
         """
@@ -120,10 +121,13 @@ class MultiLane(py_trees.behaviour.Behaviour):
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
 
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
         """
+        self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
@@ -134,11 +138,8 @@ class MultiLane(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
         """
-        self.blackboard = py_trees.blackboard.Blackboard()
+        return True
 
     def update(self):
         """
@@ -206,11 +207,14 @@ class SingleLineDotted(py_trees.behaviour.Behaviour):
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
 
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
         """
         self.Success = False
+        self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
@@ -221,11 +225,8 @@ class SingleLineDotted(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
         """
-        self.blackboard = py_trees.blackboard.Blackboard()
+        return True
 
     def update(self):
         """
@@ -288,6 +289,8 @@ class RightLaneAvailable(py_trees.behaviour.Behaviour):
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
 
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
@@ -303,9 +306,6 @@ class RightLaneAvailable(py_trees.behaviour.Behaviour):
 
         What to do here?
            Any initialisation you need before putting your behaviour to work.
-
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
         """
         pass
 
@@ -372,11 +372,13 @@ class LeftLaneAvailable(py_trees.behaviour.Behaviour):
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
 
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
         """
-
+        self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
@@ -387,11 +389,8 @@ class LeftLaneAvailable(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
         """
-        self.blackboard = py_trees.blackboard.Blackboard()
+        return True
 
     def update(self):
         """

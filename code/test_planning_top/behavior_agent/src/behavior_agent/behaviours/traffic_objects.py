@@ -33,10 +33,13 @@ class NotSlowedByCarInFront(py_trees.behaviour.Behaviour):
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
 
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
         """
+        self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
@@ -47,11 +50,8 @@ class NotSlowedByCarInFront(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
         """
-        self.blackboard = py_trees.blackboard.Blackboard()
+        return True
 
     def update(self):
         """
@@ -116,6 +116,8 @@ class WaitLeftLaneFree(py_trees.behaviour.Behaviour):
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
 
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics. Also the time when this behavior started is recorded
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
@@ -131,9 +133,6 @@ class WaitLeftLaneFree(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics. Also the time when this behavior started is recorded
         """
         self.timer = rospy.get_time()
 
@@ -203,6 +202,8 @@ class WaitRightLaneFree(py_trees.behaviour.Behaviour):
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
 
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics. Also the time when this behavior started is recorded
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
@@ -218,9 +219,6 @@ class WaitRightLaneFree(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics. Also the time when this behavior started is recorded
         """
         self.timer = rospy.get_time()
 
@@ -272,11 +270,12 @@ class NotSlowedByCarInFrontRight(py_trees.behaviour.Behaviour):
         super(NotSlowedByCarInFrontRight, self).__init__(name)
 
     def setup(self, timeout):
+        self.blackboard = py_trees.blackboard.Blackboard()
         self.Success = True
         return True
 
     def initialise(self):
-        self.blackboard = py_trees.blackboard.Blackboard()
+        return True
 
     def update(self):
         if self.Success:
@@ -296,10 +295,11 @@ class OvertakingPossible(py_trees.behaviour.Behaviour):
 
     def setup(self, timeout):
         self.Success = False
+        self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
-        self.blackboard = py_trees.blackboard.Blackboard()
+        return True
 
     def update(self):
         if self.Success:

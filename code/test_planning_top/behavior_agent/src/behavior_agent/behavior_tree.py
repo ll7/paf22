@@ -26,19 +26,6 @@ def grow_a_tree(role_name):
             ("Priorities",
                 children=[
                     behaviours.meta.RespawnOrFinish("Respawn or Finish?"),
-                    Inverter(
-                        Selector("Avoid Collisions",
-                                 children=[
-                                     behaviours.avoid_collisions.
-                                     NoObstacleAhead("No Obstacle Ahead?"),
-                                     Selector("Collision Avoidance Action",
-                                              children=[
-                                                  behaviours.avoid_collisions.ReplanAroundObstacles
-                                                  ("Replan around Obstacles"),
-                                                  behaviours.avoid_collisions.EmergencyBrake
-                                                  ("Emergency Brake")
-                                              ])
-                                 ])),
                     Selector("Road Features",
                              children=[
                                  Sequence("Intersection",

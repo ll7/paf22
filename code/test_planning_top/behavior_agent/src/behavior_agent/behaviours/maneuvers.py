@@ -33,6 +33,8 @@ class SwitchLaneLeft(py_trees.behaviour.Behaviour):
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
 
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
@@ -52,9 +54,6 @@ class SwitchLaneLeft(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
         """
         # self.update_local_path(change_lane_left=True)
         lane_status = self.blackboard.get("/paf/hero/lane_status")
@@ -125,6 +124,8 @@ class SwitchLaneRight(py_trees.behaviour.Behaviour):
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
 
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
@@ -143,9 +144,6 @@ class SwitchLaneRight(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
         """
         # self.update_local_path(change_lane_right=True)
         lane_status = self.blackboard.get("/paf/hero/lane_status")
@@ -234,10 +232,13 @@ class Cruise(py_trees.behaviour.Behaviour):
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
 
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
         """
+        self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
@@ -248,11 +249,8 @@ class Cruise(py_trees.behaviour.Behaviour):
 
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
         """
-        self.blackboard = py_trees.blackboard.Blackboard()
+        return True
 
     def update(self):
         """

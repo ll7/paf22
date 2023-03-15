@@ -53,6 +53,7 @@ catkin_python_setup()
 add_message_files(
   FILES
   Traffic_light.msg
+  Stop_sign.msg
 )
 
 ## Generate services in the 'srv' folder

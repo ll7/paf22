@@ -57,19 +57,6 @@ def grow_a_tree(role_name):
                                                            ("Leave Intersection")
                                                        ])
                                           ]),
-                                 Sequence("Stop",
-                                          children=[
-                                              behaviours.road_features.StopAhead("Stop Ahead"),
-                                              Sequence("Stop Actions",
-                                                       children=[
-                                                           behaviours.stop.Approach
-                                                           ("Approach Stop"),
-                                                           behaviours.roundabout.Approach
-                                                           ("Wait Stop"),
-                                                           behaviours.roundabout.Approach
-                                                           ("Leave Stop")
-                                                       ])
-                                          ])
                              ]),
                     Selector("Laneswitching", children=[
                         Inverter(Selector("Overtaking", children=[

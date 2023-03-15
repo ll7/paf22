@@ -3,18 +3,8 @@
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
         <Fallback name="Priorities">
-            <Inverter>
-                <Fallback name="Avoid Collisions">
-                    <Condition ID="Condition" name="No Obstacle Ahead?"/>
-                    <Fallback>
-                        <Action ID="Behaviour" name="Replan Around Obstacle"/>
-                        <Action ID="Behaviour" name="Emergency Brake"/>
-                    </Fallback>
-                </Fallback>
-            </Inverter>
             <Fallback name="Road Features">
                 <SubTree ID="Intersection"/>
-                <SubTree ID="Stop"/>
             </Fallback>
             <Fallback name="">
                 <Inverter>
@@ -60,18 +50,6 @@
         </Fallback>
     </BehaviorTree>
     <!-- ////////// -->
-    <BehaviorTree ID="Roundabout">
-        <Sequence>
-            <Condition ID="Condition" name="Roundabout Ahead?"/>
-            <Sequence>
-                <Action ID="Behaviour" name="Approach Roundabout"/>
-                <Action ID="Behaviour" name="Wait"/>
-                <Action ID="Behaviour" name="Enter"/>
-                <Action ID="Behaviour" name="Leave"/>
-            </Sequence>
-        </Sequence>
-    </BehaviorTree>
-    <!-- ////////// -->
     <BehaviorTree ID="Single-Lane">
         <Sequence>
             <Condition ID="Condition" name="Single Lane with dotted Line?"/>
@@ -88,25 +66,12 @@
         </Sequence>
     </BehaviorTree>
     <!-- ////////// -->
-    <BehaviorTree ID="Stop">
-        <Sequence>
-            <Condition ID="Condition" name="Stop Ahead?"/>
-            <Sequence>
-                <Action ID="Behaviour" name="Approach"/>
-                <Action ID="Behaviour" name="Wait"/>
-                <Action ID="Behaviour" name="Go"/>
-            </Sequence>
-        </Sequence>
-    </BehaviorTree>
-    <!-- ////////// -->
     <TreeNodesModel>
         <Action ID="Behaviour"/>
         <Condition ID="Condition"/>
         <SubTree ID="Intersection"/>
         <SubTree ID="Multi-Lane"/>
-        <SubTree ID="Roundabout"/>
         <SubTree ID="Single-Lane"/>
-        <SubTree ID="Stop"/>
     </TreeNodesModel>
     <!-- ////////// -->
 </root>

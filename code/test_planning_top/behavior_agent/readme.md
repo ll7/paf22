@@ -11,7 +11,7 @@
 
 ## About
 
-This Package implements a behaviour agent for our autonomous car using **Behaviour Trees**. It uses the _py_trees_ Framework, that works well with ROS.
+This Package implements a behaviour agent for our autonomous car using **Behaviour Trees**. It uses the `py_trees` Framework, that works well with ROS.
 For visualization at runtime you might want to also install this [rqt-Plugin](https://wiki.ros.org/rqt_py_trees).
 
 ## Our behaviour tree
@@ -54,7 +54,7 @@ Represents a specific task/scenario which is handled by the decision tree.
 
 ![BT Big Picture](../../../doc/00_assets/top-level.png)
 
-This top-level tree consists mainly of subtrees that are explained below. If none of the subtrees fit the current situation, the behaviour_agent goes into _Cruising_-behaviour, where it just follows the Path at an appropriate speed.
+This top-level tree consists mainly of subtrees that are explained below. If none of the subtrees fit the current situation, the behaviour_agent goes into `Cruising`-behaviour, where it just follows the Path at an appropriate speed.
 
 ### Intersection
 
@@ -124,7 +124,7 @@ behaviour_tree.tick_tock(500)
 
 ### Behaviours
 
-_Behaviours_ are implemented in the `code/planning/behavior_agent/behaviours/` directory. All the behaviours used in the current version of the tree are contained as skeletons.
+`Behaviours` are implemented in the `code/planning/behavior_agent/behaviours/` directory. All the behaviours used in the current version of the tree are contained as skeletons.
 
 #### Blackboard
 

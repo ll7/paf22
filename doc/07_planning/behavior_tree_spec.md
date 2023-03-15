@@ -1,34 +1,16 @@
 # Behaviour Tree - Behaviours Specification
 
-**Conditions** never return _Running_ but only _Failure_ and _Success_.
-**Actions** should not return _Failure_ (only special cases), but only _Running_ for ongoing and _Success_ for finished.
+**Disclaimer**: As we mainly built our decision tree on the previous [PAF project](https://github.com/ll7/psaf2), most part of the documentation was added here and adjusted to the changes we made.
 
-## Collision Avoidance Subtree
+**Conditions** never return `RUNNING` but only `FAILURE` and `SUCCESS`.
 
-******
-******
-
-### _Condition:_ No Obstacle Ahead
-
-There should be a function/node that detects obstacles. It should write the information to a topic and this behaviour should query that topic. Additional information (e.g. distance to obstacle) should also be published in the topic (and written to the blackboard).
-
-**OnUpdate:** Return _Success_ if no obstacle ahead, _Failure_ otherwise.
-
-******
-
-### _Action:_ Replan Around Obstacle
-
-Trigger function for local replaning, set timeout with respect to information published from obstacle detection.
-
-**OnUpdate:** If timeout but planning not done or error occured, return _Failure_. Before timeout while still planning, return _Running_. If planning finishes in time, return _Success_ and publish new local plan.
-
-**OnTerminate:** When this behaviour is termianted by higher node, cancel the planning (or at least do not publish the result).
+**Actions** should not return `FAILURE` (only special cases), but only `RUNNING` for ongoing and `SUCCESS` for finished.
 
 ## Road Features Subtree
 
 ******
 
-The node that percepts the road features should take care that not more than one (and only the closest) feature should be published. This could be done via the global plan (offline planning of a sequence of road features).
+The node that percepts the road features should take care that not more than one (and only the closest) feature should be published.
 
 ## Road Features Subtree - Intersection
 
@@ -39,15 +21,14 @@ The node that percepts the road features should take care that not more than one
 
 Read the information from a topic from Perception.
 
-**OnUpdate:** Return _Success_ if intersection ahead, _Failure_ otherwise.
+**OnUpdate:** Return `SUCCESS` if intersection ahead, `FAILURE` otherwise.
 ******
 
 ### _Action:_ Approach Intersection
 
-Slow down and stop at the traffic lights/marker. Choose and move to the required lane.
-Activate turning signal.
+Slow down and stop at the traffic lights/hold line.
 
-**OnUpdate:** If ongoing, return _Running_, return _Success_ after car has stopped.
+**OnUpdate:** If ongoing, return `RUNNING`, return `SUCCESS` after car has stopped.
 
 **OnTerminate:** Cancel this action.
 
@@ -57,7 +38,7 @@ Activate turning signal.
 
 Wait for the interscection to be free/traffic lights to become green.
 
-**OnUpdate:** If not free to go, return _Running_, otherwise _Success_.
+**OnUpdate:** If not free to go, return `RUNNING`, otherwise `SUCCESS`.
 
 **OnTerminate:** Cancel this action.
 
@@ -69,7 +50,7 @@ Enter Intersection. If required, stop again (e.g. turn left).
 
 **Initialize:** Set speed.
 
-**OnUpdate:** Return _Success_ if free to go without stopping again, return _Running_ if car still might have to stop (e.g. turn left).
+**OnUpdate:** Return `SUCCESS` if free to go without stopping again, return `RUNNING` if car still might have to stop (e.g. turn left).
 
 **OnTerminate:** Cancel this action.
 
@@ -79,99 +60,7 @@ Enter Intersection. If required, stop again (e.g. turn left).
 
 Leave Intersection.
 
-**OnUpdate:** If still in intersection, return _Running_, otherwise _Success_ (when back to other lanelet) and set speed to speed limit.
-
-**OnTerminate:** Cancel this action.
-
-## Road Features Subtree - Roundabout
-
-******
-******
-
-### _Condition:_ Roundabout Ahead
-
-Read the information from a topic from Perception.
-
-**OnUpdate:** Return _Success_ if roundabout ahead, _Failure_ otherwise.
-******
-
-### _Action:_ Approach Roundabout
-
-Slow down and stop at the roundabout entrance. Choose lane.
-
-**OnUpdate:** If ongoing, return _Running_, return _Success_ after stopping.
-
-**OnTerminate:** Cancel this action.
-
-******
-
-### _Action:_ Wait
-
-Wait for the lane in Roundabout to be free.
-
-**OnUpdate:** If not free to go, return _Running_, otherwise _Success_.
-
-**OnTerminate:** Cancel this action.
-
-******
-
-### _Action:_ Enter
-
-Enter Roundabout.
-
-**Initialize:** Set speed.
-
-**OnUpdate:** If ongoing, return _Running_, otherwise _Success_.
-
-**OnTerminate:** Cancel this action.
-
-******
-
-### _Action:_ Leave
-
-Leave Roundabout. Check for lane switch that needs to be done.
-
-**OnUpdate:** If still in Roundabout, return _Running_, otherwise _Success_ (when back to other lanelet) and set speed to speed limit.
-
-**OnTerminate:** Cancel this action.
-
-## Road Features Subtree - Stop
-
-******
-******
-
-### _Condition:_ Stop Ahead
-
-Read the information from a topic from Perception. (Stop means traffic ligths, zebra crossing, ...)
-
-**OnUpdate:** Return _Success_ if intersection ahead, _Failure_ otherwise.
-******
-
-### _Action:_ Approach
-
-Slow down and stop at the marker.
-
-**OnUpdate:** If ongoing, return _Running_, otherwise _Success_.
-
-**OnTerminate:** Cancel this action.
-
-******
-
-### _Action:_ Wait
-
-Wait for go.
-
-**OnUpdate:** If ongoing, return _Running_, if free return _Success_ and set speed.
-
-**OnTerminate:** Cancel this action.
-
-******
-
-### _Action:_ Go
-
-Continue and pass obstacle.
-
-**OnUpdate:** If ongoing, return _Running_, otherwise _Success_ (after car has passed stop).
+**OnUpdate:** If still in intersection, return `RUNNING`, otherwise `SUCCESS` (when back to other lanelet) and set speed to speed limit.
 
 **OnTerminate:** Cancel this action.
 
@@ -184,7 +73,7 @@ Continue and pass obstacle.
 
 There should be a function/node (see ACC) that detects cars in front. It should write the information to a topic and this behaviour should query that topic. Additional information (e.g. car speed) should also be published in the topic (and written to the blackboard).
 
-**OnUpdate:** Return _Success_ if no slow car ahead, _Failure_ otherwise.
+**OnUpdate:** Return `SUCCESS` if no slow car ahead, `FAILURE` otherwise.
 
 ## Lane Switch Subtree - Multilane
 
@@ -193,13 +82,13 @@ There should be a function/node (see ACC) that detects cars in front. It should 
 
 ### _Condition_: Multi-Lane
 
-**OnUpdate:** Return _Success_ if multilane, _Failure_ otherwise.
+**OnUpdate:** Return `SUCCESS` if multilane, `FAILURE` otherwise.
 
 ******
 
 ### _Condition_: Left-Lane available
 
-**OnUpdate:** Return _Success_ if left-lane available, _Failure_ otherwise.
+**OnUpdate:** Return `SUCCESS` if left-lane available, `FAILURE` otherwise.
 
 ******
 
@@ -209,7 +98,7 @@ Should have timeout.
 
 **Initialize:** Set timeout.
 
-**OnUpdate:**  If ongoing, return _Running_, if lane free return _Success_, if timeout return _Failure_.
+**OnUpdate:**  If ongoing, return `RUNNING`, if lane free return `SUCCESS`, if timeout return `FAILURE`.
 
 **OnTerminate:** Cancel this action.
 
@@ -217,7 +106,7 @@ Should have timeout.
 
 ### _Action_: Switch to lane left
 
-**OnUpdate:**  If ongoing, return _Running_, return _Success_ after finishing.
+**OnUpdate:**  If ongoing, return `RUNNING`, return `SUCCESS` after finishing.
 
 **OnTerminate:** Cancel this action.
 
@@ -229,7 +118,7 @@ Should have timeout.
 
 ### _Condition_: Single-line with dotted line
 
-**OnUpdate:** Return _Success_ if Single-line with dotted line, _Failure_ otherwise.
+**OnUpdate:** Return `SUCCESS` if Single-line with dotted line, `FAILURE` otherwise.
 
 ******
 
@@ -237,7 +126,7 @@ Should have timeout.
 
 Check if overtaking is possible (cars on other lane). In particular check cars ahead of the car to overtake.
 
-**OnUpdate:** Return _Success_ if possible, _Failure_ otherwise.
+**OnUpdate:** Return `SUCCESS` if possible, `FAILURE` otherwise.
 
 ******
 
@@ -245,7 +134,7 @@ Check if overtaking is possible (cars on other lane). In particular check cars a
 
 Accelerate, overtake car until there is space on the right lane.
 
-**OnUpdate:**  If ongoing, return _Running_, return _Success_ if there is free space.
+**OnUpdate:**  If ongoing, return `RUNNING`, return `SUCCESS` if there is free space.
 
 **OnTerminate:** Cancel this action.
 
@@ -255,7 +144,7 @@ Accelerate, overtake car until there is space on the right lane.
 
 Go back to right lane.
 
-**OnUpdate:**  If ongoing, return _Running_, otherwise _Failure_ or _Success_.
+**OnUpdate:**  If ongoing, return `RUNNING`, otherwise `FAILURE` or `SUCCESS`.
 
 **OnTerminate:** Cancel this action.
 
@@ -266,7 +155,7 @@ Go back to right lane.
 
 ### _Condition:_ Right lane available
 
-**OnUpdate:** Return _Success_ if right lane available, _Failure_ otherwise.
+**OnUpdate:** Return `SUCCESS` if right lane available, `FAILURE` otherwise.
 
 ******
 
@@ -274,13 +163,13 @@ Go back to right lane.
 
 There should be a function/node that detects cars in front (right). It should write the information to a topic and this behaviour should query that topic. Additional information (e.g. car speed) should also be published in the topic (and written to the blackboard).
 
-**OnUpdate:** Return _Success_ if no slow car ahead, _Failure_ otherwise.
+**OnUpdate:** Return `SUCCESS` if no slow car ahead, `FAILURE` otherwise.
 
 ******
 
 ### _Action_: wait for lane right free
 
-**OnUpdate:**  If ongoing, return _Running_, otherwise _Failure_ or _Success_.
+**OnUpdate:**  If ongoing, return `RUNNING`, otherwise `FAILURE` or `SUCCESS`.
 
 **OnTerminate:** Cancel this action.
 
@@ -291,6 +180,6 @@ There should be a function/node that detects cars in front (right). It should wr
 
 ### _Action:_ Cruising
 
-**OnUpdate:** Always return _Running_. Set ACC.
+**OnUpdate:** Always return `RUNNING`. Set ACC.
 
 **OnTerminate:** Cancel this action.

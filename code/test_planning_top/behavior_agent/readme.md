@@ -7,58 +7,81 @@
 
 # behaviour_agent
 
+**Disclaimer**: As we mainly built our decision tree on the previous [PAF project](https://github.com/ll7/psaf2), most part of the documentation was added here and adjusted to the changes we made.
+
 ## About
 
-This Package implements a behaviour agent for our autonomous car using __Behaviour Trees__. It uses the _py_trees_ Framework, that works well with ROS.
+This Package implements a behaviour agent for our autonomous car using **Behaviour Trees**. It uses the _py_trees_ Framework, that works well with ROS.
 For visualization at runtime you might want to also install this [rqt-Plugin](https://wiki.ros.org/rqt_py_trees).
 
 ## Our behaviour tree
 
 The following section describes the behaviour tree we use for normal driving using all functionality provided by the agent. In the actual implementation this is part of a bigger tree, that handles things like writing topics to the blackboard, starting and finishing the decision tree.
-The following description is not complete, it just contains the most common behaviours and subtrees. For a complete description have a look at the [tree-description](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/behaviortree.xml)
-(you can open it with [Groot](https://github.com/BehaviorTree/Groot)) and the [bt-specs](https://github.com/ll7/psaf2/blob/main/documentation/BTSpecs.md).
-Note that we didnt actually implement all of the behaviours from this design, due to time limitations.
+The following description is not complete, it just contains the most common behaviours and subtrees. For a complete description have a look at the [tree-description](../../../doc/07_planning/behaviortree.xml) and the [bt-specs](../../../doc/07_planning/behavior_tree_spec.md).
+Note that we didn't actually implement all the behaviours from this design, due to time and functionality limitations.
 
 ### Legend
 
-The following Notation is used in this documentation:
-![BT Legend](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/bt-legend.svg)
+The following notation is used in this documentation:
+
+![BT Legend](../../../doc/00_assets/legend_bt.png)
+
+#### Behavior
+
+Represent an action the decision tree should execute. It has three return values representing the state of the behavior:
+
+* `SUCCESS`: The action has been performed successfully.
+* `RUNNING`: The action is still being executed.
+* `Failure`: The action couldn't be executed.
+
+#### Selector
+
+Tries to execute each of its child behaviors in turn. It has a priority hierarchy from left (high priority) to right (low priority).
+
+#### Sequence
+
+Executes all of its child behaviors sequentially after one another until all behaviors have returned `SUCCESS` or one behavior returned `FAILURE`. In that case, the sequence is aborted.
+
+#### Condition
+
+Is always the first child of a sequence. It decides if the sequence should be executed or aborted.
+
+#### Subtree
+
+Represents a specific task/scenario which is handled by the decision tree.
 
 ### Big Picture
 
-![BT Big Picture](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/bt_big_picture.svg)
+![BT Big Picture](../../../doc/00_assets/top-level.png)
 
-This top-level tree consists mainly of sub-trees that are explained below. If none of the subtrees fit the current situation, the behaviour_agent goes into _Cruising_-behaviour, where it just follows the Path at an appropriate speed.
+This top-level tree consists mainly of subtrees that are explained below. If none of the subtrees fit the current situation, the behaviour_agent goes into _Cruising_-behaviour, where it just follows the Path at an appropriate speed.
 
 ### Intersection
 
-![BT Intersection](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/bt-intersection.svg)
+![BT Intersection](../../../doc/00_assets/intersection.png)
 
-If there is a Intersection coming up the agent executes the following sequence of behaviours:
+If there is an intersection coming up, the agent executes the following sequence of behaviours:
 
 * Approach Intersection
 
-    Slows down, gets into the right lane for turning and stops at line
+    Slows down and stops at line if a stop sign or a yellow or red traffic light is detected
+
 * Wait at Intersection
 
     Waits for traffic lights or higher priority traffic
+
 * Enter Intersection
 
-    Enters the intersection and stops again, if there is higher priority oncoming traffic
+    Enters the intersection and follows it predetermined path through the intersection
+
 * Leave Intersection
 
     Leaves the intersection in the right direction
 
-### Roundabout
-
-![BT Roundabout](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/bt-roundabout.svg)
-
-This subtree is basically identical to the intersection-subtree. The implementation of the behaviours varies a bit though.
-
 ### Overtaking
 
 The Overtaking subtree is quite big to accommodate for different overtaking scenarios.
-Please have a look at the [tree-description](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/behaviortree.xml) and the [bt-specs](https://github.com/ll7/psaf2/blob/main/documentation/BTSpecs.md) for a more detailed description. The Multi-Lane Overtaking Subtree looks like this:
+Please have a look at the [tree-description](../../../doc/07_planning/behaviortree.xml) and the [bt-specs](../../../doc/07_planning/behavior_tree_spec.md) for a more detailed description. The Multi-Lane Overtaking Subtree looks like this:
 ![BT Overtaking](https://github.com/ll7/psaf2/blob/main/documentation/behaviour_agent/bt-overtaking.svg)
 
 * Multi Lane?

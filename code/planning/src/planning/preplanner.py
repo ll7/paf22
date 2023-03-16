@@ -6,9 +6,9 @@ from ros_compatibility.node import CompatibleNode
 from xml.etree import ElementTree as eTree
 
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
-from carla_msgs.msg import CarlaRoute   # , CarlaWorldInfo
+from carla_msgs.msg import CarlaRoute, CarlaWorldInfo
 from nav_msgs.msg import Path
-from std_msgs.msg import String
+# from std_msgs.msg import String
 from std_msgs.msg import Float32MultiArray
 
 from preplanning_trajectory import OpenDriveConverter
@@ -49,10 +49,10 @@ class PrePlanner(CompatibleNode):
             "distance_spawn_to_first_wp", 100)
 
         self.map_sub = self.new_subscription(
-            # msg_type=CarlaWorldInfo,
-            # topic="/carla/world_info",
-            msg_type=String,
-            topic=f"/carla/{self.role_name}/OpenDRIVE",
+            msg_type=CarlaWorldInfo,
+            topic="/carla/world_info",
+            # msg_type=String,
+            # topic=f"/carla/{self.role_name}/OpenDRIVE",
             callback=self.world_info_callback,
             qos_profile=10)
 
@@ -190,8 +190,8 @@ class PrePlanner(CompatibleNode):
 
         self.loginfo("PrePlanner: published trajectory")
 
-#    def world_info_callback(self, data: CarlaWorldInfo) -> None:
-    def world_info_callback(self, opendrive: String) -> None:
+    def world_info_callback(self, data: CarlaWorldInfo) -> None:
+        #    def world_info_callback(self, opendrive: String) -> None:
         """
         when the map gets updated a mew OpenDriveConverter instance is created
         (needed for the trajectory preplanning)
@@ -199,8 +199,8 @@ class PrePlanner(CompatibleNode):
         """
         self.loginfo("PrePlanner: MapUpdate called")
 
-#        root = eTree.fromstring(data.opendrive)
-        root = eTree.fromstring(opendrive.data)
+        root = eTree.fromstring(data.opendrive)
+#        root = eTree.fromstring(opendrive.data)
 
         roads = root.findall("road")
         road_ids = [int(road.get("id")) for road in roads]

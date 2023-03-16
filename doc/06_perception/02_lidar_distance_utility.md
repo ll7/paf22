@@ -22,13 +22,11 @@ Tim Dreier
 
 ---
 <!-- TOC -->
-* [Title of wiki page](#title-of-wiki-page)
+* [Lidar Distance Utility](#lidar-distance-utility)
   * [Author](#author)
   * [Date](#date)
-  * [Prerequisite](#prerequisite)
-  * [Some Content](#some-content)
-  * [more Content](#more-content)
-    * [Sources](#sources)
+  * [Configuration](#configuration)
+    * [Example](#example)
 <!-- TOC -->
 
 ## Configuration
@@ -46,6 +44,15 @@ The possible params for this node are summed up in the following table:
 | point_cloud_topic | Topic to publish the filtered PointCloud2             | `/carla/hero/<namespace>filtered` |
 | range_topic       | Topic to publish the Range                            | `/carla/hero/<namespace>_range`   |
 | source_topic      | Topic on which the PointCloud2 messages are read from | `/carla/hero/LIDAR`               |
+
+❗️Important:
+
+The LIDAR sensor is mounted in a height of 1.7m (height of the car). Thereby, if you want all points
+starting from 20cm above the ground you have to set min_z = -1.5.
+
+The meaning of the x and y values is described by the following image:
+
+![](../00_assets/lidar_filter.png)
 
 ### Example
 

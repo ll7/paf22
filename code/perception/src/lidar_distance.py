@@ -5,6 +5,7 @@ import numpy as np
 import lidar_filter_utility
 from sensor_msgs.msg import PointCloud2, Range
 
+
 class LidarDistance():
     """ See doc/06_perception/02_lidar_distance_utility.md on
         how to configute this node
@@ -27,11 +28,11 @@ class LidarDistance():
         bit_mask = lidar_filter_utility.bounding_box(
             coordinates,
             max_x=rospy.get_param('~max_x', np.inf),
-            min_x=rospy.get_param('~min_x', np.inf),
+            min_x=rospy.get_param('~min_x', -np.inf),
             max_y=rospy.get_param('~max_y', np.inf),
-            min_y=rospy.get_param('~min_y', np.inf),
+            min_y=rospy.get_param('~min_y', -np.inf),
             max_z=rospy.get_param('~max_z', np.inf),
-            min_z=rospy.get_param('~min_z', np.inf),
+            min_z=rospy.get_param('~min_z', -np.inf),
         )
 
         # Filter coordinates based in generated bit_mask
@@ -82,7 +83,8 @@ class LidarDistance():
             Range
         )
 
-        rospy.Subscriber(rospy.get_param('~source_topic', "/carla/hero/LIDAR"), PointCloud2, self.callback)
+        rospy.Subscriber(rospy.get_param('~source_topic', "/carla/hero/LIDAR"),
+                         PointCloud2, self.callback)
 
         # spin() simply keeps python from exiting until this node is stopped
         rospy.spin()

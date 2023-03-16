@@ -38,7 +38,6 @@ class SemanticHead(nn.Module):
         self.cross_entropy_loss = nn.CrossEntropyLoss(reduction='none')
 
     def forward(self, inputs, targets={}):
-        # TODO Make a loop
         # The forward is apply in a bottom up manner
         # x32 size
         p_32 = inputs['P_32']

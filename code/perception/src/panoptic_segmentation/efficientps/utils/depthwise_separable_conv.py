@@ -6,7 +6,6 @@ class DepthwiseSeparableConv(nn.Module):
     """
     DepthwiseSeparableConv from MobileNet, code largely inspire from mmcv
     DepthwiseSeparableConvModule but simplify
-    TODO Improve the normalisation choices
     """
 
     def __init__(self,

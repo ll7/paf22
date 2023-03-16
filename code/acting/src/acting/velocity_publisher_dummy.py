@@ -1,14 +1,8 @@
 #!/usr/bin/env python
 import ros_compatibility as roscomp
-import rospy
-from carla_msgs.msg import CarlaSpeedometer
 from ros_compatibility.node import CompatibleNode
-from rospy import Publisher, Subscriber
+from rospy import Publisher
 from std_msgs.msg import Float32
-
-
-PARKING_V: float = 2.0
-PARKING_DUR: float = 15.0
 
 
 class VelocityPublisherDummy(CompatibleNode):
@@ -25,36 +19,17 @@ class VelocityPublisherDummy(CompatibleNode):
         self.role_name = self.get_param('role_name', 'ego_vehicle')
         self.enabled = self.get_param('enabled', False)
 
-        self.velocity_sub: Subscriber = self.new_subscription(
-            CarlaSpeedometer,
-            f"/carla/{self.role_name}/Speed",
-            self.__set_velocity,
-            qos_profile=1)
-
         self.velocity_pub: Publisher = self.new_publisher(
             Float32,
             f"/paf/{self.role_name}/max_velocity",
             qos_profile=1)
 
-        self.__cur_v: float = 0.0
-        self.__is_moving: bool = False
-        self.__is_parking: bool = True
-        self.__start_time = None
-
-        self.velocity = 3.0
-        self.delta_velocity = 0.05
-        self.max_velocity = 7.0
-        self.min_velocity = 3.0
+        self.velocity = 4.0
+        self.delta_velocity = 0.125
+        self.max_velocity = 5.0
+        self.min_velocity = 4
 
         self.__dv = self.delta_velocity
-
-    def __set_velocity(self, data: CarlaSpeedometer) -> None:
-        new_v = data.speed
-        if not self.__is_moving and new_v > 0.125:
-            # vehicle starts moving
-            self.__is_moving = True
-            self.__start_time = rospy.get_time()
-        self.__cur_v = new_v
 
     def run(self):
         """
@@ -71,27 +46,13 @@ class VelocityPublisherDummy(CompatibleNode):
             :param timer_event: Timer event from ROS
             :return:
             """
-            elapsed_time = 0
-            if self.__start_time is not None:
-                # vehicle has not started moving yet
-                elapsed_time = rospy.get_time() - self.__start_time
-
-            if elapsed_time > PARKING_DUR:
-                # vehicle should have left the parking spot by now
-                self.__is_parking = False
-
-            if self.__is_parking:
-                # Parking state
-                self.velocity_pub.publish(PARKING_V)
-            else:
-                # Normal state
-                # self.loginfo('Published velocity: ' + str(self.velocity))
-                self.velocity_pub.publish(self.velocity)
-                if self.velocity > self.max_velocity:
-                    self.__dv = -self.delta_velocity
-                if self.velocity < self.min_velocity:
-                    self.__dv = self.delta_velocity
-                self.velocity += self.__dv
+            # self.loginfo('Published dummy velocity: ' + str(self.velocity))
+            self.velocity_pub.publish(self.velocity)
+            if self.velocity > self.max_velocity:
+                self.__dv = -self.delta_velocity
+            if self.velocity < self.min_velocity:
+                self.__dv = self.delta_velocity
+            self.velocity += self.__dv
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 

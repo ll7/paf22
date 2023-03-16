@@ -100,10 +100,11 @@ class Approach(py_trees.behaviour.Behaviour):
             self.traffic_light_detected = True
 
         # Update stopline Info
-        _dis = self.blackboard.get("/paf/hero/intersection_distance")
+        _dis = self.blackboard.get("/paf/hero/waypoint_distance")
         if _dis is not None:
-            self.intersection_distance = _dis.data
-            rospy.loginfo(f"Stopline distance: {self.intersection_distance}")
+            self.stopline_distance = _dis.distance
+            self.stopline_detected = _dis.isStopLine
+            rospy.loginfo(f"Stopline distance: {self.stopline_distance}")
 
         # Update stop sign Info
         stop_sign_msg = self.blackboard.get("/paf/hero/stop_sign")
@@ -112,8 +113,8 @@ class Approach(py_trees.behaviour.Behaviour):
             self.stop_distance = stop_sign_msg.distance
 
         # calculate virtual stopline
-        if self.intersection_distance != np.inf:
-            self.virtual_stopline_distance = self.intersection_distance
+        if self.stopline_distance != np.inf and self.stopline_detected:
+            self.virtual_stopline_distance = self.stopline_distance
         elif self.traffic_light_detected:
             self.virtual_stopline_distance = self.traffic_light_distance
         elif self.stop_sign_detected:
@@ -152,15 +153,17 @@ class Approach(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.RUNNING
         if self.virtual_stopline_distance > 5.0:
             # too far
+            print("still approaching")
             return py_trees.common.Status.RUNNING
         elif speed < convert_to_ms(2.0) and \
                 self.virtual_stopline_distance < 5.0:
             # stopped
+            print("stopped")
             return py_trees.common.Status.SUCCESS
         elif speed > convert_to_ms(5.0) and \
                 self.virtual_stopline_distance < 6.0 and \
                 self.traffic_light_status == "green":
-
+            # TODO here is something wrong
             # drive through intersection even if traffic light turns yellow
             return py_trees.common.Status.SUCCESS
         elif speed > convert_to_ms(5.0) and \
@@ -172,15 +175,9 @@ class Approach(py_trees.behaviour.Behaviour):
             # ran over line
             return py_trees.common.Status.SUCCESS
 
-        next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/"
-                                               "next_lanelet")
-        # TODO should be replaced by the next glob path point, adjust values
-        if next_lanelet_msg is None:
-            return py_trees.common.Status.FAILURE
-        if next_lanelet_msg.distance < 12 and not next_lanelet_msg.\
-                isInIntersection:
+        if self.stopline_distance.data < 5 and not self.stopline_detected:
             rospy.loginfo("Leave intersection!")
-            self.update_local_path(leave_intersection=True)
+            # self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS
         else:
             return py_trees.common.Status.RUNNING
@@ -353,6 +350,7 @@ class Enter(py_trees.behaviour.Behaviour):
             return True
         else:
             traffic_light_status = light_status_msg.color
+
         if traffic_light_status == "":
             self.target_speed_pub.publish(convert_to_ms(10.0))
         else:
@@ -375,23 +373,16 @@ class Enter(py_trees.behaviour.Behaviour):
                  py_trees.common.Status.FAILURE, if no next path point can be
                  detected.
         """
-        # TODO this part needs to be refurbished when we have a publisher for
-        # the next global way point
-        # next_lanelet_msg = self.blackboard.get("/psaf/ego_vehicle/"
-        #                                        "next_lanelet")
+        next_waypoint_msg = self.blackboard.get("/paf/hero/waypoint_distance")
 
-        rospy.loginfo("Through intersection")
-        return py_trees.common.Status.SUCCESS
-
-        # if next_lanelet_msg is None:
-        #     return py_trees.common.Status.FAILURE
-        # if next_lanelet_msg.distance < 12 and not next_lanelet_msg.\
-        #         isInIntersection:
-        #     rospy.loginfo("Leave intersection!")
-        #     self.update_local_path(leave_intersection=True)
-        #     return py_trees.common.Status.SUCCESS
-        # else:
-        #     return py_trees.common.Status.RUNNING
+        if next_waypoint_msg is None:
+            return py_trees.common.Status.FAILURE
+        if next_waypoint_msg.distance < 5 and not next_waypoint_msg.isStopLine:
+            rospy.loginfo("Leave intersection!")
+            # self.update_local_path(leave_intersection=True)
+            return py_trees.common.Status.SUCCESS
+        else:
+            return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
         """

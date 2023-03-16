@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import rospy
+# import rospy
 import py_trees
 # from std_msgs.msg import Float64
 # from nav_msgs.msg import Odometry
 # import numpy as np
-import math
+# import math
 
 """
 Source: https://github.com/ll7/psaf2
@@ -71,12 +71,13 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
                  the intersection
         """
         # TODO change this part to the actual source of intersection detection
-        bb = self.blackboard.get("/paf/hero/stop_sign")
+        bb = self.blackboard.get("/paf/hero/waypoint_distance")
         if bb is None:
             return py_trees.common.Status.FAILURE
         else:
-            self.dist = bb.distance
-        if self.dist < 30:
+            dist = bb.distance
+            isIntersection = bb.isStopLine
+        if dist < 30 and isIntersection:
             return py_trees.common.Status.SUCCESS
         else:
             return py_trees.common.Status.FAILURE
@@ -95,38 +96,38 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
                           (self.name, self.status, new_status))
 
 
-class RoundaboutAhead(py_trees.behaviour.Behaviour):
-    def __init__(self, name):
-        super(RoundaboutAhead, self).__init__(name)
-
-    def setup(self, timeout):
-        self.Roundabout = False
-        return True
-
-    def initialise(self):
-        self.blackboard = py_trees.blackboard.Blackboard()
-        self.dist = 0
-
-    def update(self):
-        bb = self.blackboard.get("/psaf/ego_vehicle/distance_next_roundabout")
-        self.odo = self.blackboard.get("/carla/ego_vehicle/odometry")
-        if bb is None:
-            return py_trees.common.Status.FAILURE
-        else:
-            dist_x = bb.entry_point.x - self.odo.pose.pose.position.x
-            dist_y = bb.entry_point.y - self.odo.pose.pose.position.y
-            dist = math.sqrt(dist_x ** 2 + dist_y ** 2)
-            self.dist = dist
-        if self.dist < 30:
-            rospy.loginfo("approaching roundabout")
-            return py_trees.common.Status.SUCCESS
-        else:
-            return py_trees.common.Status.FAILURE
-
-    def terminate(self, new_status):
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
-                          (self.name, self.status, new_status))
-
+# class RoundaboutAhead(py_trees.behaviour.Behaviour):
+#     def __init__(self, name):
+#         super(RoundaboutAhead, self).__init__(name)
+#
+#     def setup(self, timeout):
+#         self.Roundabout = False
+#         return True
+#
+#     def initialise(self):
+#         self.blackboard = py_trees.blackboard.Blackboard()
+#         self.dist = 0
+#
+#     def update(self):
+#        bb = self.blackboard.get("/psaf/ego_vehicle/distance_next_roundabout")
+#         self.odo = self.blackboard.get("/carla/ego_vehicle/odometry")
+#         if bb is None:
+#             return py_trees.common.Status.FAILURE
+#         else:
+#             dist_x = bb.entry_point.x - self.odo.pose.pose.position.x
+#             dist_y = bb.entry_point.y - self.odo.pose.pose.position.y
+#             dist = math.sqrt(dist_x ** 2 + dist_y ** 2)
+#             self.dist = dist
+#         if self.dist < 30:
+#             rospy.loginfo("approaching roundabout")
+#             return py_trees.common.Status.SUCCESS
+#         else:
+#             return py_trees.common.Status.FAILURE
+#
+#     def terminate(self, new_status):
+#         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
+#                           (self.name, self.status, new_status))
+#
 
 class StopAhead(py_trees.behaviour.Behaviour):
     def __init__(self, name):

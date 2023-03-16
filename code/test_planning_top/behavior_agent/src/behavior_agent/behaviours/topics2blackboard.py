@@ -5,10 +5,11 @@ import py_trees
 import py_trees_ros
 
 from std_msgs.msg import Float64, String, Bool, Float32
-from geometry_msgs.msg import Point
+# from geometry_msgs.msg import Point
 from carla_msgs.msg import CarlaSpeedometer
 
 from mock.msg import Traffic_light, Stop_sign
+from perception.msg import Waypoint
 
 """
 Source: https://github.com/ll7/psaf2
@@ -33,9 +34,9 @@ def create_node(role_name):
          'msg': Bool,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/paf/{role_name}/stopline_distance", 'msg': Float32,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/psaf/{role_name}/distance_exit_roundabout", 'msg': Point,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+         'clearing-policy': py_trees.common.ClearingPolicy.ON_INITIALISE},
+        {'name': f"/paf/{role_name}/waypoint_distance", 'msg': Waypoint,
+         'clearing-policy': py_trees.common.ClearingPolicy.ON_INITIALISE},
         {'name': f"/psaf/{role_name}/obstacle_on_left_lane", 'msg': Float64,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/psaf/{role_name}/obstacle_on_right_lane", 'msg': Float64,

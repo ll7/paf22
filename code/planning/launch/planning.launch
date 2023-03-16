@@ -13,9 +13,6 @@
            <param name="control_loop_rate" value="1" />
            <param name="distance_spawn_to_first_wp" value="100" />
     </node>
-    <node pkg="planning" type="preplanner.py" name="PrePlanner" output="screen">
-           <param name="role_name" value="hero" />
-    </node>
 
     <include file="$(find behavior_agent)/launch/behavior_agent.launch"/>
 </launch>

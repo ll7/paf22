@@ -7,6 +7,7 @@ import py_trees_ros
 from std_msgs.msg import Float64, String, Bool, Float32
 # from geometry_msgs.msg import Point
 from carla_msgs.msg import CarlaSpeedometer
+from sensor_msgs.msg import Range
 
 from mock.msg import Traffic_light, Stop_sign
 from perception.msg import Waypoint
@@ -48,6 +49,8 @@ def create_node(role_name):
         {'name': f"/paf/{role_name}/traffic_light", 'msg': Traffic_light,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/paf/{role_name}/max_velocity", 'msg': Float32,
+         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/carla/{role_name}/LIDAR_range", 'msg': Range,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER}
     ]
 

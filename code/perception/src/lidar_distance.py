@@ -5,16 +5,21 @@ import numpy as np
 import lidar_filter_utility
 from sensor_msgs.msg import PointCloud2, Range
 
-
 class LidarDistance():
+    """ See doc/06_perception/02_lidar_distance_utility.md on
+        how to configute this node
+    """
 
     def callback(self, data):
-        """ Callback function to process PointCloud2 and
-            publish a Range message from the contained points
-            and a PointCloud2
+        """ Callback function, filters a PontCloud2 message
+            by restrictions defined in the launchfile.
 
-        :param data:
-        :return:
+            Publishes a range message containing the farest and
+            the closest point of the filtered result. Additionally,
+            publishes the filtered result as PointCloud2
+            on the topic defined in the launchfile.
+
+        :param data: a PointCloud2
         """
         coordinates = ros_numpy.point_cloud2.pointcloud2_to_array(data)
 
@@ -29,10 +34,8 @@ class LidarDistance():
             min_z=rospy.get_param('~min_z', np.inf),
         )
 
-        rospy.loginfo(len(coordinates))
         # Filter coordinates based in generated bit_mask
         coordinates = coordinates[bit_mask]
-        rospy.loginfo(len(coordinates))
 
         # Create pointcloud from manipulated data
         coordinates_manipulated = ros_numpy \
@@ -59,10 +62,8 @@ class LidarDistance():
             self.pub_range.publish(range_msg)
 
     def listener(self):
-        # In ROS, nodes are uniquely named. If two nodes with the same
-        # name are launched, the previous one is kicked off. The
-        # anonymous=True flag means that rospy will choose a unique
-        # name for our 'listener' node so that multiple listeners can
+        """ Initializes the node and it's publishers
+        """
         # run simultaneously.
         rospy.init_node('lidar_distance')
 
@@ -81,7 +82,7 @@ class LidarDistance():
             Range
         )
 
-        rospy.Subscriber("/carla/hero/LIDAR", PointCloud2, self.callback)
+        rospy.Subscriber(rospy.get_param('~source_topic', "/carla/hero/LIDAR"), PointCloud2, self.callback)
 
         # spin() simply keeps python from exiting until this node is stopped
         rospy.spin()

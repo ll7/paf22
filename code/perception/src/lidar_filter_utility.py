@@ -42,6 +42,12 @@ def bounding_box(points, min_x=-np.inf, max_x=np.inf, min_y=-np.inf,
 
 # https://stackoverflow.com/questions/15575878/how-do-you-remove-a-column-from-a-structured-numpy-array
 def remove_field_name(a, name):
+    """ Removes a column from a structured numpy array
+
+    :param a: structured numoy array
+    :param name: name of the column to remove
+    :return: structured numpy array without column
+    """
     names = list(a.dtype.names)
     if name in names:
         names.remove(name)

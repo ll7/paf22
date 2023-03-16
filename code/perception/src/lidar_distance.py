@@ -5,6 +5,7 @@ import numpy as np
 import lidar_filter_utility
 from sensor_msgs.msg import PointCloud2, Range
 
+
 class LidarDistance():
     """ See doc/06_perception/02_lidar_distance_utility.md on
         how to configute this node
@@ -23,7 +24,8 @@ class LidarDistance():
         """
         coordinates = ros_numpy.point_cloud2.pointcloud2_to_array(data)
 
-        # https://stackoverflow.com/questions/44295375/how-to-slice-a-numpy-ndarray-made-up-of-numpy-void-numbers
+        # https://stackoverflow.com/questions/44295375/how-to-slice-a-numpy-
+        # ndarray-made-up-of-numpy-void-numbers
         bit_mask = lidar_filter_utility.bounding_box(
             coordinates,
             max_x=rospy.get_param('~max_x', np.inf),
@@ -45,7 +47,8 @@ class LidarDistance():
         # Publish manipulated pointCloud2
         self.pub_pointcloud.publish(coordinates_manipulated)
 
-        # https://stackoverflow.com/questions/1401712/how-can-the-euclidean-distance-be-calculated-with-numpy
+        # https://stackoverflow.com/questions/1401712/how-can-the-euclidean-
+        # distance-be-calculated-with-numpy
         coordinates_xyz = np.array(
             lidar_filter_utility.remove_field_name(coordinates, 'intensity')
             .tolist()
@@ -82,7 +85,8 @@ class LidarDistance():
             Range
         )
 
-        rospy.Subscriber(rospy.get_param('~source_topic', "/carla/hero/LIDAR"), PointCloud2, self.callback)
+        rospy.Subscriber(rospy.get_param('~source_topic', "/carla/hero/LIDAR"),
+                         PointCloud2, self.callback)
 
         # spin() simply keeps python from exiting until this node is stopped
         rospy.spin()

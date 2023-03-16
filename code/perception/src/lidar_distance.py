@@ -7,14 +7,25 @@ from sensor_msgs.msg import PointCloud2, Range
 
 class LidarDistance():
 
-    pub_pointcloud = rospy.Publisher('/carla/hero/LIDAR_filtered', PointCloud2)
-    pub_range = rospy.Publisher('/carla/hero/LIDAR_range', Range)
-
     def callback(self, data):
+        """ Callback function to process PointCloud2 and publish a Range message
+            from the contained points and a PointCloud2
+
+        :param data:
+        :return:
+        """
         coordinates = ros_numpy.point_cloud2.pointcloud2_to_array(data)
 
         # https://stackoverflow.com/questions/44295375/how-to-slice-a-numpy-ndarray-made-up-of-numpy-void-numbers
-        bit_mask = lidar_filter_utility.bounding_box(coordinates, max_x=1, min_x=-1, min_y=1, min_z=-1.5, max_z=0)
+        bit_mask = lidar_filter_utility.bounding_box(
+            coordinates,
+            max_x = rospy.get_param('~max_x', np.inf),
+            min_x= rospy.get_param('~min_x', np.inf),
+            max_y=rospy.get_param('~max_y', np.inf),
+            min_y=rospy.get_param('~min_y', np.inf),
+            max_z=rospy.get_param('~max_z', np.inf),
+            min_z=rospy.get_param('~min_z', np.inf),
+        )
 
         rospy.loginfo(len(coordinates))
         # Filter coordinates based in generated bit_mask
@@ -46,7 +57,12 @@ class LidarDistance():
         # anonymous=True flag means that rospy will choose a unique
         # name for our 'listener' node so that multiple listeners can
         # run simultaneously.
-        rospy.init_node('lidar_distance', anonymous=True)
+        rospy.init_node('lidar_distance')
+
+        namespace = rospy.get_namespace()
+
+        self.pub_pointcloud = rospy.Publisher(rospy.get_param('~point_cloud_topic', '/carla/hero/' + rospy.get_namespace() + '_filtered'), PointCloud2)
+        self.pub_range = rospy.Publisher(rospy.get_param('~range_topic',  '/carla/hero/' + rospy.get_namespace() + '_range'), Range)
 
         rospy.Subscriber("/carla/hero/LIDAR", PointCloud2, self.callback)
 

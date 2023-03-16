@@ -11,6 +11,8 @@ from simple_pid import PID
 
 PURE_PURSUIT_CONTROLLER: int = 1
 STANLEY_CONTROLLER: int = 2
+STANLEY_CONTROLLER_MIN_V: float = 4.0  # ~14kph
+# STANLEY_CONTROLLER_MAX_V: float = 13.89  # ~50kph
 MAX_STEER_ANGLE: float = 0.75
 
 
@@ -43,6 +45,13 @@ class VehicleController(CompatibleNode):
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        )
+
+        self.controller_pub: Publisher = self.new_publisher(
+            Float32,
+            f"/paf/{self.role_name}/controller",
+            qos_profile=QoSProfile(depth=10,
+                                   durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
         self.emergency_pub: Publisher = self.new_publisher(
@@ -85,10 +94,11 @@ class VehicleController(CompatibleNode):
             qos_profile=1)
 
         self.__emergency: bool = False
-        self.__throttle: float = 0
-        self.__pure_pursuit_steer: float = 0
-        self.__stanley_steer: float = 0
-        self.__current_steer: float = 0  # todo: check emergency behaviour
+        self.__throttle: float = 0.0
+        self.__velocity: float = 0.0
+        self.__pure_pursuit_steer: float = 0.0
+        self.__stanley_steer: float = 0.0
+        self.__current_steer: float = 0.0  # todo: check emergency behaviour
 
     def run(self):
         """
@@ -109,17 +119,17 @@ class VehicleController(CompatibleNode):
             if self.__emergency:  # emergency is already handled in
                 # __emergency_break()
                 return
-            controller = self.__choose_controller()
-            if controller == PURE_PURSUIT_CONTROLLER:
+            p_stanley = self.__choose_controller()
+            if p_stanley < 0.5:
                 self.logdebug('Using PURE_PURSUIT_CONTROLLER')
-                steer = self.__pure_pursuit_steer
-            elif controller == STANLEY_CONTROLLER:
+                self.controller_pub.publish(float(PURE_PURSUIT_CONTROLLER))
+            elif p_stanley >= 0.5:
                 self.logdebug('Using STANLEY_CONTROLLER')
-                steer = self.__stanley_steer
-            else:
-                self.logerr("Vehicle Controller couldn't find requested "
-                            "controller.")
-                raise Exception("Requested Controller not found")
+                self.controller_pub.publish(float(STANLEY_CONTROLLER))
+
+            f_stanley = p_stanley * self.__stanley_steer
+            f_pure_p = (1-p_stanley) * self.__pure_pursuit_steer
+            steer = f_stanley + f_pure_p
 
             message = CarlaEgoVehicleControl()
             message.reverse = False
@@ -134,7 +144,6 @@ class VehicleController(CompatibleNode):
             message.manual_gear_shift = False
             pid.setpoint = self.__map_steering(steer)
             message.steer = pid(self.__current_steer)
-            # message.steer = 0  # zum testen mit bei gerader Fahrt
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)
@@ -185,6 +194,7 @@ class VehicleController(CompatibleNode):
         :param data:
         :return:
         """
+        self.__velocity = data.speed
         if not self.__emergency:  # nothing to do in this case
             return
         if data.speed < 0.1:  # vehicle has come to a stop
@@ -215,13 +225,24 @@ class VehicleController(CompatibleNode):
     def __set_stanley_steer(self, data: Float32):
         self.__stanley_steer = data.data
 
-    def __choose_controller(self) -> int:
+    def sigmoid(self, x: float):
         """
-        Chooses with steering controller to use
+        Evaluates the sigmoid function s(x) = 1 / (1+e^-25x)
+        :param x: x
+        :return: s(x) = 1 / (1+e^-25x)
+        """
+        temp_x = min(-25 * x, 25)
+        res = 1 / (1 + math.exp(temp_x))
+        return res
+
+    def __choose_controller(self) -> float:
+        """
+        Returns the proportion of stanley to use.
+        Publishes the currently used controller
         :return:
         """
-        return STANLEY_CONTROLLER
-        # return PURE_PURSUIT_CONTROLLER
+        res = self.sigmoid(self.__velocity - STANLEY_CONTROLLER_MIN_V)
+        return res
 
 
 def main(args=None):

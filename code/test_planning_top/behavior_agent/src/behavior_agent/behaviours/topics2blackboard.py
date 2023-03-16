@@ -8,9 +8,8 @@ from std_msgs.msg import Float64, String, Bool, Float32
 # from geometry_msgs.msg import Point
 from carla_msgs.msg import CarlaSpeedometer
 
-from geometry_msgs.msg import PoseWithCovarianceStamped
-from mock.msg import Traffic_light
 from perception.msg import Waypoint
+from mock.msg import Traffic_light, Stop_sign
 
 """
 Source: https://github.com/ll7/psaf2
@@ -42,10 +41,9 @@ def create_node(role_name):
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/psaf/{role_name}/obstacle_on_right_lane", 'msg': Float64,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': "/initialpose", 'msg': PoseWithCovarianceStamped,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/carla/{role_name}/initialpose",
-         'msg': PoseWithCovarianceStamped,
+        {'name': f"/paf/{role_name}/intersection_clear",
+         'msg': Bool, 'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/paf/{role_name}/stop_sign", 'msg': Stop_sign,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/paf/{role_name}/traffic_light", 'msg': Traffic_light,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},

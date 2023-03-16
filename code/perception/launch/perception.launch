@@ -13,10 +13,10 @@
     <param name="role_name" value="$(arg role_name)" />
   </node>
 
-<!--   <node pkg="perception" type="segmentation_node.py" name="SegmentationNode" output="screen"> -->
-<!--     <param name="role_name" value="$(arg role_name)" /> -->
-<!--     <param name="side" value="Center" /> -->
-<!--   </node> -->
+  <node pkg="perception" type="segmentation_node.py" name="SegmentationNode" output="screen">
+    <param name="role_name" value="$(arg role_name)" />
+    <param name="side" value="Center" />
+  </node>
 
   <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
     <!--remap from="imu_data" to="carla/hero/IMU"/-->

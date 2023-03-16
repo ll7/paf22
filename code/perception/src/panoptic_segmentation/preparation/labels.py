@@ -43,7 +43,7 @@ labels = [
     #     name   id   category  catId  hasInstances  ignoreInEval  color
     Label('none', 0, 'none', 0, False, True, (0, 0, 0)),
     Label('road', 1, 'flat', 1, True, False, (128, 64, 128)),
-    Label('sidewalk', 2, 'flat', 1, True, False, (244, 35, 232)),
+    Label('sidewalk', 2, 'flat', 1, True, True, (244, 35, 232)),
     Label('building', 3, 'construction', 2, True, True, (70, 70, 70)),
     Label('wall', 4, 'construction', 2, True, True, (102, 102, 156)),
     Label('fence', 5, 'construction', 2, True, True, (100, 40, 40)),

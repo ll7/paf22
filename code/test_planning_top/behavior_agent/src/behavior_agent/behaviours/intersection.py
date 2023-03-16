@@ -29,6 +29,7 @@ class Approach(py_trees.behaviour.Behaviour):
          :param name: name of the behaviour
         """
         super(Approach, self).__init__(name)
+        rospy.loginfo("Approach started")
 
     def setup(self, timeout):
         """
@@ -126,7 +127,7 @@ class Approach(py_trees.behaviour.Behaviour):
                                    * 50))
         if v_stop > convert_to_ms(50.0):
             v_stop = convert_to_ms(30.0)
-        if self.virtual_stopline_distance < 3.5:
+        if self.virtual_stopline_distance < 5.0:
             v_stop = 0.0
         # stop when there is no or red/yellow traffic light or a stop sign is
         # detected

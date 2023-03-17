@@ -264,9 +264,9 @@ class Wait(py_trees.behaviour.Behaviour):
         distance_lidar = self.blackboard.get("/carla/hero/LIDAR_range")
         intersection_clear = True
         if distance_lidar is not None:
-            # if distance smaller than 3m, intersection is blocked
-            if distance_lidar.min_range < 3.0 or \
-               distance_lidar.max_range < 3.0:
+            # if distance smaller than 10m, intersection is blocked
+            if distance_lidar.min_range < 10.0 or \
+               distance_lidar.max_range < 10.0:
                 intersection_clear = False
             else:
                 intersection_clear = True

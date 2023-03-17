@@ -28,12 +28,12 @@
         <param name="control_loop_rate" value="$(arg control_loop_rate)" />
         <param name="role_name" value="$(arg role_name)" />
     </node>
-<!--
+
     <node pkg="acting" type="DummyTrajectoryPublisher.py" name="DummyTrajectoryPublisher" output="screen">
         <param name="control_loop_rate" value="1" />
         <param name="role_name" value="$(arg role_name)" />
     </node>
--->
+
 
     <node pkg="acting" type="MainFramePublisher.py" name="MainFramePublisher" output="screen">
         <param name="control_loop_rate" value="0.05" />

@@ -14,7 +14,7 @@ from std_msgs.msg import Float32
 from coordinate_transformation import CoordinateTransformer, GeoRef
 from tf.transformations import euler_from_quaternion
 
-GPS_RUNNING_AVG_ARGS: int = 5
+GPS_RUNNING_AVG_ARGS: int = 10
 
 
 class PositionPublisherNode(CompatibleNode):

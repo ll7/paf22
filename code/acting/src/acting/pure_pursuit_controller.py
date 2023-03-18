@@ -219,9 +219,9 @@ class PurePursuitController(CompatibleNode):
 
         self.pure_pursuit_steer_target_pub.publish(target_wp.pose)
 
-        speed: float = self.__od_speed[self.__tp_idx]
+        # speed: float = self.__od_speed[self.__tp_idx]
         # publish the current max speed based on the map data
-        self.max_speed_pub.publish(speed)
+        # self.max_speed_pub.publish(speed)
 
         return steering_angle
 

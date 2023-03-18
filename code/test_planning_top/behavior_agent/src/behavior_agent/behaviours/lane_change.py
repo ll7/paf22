@@ -90,7 +90,8 @@ class Approach(py_trees.behaviour.Behaviour):
         _dis = self.blackboard.get("/paf/hero/lane_change_distance")
         if _dis is not None:
             self.change_distance = _dis.distance
-            self.change_detected = _dis.isStopLine
+            self.change_detected = _dis.isLaneChange
+            self.change_option = _dis.roadOption
             rospy.loginfo(f"Change distance: {self.change_distance}")
 
         # calculate virtual stopline
@@ -212,8 +213,18 @@ class Wait(py_trees.behaviour.Behaviour):
                  py_trees.common.Status.SUCCESS, if the traffic light switched
                  to green or no traffic light is detected
         """
-        distance_lidar = self.blackboard.\
-            get("/carla/hero/LIDAR_range_rear_left")
+
+        road_option = self.blackboard.\
+            get("/paf/hero/lane_change_distance").roadOption
+        if road_option == 5:
+            distance_lidar = self.blackboard. \
+                get("/carla/hero/LIDAR_range_rear_left")
+        elif road_option == 6:
+            distance_lidar = self.blackboard. \
+                get("/carla/hero/LIDAR_range_rear_right")
+        else:
+            distance_lidar = None
+
         change_clear = False
         if distance_lidar is not None:
             # if distance smaller than 15m, change is blocked

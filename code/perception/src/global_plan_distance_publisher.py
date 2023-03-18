@@ -4,7 +4,7 @@ import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from geometry_msgs.msg import PoseStamped
 from carla_msgs.msg import CarlaRoute
-from perception.msg import Waypoint
+from perception.msg import Waypoint, LaneChange
 import math
 # import rospy
 
@@ -60,7 +60,7 @@ class GlobalPlanDistance(CompatibleNode):
             qos_profile=1)
 
         self.lane_change_publisher = self.new_publisher(
-            Waypoint,
+            LaneChange,
             "/paf/" + self.role_name + "/lane_change_distance",
             qos_profile=1)
 
@@ -88,12 +88,13 @@ class GlobalPlanDistance(CompatibleNode):
             if self.road_options[0] < 4:
                 # print("publish waypoint")
                 self.waypoint_publisher.publish(Waypoint(distance, True))
-                self.lane_change_publisher.publish(Waypoint(distance, False))
+                self.lane_change_publisher.publish(
+                    LaneChange(distance, False, self.road_options[0]))
             else:
                 self.waypoint_publisher.publish(Waypoint(distance, False))
                 if self.road_options[0] == 5 or self.road_options[0] == 6:
-                    self.lane_change_publisher.\
-                        publish(Waypoint(distance, True))
+                    self.lane_change_publisher.publish(
+                        LaneChange(distance, True, self.road_options[0]))
             # if we reached the next waypoint, pop it and the next point will
             # be published
             if distance < 2.5:

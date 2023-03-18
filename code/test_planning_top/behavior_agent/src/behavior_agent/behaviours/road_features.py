@@ -160,7 +160,7 @@ class LaneChangeAhead(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.FAILURE
         else:
             dist = bb.distance
-            isIntersection = bb.isStopLine
+            isIntersection = bb.isLaneChange
         if dist < 30 and isIntersection:
             return py_trees.common.Status.SUCCESS
         else:

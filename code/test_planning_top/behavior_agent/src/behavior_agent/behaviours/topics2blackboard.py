@@ -10,7 +10,7 @@ from carla_msgs.msg import CarlaSpeedometer
 from sensor_msgs.msg import Range
 
 from mock.msg import Traffic_light, Stop_sign
-from perception.msg import Waypoint
+from perception.msg import Waypoint, LaneChange
 
 """
 Source: https://github.com/ll7/psaf2
@@ -58,7 +58,7 @@ def create_node(role_name):
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/paf/{role_name}/speed_limit", 'msg': Float32,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/paf/{role_name}/lane_change_distance", 'msg': Waypoint,
+        {'name': f"/paf/{role_name}/lane_change_distance", 'msg': LaneChange,
          'clearing-policy': py_trees.common.ClearingPolicy.ON_INITIALISE}
     ]
 

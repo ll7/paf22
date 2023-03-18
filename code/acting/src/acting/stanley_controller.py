@@ -118,7 +118,7 @@ class StanleyController(CompatibleNode):
                 return
             self.stanley_steer_pub.publish(self.__calculate_steer())
             # publish the current max speed based on the map data
-            self.max_speed_pub.publish(self.__opendrive_speed())
+            # self.max_speed_pub.publish(self.__opendrive_speed())
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()

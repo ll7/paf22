@@ -11,7 +11,7 @@ from ros_compatibility.node import CompatibleNode
 # from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from rospy import Publisher, Subscriber
 # from sensor_msgs.msg import NavSatFix, Imu
-from std_msgs.msg import Float32  # Bool
+from std_msgs.msg import Float32, Float32MultiArray  # Bool
 from acting.msg import StanleyDebug
 
 from helper_functions import vector_angle
@@ -51,6 +51,12 @@ class StanleyController(CompatibleNode):
             self.__set_heading,
             qos_profile=1)
 
+        self.speed_limit_OD_sub: Subscriber = self.new_subscription(
+            Float32MultiArray,
+            f"/paf/{self.role_name}/speed_limits_OpenDrive",
+            self.__set_speed_limits_opendrive,
+            qos_profile=1)
+
         # Publisher
         self.stanley_steer_pub: Publisher = self.new_publisher(
             Float32,
@@ -62,12 +68,18 @@ class StanleyController(CompatibleNode):
             f"/paf/{self.role_name}/stanley_debug",
             qos_profile=1)
 
+        self.max_speed_pub: Publisher = self.new_publisher(
+            Float32,
+            f"/paf/{self.role_name}/speed_limit",
+            qos_profile=1)
+
         self.__position: (float, float) = None  # x, y
         self.__last_pos: (float, float) = None
         self.__path: Path = None
         self.__heading: float = None
         self.__velocity: float = None
         self.__tp_idx: int = 0  # target waypoint index
+        self.__od_speed: Float32MultiArray = None
         # error when there are no targets
 
     def run(self):
@@ -105,6 +117,8 @@ class StanleyController(CompatibleNode):
                              "and can therefore not publish steering")
                 return
             self.stanley_steer_pub.publish(self.__calculate_steer())
+            # publish the current max speed based on the map data
+            self.max_speed_pub.publish(self.__opendrive_speed())
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
@@ -154,6 +168,9 @@ class StanleyController(CompatibleNode):
     def __set_velocity(self, data: CarlaSpeedometer):
         self.__velocity = data.speed
 
+    def __set_speed_limits_opendrive(self, data: Float32MultiArray):
+        self.__od_speed = data.data
+
     def __calculate_steer(self) -> float:
         """
         Calculates the steering angle based on the current information
@@ -192,6 +209,11 @@ class StanleyController(CompatibleNode):
         # <-
 
         return steering_angle
+
+    def __opendrive_speed(self) -> float:
+        closest_point_idx = self.__get_closest_point_index()
+        speed: float = self.__od_speed[closest_point_idx]
+        return speed
 
     def __get_closest_point_index(self) -> int:
         """

@@ -51,7 +51,15 @@ def create_node(role_name):
         {'name': f"/paf/{role_name}/max_velocity", 'msg': Float32,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/carla/{role_name}/LIDAR_range", 'msg': Range,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER}
+         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/carla/{role_name}/LIDAR_range_rear_right", 'msg': Range,
+         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/carla/{role_name}/LIDAR_range_rear_left", 'msg': Range,
+         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/paf/{role_name}/speed_limit", 'msg': Float32,
+         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/paf/{role_name}/lane_change_distance", 'msg': Waypoint,
+         'clearing-policy': py_trees.common.ClearingPolicy.ON_INITIALISE}
     ]
 
     topics2blackboard = py_trees.composites.Parallel("Topics to Blackboard")

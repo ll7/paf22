@@ -59,6 +59,11 @@ class GlobalPlanDistance(CompatibleNode):
             "/paf/" + self.role_name + "/waypoint_distance",
             qos_profile=1)
 
+        self.lane_change_publisher = self.new_publisher(
+            Waypoint,
+            "/paf/" + self.role_name + "/lane_change_distance",
+            qos_profile=1)
+
     def update_position(self, pos):
         """
         Updates the current position based on the most upto date
@@ -83,8 +88,12 @@ class GlobalPlanDistance(CompatibleNode):
             if self.road_options[0] < 4:
                 # print("publish waypoint")
                 self.waypoint_publisher.publish(Waypoint(distance, True))
+                self.lane_change_publisher.publish(Waypoint(distance, False))
             else:
                 self.waypoint_publisher.publish(Waypoint(distance, False))
+                if self.road_options[0] == 5 or self.road_options[0] == 6:
+                    self.lane_change_publisher.\
+                        publish(Waypoint(distance, True))
             # if we reached the next waypoint, pop it and the next point will
             # be published
             if distance < 2.5:

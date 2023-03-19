@@ -106,9 +106,23 @@ class Approach(py_trees.behaviour.Behaviour):
             v_stop = convert_to_ms(30.0)
         # slow down before lane change
         if self.virtual_change_distance < 15.0:
-            v_stop = 0.0
-            rospy.loginfo(f"slowing down: {v_stop}")
-            self.target_speed_pub.publish(v_stop)
+            if self.change_option == 5:
+                distance_lidar = self.blackboard. \
+                    get("/carla/hero/LIDAR_range_rear_left")
+            elif self.change_option == 6:
+                distance_lidar = self.blackboard. \
+                    get("/carla/hero/LIDAR_range_rear_right")
+            else:
+                distance_lidar = None
+
+            if distance_lidar is not None and distance_lidar.min_range > 15.0:
+                rospy.loginfo("Change is free not slowing down!")
+                # self.update_local_path(leave_intersection=True)
+                return py_trees.common.Status.SUCCESS
+            else:
+                v_stop = 0.5
+                rospy.loginfo(f"Change blocked slowing down: {v_stop}")
+                self.target_speed_pub.publish(v_stop)
 
         # get speed
         speedometer = self.blackboard.get("/carla/hero/Speed")
@@ -132,7 +146,7 @@ class Approach(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.SUCCESS
 
         if self.virtual_change_distance < 5 and not self.change_detected:
-            rospy.loginfo("Leave intersection!")
+            rospy.loginfo("Leave Change!")
             # self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS
         else:
@@ -390,7 +404,7 @@ class Leave(py_trees.behaviour.Behaviour):
         This prints a state status message and changes the driving speed to
         the street speed limit.
         """
-        rospy.loginfo("Leave Intersection")
+        rospy.loginfo("Leave Change")
         street_speed_msg = self.blackboard.get("/paf/hero/speed_limit")
         if street_speed_msg is not None:
             self.target_speed_pub.publish(street_speed_msg.data)

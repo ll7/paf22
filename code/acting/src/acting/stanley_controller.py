@@ -51,12 +51,6 @@ class StanleyController(CompatibleNode):
             self.__set_heading,
             qos_profile=1)
 
-        self.speed_limit_OD_sub: Subscriber = self.new_subscription(
-            Float32MultiArray,
-            f"/paf/{self.role_name}/speed_limits_OpenDrive",
-            self.__set_speed_limits_opendrive,
-            qos_profile=1)
-
         # Publisher
         self.stanley_steer_pub: Publisher = self.new_publisher(
             Float32,
@@ -117,8 +111,6 @@ class StanleyController(CompatibleNode):
                              "and can therefore not publish steering")
                 return
             self.stanley_steer_pub.publish(self.__calculate_steer())
-            # publish the current max speed based on the map data
-            # self.max_speed_pub.publish(self.__opendrive_speed())
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
@@ -168,9 +160,6 @@ class StanleyController(CompatibleNode):
     def __set_velocity(self, data: CarlaSpeedometer):
         self.__velocity = data.speed
 
-    def __set_speed_limits_opendrive(self, data: Float32MultiArray):
-        self.__od_speed = data.data
-
     def __calculate_steer(self) -> float:
         """
         Calculates the steering angle based on the current information
@@ -209,11 +198,6 @@ class StanleyController(CompatibleNode):
         # <-
 
         return steering_angle
-
-    def __opendrive_speed(self) -> float:
-        closest_point_idx = self.__get_closest_point_index()
-        speed: float = self.__od_speed[closest_point_idx]
-        return speed
 
     def __get_closest_point_index(self) -> int:
         """

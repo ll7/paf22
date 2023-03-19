@@ -50,12 +50,6 @@ class PurePursuitController(CompatibleNode):
             qos_profile=1
         )
 
-        self.speed_limit_OD_sub: Subscriber = self.new_subscription(
-            Float32MultiArray,
-            f"/paf/{self.role_name}/speed_limits_OpenDrive",
-            self.__set_speed_limits_opendrive,
-            qos_profile=1)
-
         self.pure_pursuit_steer_pub: Publisher = self.new_publisher(
             Float32,
             f"/paf/{self.role_name}/pure_pursuit_steer",
@@ -173,9 +167,6 @@ class PurePursuitController(CompatibleNode):
     def __set_velocity(self, data: CarlaSpeedometer):
         self.__velocity = data.speed
 
-    def __set_speed_limits_opendrive(self, data: Float32MultiArray):
-        self.__od_speed = data.data
-
     def __calculate_steer(self) -> float:
         """
         Calculates the steering angle based on the current information
@@ -218,10 +209,6 @@ class PurePursuitController(CompatibleNode):
         # <-
 
         self.pure_pursuit_steer_target_pub.publish(target_wp.pose)
-
-        # speed: float = self.__od_speed[self.__tp_idx]
-        # publish the current max speed based on the map data
-        # self.max_speed_pub.publish(speed)
 
         return steering_angle
 

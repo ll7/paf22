@@ -105,7 +105,6 @@ class Approach(py_trees.behaviour.Behaviour):
         if _dis is not None:
             self.stopline_distance = _dis.distance
             self.stopline_detected = _dis.isStopLine
-            rospy.loginfo(f"Stopline distance: {self.stopline_distance}")
 
         # Update stop sign Info
         stop_sign_msg = self.blackboard.get("/paf/hero/stop_sign")
@@ -120,14 +119,19 @@ class Approach(py_trees.behaviour.Behaviour):
             self.virtual_stopline_distance = self.traffic_light_distance
         elif self.stop_sign_detected:
             self.virtual_stopline_distance = self.stop_distance
+        else:
+            self.virtual_stopline_distance = 0.0
 
+        rospy.loginfo(f"Stopline distance: {self.virtual_stopline_distance}")
+
+        target_distance = 3.0
         # calculate speed needed for stopping
-        v_stop = max(convert_to_ms(5.),
-                     convert_to_ms((self.virtual_stopline_distance / 30) ** 1.5
+        v_stop = max(convert_to_ms(10.),
+                     convert_to_ms((self.virtual_stopline_distance / 30)
                                    * 50))
         if v_stop > convert_to_ms(50.0):
-            v_stop = convert_to_ms(30.0)
-        if self.virtual_stopline_distance < 5.0:
+            v_stop = convert_to_ms(50.0)
+        if self.virtual_stopline_distance < target_distance:
             v_stop = 0.0
         # stop when there is no or red/yellow traffic light or a stop sign is
         # detected
@@ -152,12 +156,12 @@ class Approach(py_trees.behaviour.Behaviour):
         else:
             rospy.logwarn("no speedometer connected")
             return py_trees.common.Status.RUNNING
-        if self.virtual_stopline_distance > 5.0:
+        if self.virtual_stopline_distance > target_distance:
             # too far
             print("still approaching")
             return py_trees.common.Status.RUNNING
         elif speed < convert_to_ms(2.0) and \
-                self.virtual_stopline_distance < 5.0:
+                self.virtual_stopline_distance < target_distance:
             # stopped
             print("stopped")
             return py_trees.common.Status.SUCCESS
@@ -176,7 +180,8 @@ class Approach(py_trees.behaviour.Behaviour):
             # ran over line
             return py_trees.common.Status.SUCCESS
 
-        if self.virtual_stopline_distance < 5 and not self.stopline_detected:
+        if self.virtual_stopline_distance < target_distance and \
+           not self.stopline_detected:
             rospy.loginfo("Leave intersection!")
             # self.update_local_path(leave_intersection=True)
             return py_trees.common.Status.SUCCESS

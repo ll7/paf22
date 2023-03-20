@@ -43,6 +43,7 @@ class TrafficLightInference:
         ])
 
         self.model = ClassificationModel.load_model(self.cfg)
+        self.model.eval()
         self.model = self.model.to(self.cfg.DEVICE)
         self.class_dict = {0: 'Backside',
                            1: 'Green',

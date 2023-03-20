@@ -23,7 +23,7 @@ class DevGlobalRoute(CompatibleNode):
         if self.from_txt:
             self.global_route_txt = self.get_param(
                 'global_route_txt',
-                "/code/planning/src/planning/global_route.txt")
+                "/code/planning/global_planner/src/global_route.txt")
         else:
             self.sampling_resolution = self.get_param('sampling_resolution',
                                                       100.0)
@@ -40,7 +40,7 @@ class DevGlobalRoute(CompatibleNode):
 
         self.global_plan_pub = self.new_publisher(
             msg_type=CarlaRoute,
-            topic='/carla/' + self.role_name + '/global_plan',
+            topic='/paf/' + self.role_name + '/global_plan',
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)

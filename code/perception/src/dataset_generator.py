@@ -46,20 +46,10 @@ def setup_empty_world(client):
     traffic_manager = client.get_trafficmanager(8000)
     traffic_manager.set_global_distance_to_leading_vehicle(1.0)
 
-    # spawn traffic vehicles
-    blueprint_library = world.get_blueprint_library()
-    for i in range(30):
-        bp = choice(blueprint_library.filter('vehicle.*'))
-        traffic_vehicle = world.spawn_actor(bp,
-                                            world.get_map().get_spawn_points()[
-                                                i + 1])
-        traffic_manager.vehicle_percentage_speed_difference(traffic_vehicle,
-                                                            0.0)
-        traffic_vehicle.set_autopilot(True)
-
     # spawn traffic pedestrians
+    blueprint_library = world.get_blueprint_library()
     count = 0
-    while count < 70:
+    while count < 14:
         bp = choice(blueprint_library.filter('walker.pedestrian.*'))
         spawn_point = carla.Transform()
         spawn_point.location = world.get_random_location_from_navigation()
@@ -77,6 +67,16 @@ def setup_empty_world(client):
         ai_controller.set_max_speed(1.0)
 
         count += 1
+
+    # spawn traffic vehicles
+    for i in range(18):
+        bp = choice(blueprint_library.filter('vehicle.*'))
+        traffic_vehicle = world.spawn_actor(bp,
+                                            world.get_map().get_spawn_points()[
+                                                i + 1])
+        traffic_manager.vehicle_percentage_speed_difference(traffic_vehicle,
+                                                            0.0)
+        traffic_vehicle.set_autopilot(True)
 
     return ego_vehicle
 
@@ -119,8 +119,8 @@ class DatasetGenerator:
         camera_bp.set_attribute('sensor_tick', '1.0')
 
         # set leaderboard attributes
-        camera_bp.set_attribute('lens_circle_multiplier', '3.0')
-        camera_bp.set_attribute('lens_circle_falloff', '3.0')
+        camera_bp.set_attribute('lens_circle_multiplier', '0.0')
+        camera_bp.set_attribute('lens_circle_falloff', '5.0')
         camera_bp.set_attribute('chromatic_aberration_intensity', '0.5')
         camera_bp.set_attribute('chromatic_aberration_offset', '0.0')
 
@@ -174,25 +174,24 @@ class DatasetGenerator:
     def save_images_worker(self, direction, stop_event):
         image_queue = self.camera_queues[direction]
         instance_image_queue = self.instance_camera_queues[direction]
-        counter = 0
-        while \
-            not stop_event.is_set() \
-                or not (image_queue.empty() and instance_image_queue.empty()):
+        counter = 1600
+        while not stop_event.is_set():
             image = image_queue.get()
-            image.save_to_disk(
-                '{}/rgb/{}/{}.png'.format(
-                    output_dir, direction,
-                    counter
+            if counter < 2500:
+                image.save_to_disk(
+                    '{}/rgb/{}/{}.png'.format(
+                        output_dir, direction,
+                        counter
+                    )
                 )
-            )
-            instance_image = instance_image_queue.get()
-            instance_image.save_to_disk(
-                '{}/instance/{}/{}.png'.format(
-                    output_dir, direction,
-                    counter
+                instance_image = instance_image_queue.get()
+                instance_image.save_to_disk(
+                    '{}/instance/{}/{}.png'.format(
+                        output_dir, direction,
+                        counter
+                    )
                 )
-            )
-            counter += 1
+                counter += 1
 
     def start_saving_images(self):
         if not self.threads:
@@ -216,7 +215,7 @@ def find_ego_vehicle(world, role_name='hero'):
     if world.get_actors().filter('vehicle.*'):
         # get ego vehicle with hero role
         for actor in world.get_actors().filter('vehicle.*'):
-            if actor.attributes['role_name'] == 'hero':
+            if actor.attributes['role_name'] == role_name:
                 return actor
 
 
@@ -224,7 +223,7 @@ def create_argparse():
     argparser = argparse.ArgumentParser(
         description='CARLA Dataset Generator')
     argparser.add_argument(
-        '--output_dir',
+        '--output-dir',
         metavar='DIR',
         default='output',
         help='Path to the output directory')
@@ -251,6 +250,9 @@ def create_argparse():
 
 
 if __name__ == '__main__':
+    towns = ["Town01", "Town02", "Town03", "Town04", "Town05", "Town06",
+             "Town07", "Town10", "Town11", "Town12"]
+    town = towns[2]
     argparser = create_argparse()
     args = argparser.parse_args()
     output_dir = args.output_dir
@@ -260,15 +262,10 @@ if __name__ == '__main__':
 
     client = carla.Client(host, port)
     client.set_timeout(30)
-    world = client.get_world()
+    world = client.load_world(town)
     world.wait_for_tick()
 
-    # make sure, that we write in a clean output directory
-    iteration_id = 0
-    while os.path.exists(os.path.join(output_dir, str(iteration_id))):
-        iteration_id += 1
-
-    output_dir = os.path.join(output_dir, str(iteration_id))
+    output_dir = os.path.join(output_dir, town[-2:])
 
     if use_empty_world:
         ego_vehicle = setup_empty_world(client)
@@ -288,9 +285,9 @@ if __name__ == '__main__':
         while True:
             pass
             # if use_empty_world:
-            # attach spectator to ego vehicle
-            # spectator.set_transform(
-            #    carla.Transform(
+            #     # attach spectator to ego vehicle
+            #     spectator.set_transform(
+            #     carla.Transform(
             #        ego_vehicle.get_location() + carla.Location(z=50),
             #        carla.Rotation(pitch=-90)))
     except KeyboardInterrupt:

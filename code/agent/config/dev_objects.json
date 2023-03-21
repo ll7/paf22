@@ -10,7 +10,7 @@
       "id": "hero",
       "role_name": "hero",
       "spawn_point": {
-        "x": 984.5,
+        "x": 986.0,
         "y": -5442.0,
         "z": 371.0,
         "yaw": -90.0,
@@ -109,7 +109,7 @@
             "z": 1.60,
             "roll": 0.0,
             "pitch": 0.0,
-            "yaw": -45.0
+            "yaw": 0.0
           },
           "range": 85,
           "rotation_frequency": 10,

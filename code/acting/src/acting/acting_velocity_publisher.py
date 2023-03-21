@@ -25,7 +25,7 @@ PARKING_DUR: float = 15.0
 MAX_VELOCITY: float = 25  # = 90 km/h
 
 
-class VelocityPublisherDummy(CompatibleNode):
+class ActingVelocityPublisher(CompatibleNode):
     """
     This node publishes velocities. It can be used for testing.
     Published velocities move up and down in steps of delta_velocity between
@@ -33,8 +33,8 @@ class VelocityPublisherDummy(CompatibleNode):
     """
 
     def __init__(self):
-        super(VelocityPublisherDummy, self). \
-            __init__('velocity_publisher_dummy')
+        super(ActingVelocityPublisher, self). \
+            __init__('acting_velocity_publisher')
 
         self.control_loop_rate = self.get_param('control_loop_rate', 10)
         self.role_name = self.get_param('role_name', 'ego_vehicle')
@@ -89,11 +89,11 @@ class VelocityPublisherDummy(CompatibleNode):
         """
         if not self.enabled:
             return
-        self.loginfo('VelocityPublisherDummy node running')
+        self.loginfo('Acting_velocity_publisher node running')
 
         def loop(timer_event=None):
             """
-            Publishes dummy velocity
+            Publishes velocity limits calculated in acting
             :param timer_event: Timer event from ROS
             :return:
             """
@@ -227,10 +227,10 @@ def main(args=None):
     Main function starts the node
     :param args:
     """
-    roscomp.init('velocity_publisher_dummy', args=args)
+    roscomp.init('acting_velocity_publisher', args=args)
 
     try:
-        node = VelocityPublisherDummy()
+        node = ActingVelocityPublisher()
         node.run()
     except KeyboardInterrupt:
         pass

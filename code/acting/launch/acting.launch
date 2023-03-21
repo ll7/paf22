@@ -18,7 +18,7 @@
         <param name="role_name" value="$(arg role_name)" />
     </node>
 
-    <node pkg="acting" type="velocity_publisher_dummy.py" name="velocity_publisher_dummy" output="screen">
+    <node pkg="acting" type="acting_velocity_publisher.py" name="acting_velocity_publisher" output="screen">
         <param name="role_name" value="$(arg role_name)" />
         <param name="control_loop_rate" value="0.2" />
         <param name="enabled" value="True" /> <!-- set to True to publish dummy velocities for testing-->

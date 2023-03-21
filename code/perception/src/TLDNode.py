@@ -6,9 +6,10 @@ import ros_compatibility as roscomp
 from rospy.numpy_msg import numpy_msg
 from ros_compatibility.node import CompatibleNode
 from sensor_msgs.msg import Image
+from std_msgs.msg import String
 
-from traffic_light_detection.traffic_light_inference import \
-    TrafficLightInference
+from traffic_light_detection.src.traffic_light_detection.\
+    traffic_light_inference import TrafficLightInference
 from panoptic_segmentation.preparation.labels import name2label
 from panoptic_segmentation.datasets.panoptic_dataset import rgb2id
 
@@ -39,7 +40,7 @@ class TLDNode(CompatibleNode):
 
         self.setup_subscriptions()
         self.setup_publishers()
-        self.traffic_light_id = name2label("traffic light").id
+        self.traffic_light_id = (name2label["traffic light"]).id
 
     def setup_subscriptions(self):
         self.effps_sub = self.new_subscription(
@@ -57,7 +58,7 @@ class TLDNode(CompatibleNode):
 
     def setup_publishers(self):
         self.publisher = self.new_publisher(
-            msg_type=str,
+            msg_type=String,
             topic=f"/paf/{self.role_name}/{self.side}/segmented_image",
             qos_profile=1
         )

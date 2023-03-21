@@ -36,6 +36,4 @@
     <param name="debug" value="true"/>
     <param name="self_diagnose" value="true"/>
   </node>
-
-
 </launch>

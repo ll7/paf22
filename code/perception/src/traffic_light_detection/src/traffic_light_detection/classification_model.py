@@ -1,3 +1,5 @@
+import pathlib
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -58,8 +60,12 @@ class ClassificationModel(nn.Module):
         path = cfg.MODEL_PATH
         if path is not None:
             try:
+                parent = pathlib.Path(__file__).parent.parent.parent\
+                    .parent.parent.parent
+                path = parent.joinpath(path)
                 state_dict = torch.load(path)
-                model.load_state_dict(state_dict).eval()
+                model.load_state_dict(state_dict)
+                model.eval()
                 print(f"Pretrained model loaded from {path}")
                 return model
             except (Exception, ):

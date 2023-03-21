@@ -9,7 +9,7 @@ from std_msgs.msg import Float32, Float32MultiArray
 from nav_msgs.msg import Path
 
 # TODO put back to 36 when controller can handle it
-SPEED_LIMIT_DEFAULT: float = 8  # 36.0
+SPEED_LIMIT_DEFAULT: float = 6  # 36.0
 
 
 class VelocityController(CompatibleNode):
@@ -142,8 +142,6 @@ class VelocityController(CompatibleNode):
                 self.logerr("Velocity controller doesn't support backward "
                             "driving yet.")
                 return
-            # print(f"v_soll = min({self.__max_velocity}, {self.__max_tree_v},
-            # {self.__speed_limit}) | v_ist = {self.__current_velocity} ")
             v = min(self.__max_velocity, self.__max_tree_v)
             v = min(v, self.__speed_limit)
 

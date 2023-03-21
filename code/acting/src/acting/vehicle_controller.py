@@ -98,7 +98,7 @@ class VehicleController(CompatibleNode):
         self.__velocity: float = 0.0
         self.__pure_pursuit_steer: float = 0.0
         self.__stanley_steer: float = 0.0
-        self.__current_steer: float = 0.0  # check emergency behaviour
+        self.__current_steer: float = 0.0  # todo: check emergency behaviour
 
     def run(self):
         """
@@ -107,7 +107,7 @@ class VehicleController(CompatibleNode):
         """
         self.status_pub.publish(True)
         self.loginfo('VehicleController node running')
-        pid = PID(0.85, 0.1, 0.1, setpoint=0)  # random values -> tune
+        pid = PID(0.85, 0.1, 0.1, setpoint=0)  # random values -> todo: tune
         pid.output_limits = (-MAX_STEER_ANGLE, MAX_STEER_ANGLE)
 
         def loop(timer_event=None) -> None:

@@ -11,7 +11,7 @@ from ros_compatibility.node import CompatibleNode
 # from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from rospy import Publisher, Subscriber
 # from sensor_msgs.msg import NavSatFix, Imu
-from std_msgs.msg import Float32, Float32MultiArray  # Bool
+from std_msgs.msg import Float32  # Bool
 from acting.msg import StanleyDebug
 
 from helper_functions import vector_angle
@@ -62,18 +62,12 @@ class StanleyController(CompatibleNode):
             f"/paf/{self.role_name}/stanley_debug",
             qos_profile=1)
 
-        self.max_speed_pub: Publisher = self.new_publisher(
-            Float32,
-            f"/paf/{self.role_name}/speed_limit",
-            qos_profile=1)
-
         self.__position: (float, float) = None  # x, y
         self.__last_pos: (float, float) = None
         self.__path: Path = None
         self.__heading: float = None
         self.__velocity: float = None
         self.__tp_idx: int = 0  # target waypoint index
-        self.__od_speed: Float32MultiArray = None
         # error when there are no targets
 
     def run(self):

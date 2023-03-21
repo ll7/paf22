@@ -90,7 +90,7 @@ class TLDNode(CompatibleNode):
         image_array = image_array.reshape((image.height, image.width, -1))
         image = rgb2id(image_array)
         mask = np.ma.masked_outside(image, self.traffic_light_id * 1000,
-                                    (self.traffic_light_id + 1) * 1000)
+                                    (self.traffic_light_id + 1) * 1000 - 1)
         mask = mask.mask
         if not mask.any():
             return

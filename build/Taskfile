@@ -32,7 +32,7 @@ task:shell() {
 ##########################################
 task:install() {
     task:install:git_hooks
-    task:gitconfig:copy
+    # task:gitconfig:copy
     install:gpu-support
     docker:install
 }

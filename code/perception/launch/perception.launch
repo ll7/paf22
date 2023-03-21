@@ -32,4 +32,7 @@
     <remap from="image_in" to="/carla/hero/Center/image"/>
     <remap from="camera_info" to="/carla/hero/Center/camera_info"/>
   </node>
+
+  <node pkg="perception" type="lidar_depth_buffer.py" name="lidar_depth_buffer" output="screen">
+  </node>
 </launch>

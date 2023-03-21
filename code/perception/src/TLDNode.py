@@ -26,6 +26,8 @@ class TLDNode(CompatibleNode):
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
 
+        self.effps_sub = None
+        self.camera_sub = None
         self.image = None
         self.publisher = None
         self.loginfo("Initializing traffic light detection node...")
@@ -40,13 +42,13 @@ class TLDNode(CompatibleNode):
         self.traffic_light_id = name2label("traffic light").id
 
     def setup_subscriptions(self):
-        self.new_subscription(
+        self.effps_sub = self.new_subscription(
             msg_type=numpy_msg(Image),
             callback=self.handle_segmented_image,
             topic=f"/carla/{self.role_name}/{self.side}/segmented_image",
             qos_profile=1
         )
-        self.new_subscription(
+        self.camera_sub = self.new_subscription(
             msg_type=numpy_msg(Image),
             callback=self.handle_image,
             topic=f"/carla/{self.role_name}/{self.side}/image",

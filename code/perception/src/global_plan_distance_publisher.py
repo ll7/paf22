@@ -4,7 +4,7 @@ import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from geometry_msgs.msg import PoseStamped
 from carla_msgs.msg import CarlaRoute
-from perception.msg import Waypoint
+from perception.msg import Waypoint, LaneChange
 import math
 # import rospy
 
@@ -59,37 +59,57 @@ class GlobalPlanDistance(CompatibleNode):
             "/paf/" + self.role_name + "/waypoint_distance",
             qos_profile=1)
 
+        self.lane_change_publisher = self.new_publisher(
+            LaneChange,
+            "/paf/" + self.role_name + "/lane_change_distance",
+            qos_profile=1)
+
     def update_position(self, pos):
         """
         Updates the current position based on the most upto date
         IMU, Speedometer and GNSS sensor data.
         :return:
         """
+        def distance(a, b):
+            d_x = (a.x - b.x) ** 2
+            d_y = (a.y - b.y) ** 2
+            return math.sqrt(d_x + d_y)
+
         self.current_pos = pos.pose
 
         # check if the global route has been published and that there are still
         # points to navigate to
         if self.global_route is not None and self.global_route:
-            # print(len(self.global_route))
-            distance_x = (self.global_route[0].position.x - self.current_pos.
-                          position.x) ** 2
-            distance_y = (self.global_route[0].position.y - self.current_pos.
-                          position.y) ** 2
-
-            distance = math.sqrt(distance_x + distance_y)
+            current_distance = distance(self.global_route[0].position,
+                                        self.current_pos.position)
+            next_distance = distance(self.global_route[1].position,
+                                     self.current_pos.position)
 
             # if the road option indicates an intersection, the distance to the
             # next waypoint is also the distance to the stop line
             if self.road_options[0] < 4:
                 # print("publish waypoint")
-                self.waypoint_publisher.publish(Waypoint(distance, True))
+                self.waypoint_publisher.publish(
+                    Waypoint(current_distance, True))
+                self.lane_change_publisher.publish(
+                    LaneChange(current_distance, False, self.road_options[0]))
             else:
-                self.waypoint_publisher.publish(Waypoint(distance, False))
+                self.waypoint_publisher.publish(
+                    Waypoint(current_distance, False))
+                if self.road_options[0] == 5 or self.road_options[0] == 6:
+                    self.lane_change_publisher.publish(
+                        LaneChange(current_distance, True,
+                                   self.road_options[0]))
             # if we reached the next waypoint, pop it and the next point will
             # be published
-            if distance < 2.5:
+            if current_distance < 2.5 or next_distance < current_distance:
                 self.road_options.pop(0)
                 self.global_route.pop(0)
+                if self.road_options[0] in {5, 6} and \
+                   self.road_options[0] == self.road_options[1]:
+                    self.road_options.pop(0)
+                    self.global_route.pop(0)
+                print(f"next road option = {self.road_options[0]}")
 
     def update_global_route(self, route):
         """

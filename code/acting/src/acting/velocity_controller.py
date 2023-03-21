@@ -8,7 +8,8 @@ from simple_pid import PID
 from std_msgs.msg import Float32, Float32MultiArray
 from nav_msgs.msg import Path
 
-SPEED_LIMIT_DEFAULT: float = 36.0
+# TODO put back to 36 when controller can handle it
+SPEED_LIMIT_DEFAULT: float = 6  # 36.0
 
 
 class VelocityController(CompatibleNode):
@@ -38,10 +39,9 @@ class VelocityController(CompatibleNode):
             self.__get_current_velocity,
             qos_profile=1)
 
-        self.speed_limit_sub: Subscriber = self.new_subscription(
+        self.speed_limit_pub: Publisher = self.new_publisher(
             Float32,
             f"/paf/{self.role_name}/speed_limit",
-            self.__get_speed_limit,
             qos_profile=1)
 
         self.max_tree_v_sub: Subscriber = self.new_subscription(
@@ -109,9 +109,10 @@ class VelocityController(CompatibleNode):
             """
             if self.__max_velocity is None:
                 self.logdebug("VehicleController hasn't received max_velocity"
-                              " yet and can therefore not publish a "
-                              "throttle value")
-                return
+                              " yet. max_velocity has been set to"
+                              f"default value {SPEED_LIMIT_DEFAULT}")
+                # return
+                self.__max_velocity = SPEED_LIMIT_DEFAULT
 
             if self.__current_velocity is None:
                 self.logdebug("VehicleController hasn't received "
@@ -141,7 +142,6 @@ class VelocityController(CompatibleNode):
                 self.logerr("Velocity controller doesn't support backward "
                             "driving yet.")
                 return
-
             v = min(self.__max_velocity, self.__max_tree_v)
             v = min(v, self.__speed_limit)
 
@@ -191,6 +191,7 @@ class VelocityController(CompatibleNode):
             self.__current_wp_index += 1
             self.__speed_limit = \
                 self.__speed_limits_OD[self.__current_wp_index]
+            self.speed_limit_pub.publish(self.__speed_limit)
 
 
 def main(args=None):

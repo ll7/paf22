@@ -40,7 +40,28 @@ RUN wget https://github.com/libgit2/libgit2/archive/refs/tags/v1.5.0.tar.gz -O l
     && cd libgit2-1.5.0/ \
     && cmake . \
     && make -j$(nproc --ignore=2) \
-    && make install
+    && make install \
+    && cd ../ \
+    && rm libgit2-1.5.0.tar.gz \
+    && rm -r libgit2-1.5.0/
+
+# CUDA installation
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin \
+    && mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600 \
+    && wget https://developer.download.nvidia.com/compute/cuda/11.7.0/local_installers/cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb \
+    && dpkg -i cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb \
+    && cp /var/cuda-repo-ubuntu2004-11-7-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y install cuda-nvcc-11-7 \
+    && rm cuda-repo-ubuntu2004-11-7-local_11.7.0-515.43.04-1_amd64.deb \
+    && apt-get -y remove cuda-repo-ubuntu2004-11-7-local \
+    && cat /etc/apt/sources.list \
+    && rm /etc/apt/preferences.d/cuda-repository-pin-600 \
+    && rm -rf /var/cuda-repo-ubuntu1804-11-7-local/ \
+    && rm /etc/apt/sources.list.d/cuda-ubuntu2004-11-7-local.list \
+    && apt-get clean
+
+ENV CUDA_HOME=/usr/local/cuda-11.7
 
 # override python path, carla pip package path didn't exist and was using Python 3.7 instead of 2.7
 ENV PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages
@@ -52,7 +73,7 @@ RUN apt-get update && apt-get install -y \
         ros-noetic-ackermann-msgs ros-noetic-derived-object-msgs \
         ros-noetic-carla-msgs ros-noetic-pcl-conversions \
         ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server \
-        ros-noetic-robot-pose-ekf \
+        ros-noetic-robot-pose-ekf ros-noetic-ros-numpy \
         ros-noetic-py-trees-ros ros-noetic-rqt-py-trees ros-noetic-rqt-reconfigure
 
 SHELL ["/bin/bash", "-c"]
@@ -111,7 +132,6 @@ RUN sudo mkdir /opt/leaderboard-py3 && sudo chown $USERNAME:$USERNAME /opt/leade
 
 RUN python -m pip install roslibpy lxml
 
-
 # environment variables for the leaderboard_evaluator
 ENV ROUTES=$LEADERBOARD_ROOT/data/routes_devtest.xml
 ENV REPETITIONS=1
@@ -136,6 +156,15 @@ RUN echo /catkin_ws/install/lib/python3/dist-packages >> /home/$USERNAME/.local/
 
 RUN sudo mkdir /workspace && sudo chown $USERNAME:$USERNAME /workspace
 
+RUN echo "export CUDA_HOME=/usr/local/cuda-11" >> ~/.bashrc \
+    && echo "export PATH=$PATH:$CUDA_HOME/bin" >> ~/.bashrc
+
+COPY --chown=$USERNAME:$USERNAME ./code/requirements.txt /workspace/
+ENV TORCH_CUDA_ARCH_LIST="5.2 6.0 6.1 7.0 7.5 8.0 8.6+PTX"
+ENV IABN_FORCE_CUDA=1
+
+RUN source ~/.bashrc && cat /workspace/requirements.txt | xargs -n 1 -L 1 pip install
+
 # Add agent code
 COPY --chown=$USERNAME:$USERNAME ./code /workspace/code/
 
@@ -151,8 +180,6 @@ ADD ./build/docker/agent/entrypoint.sh /entrypoint.sh
 WORKDIR /workspace/code
 
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-
-RUN pip install -r requirements.txt
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash", "-c", "sleep 10 && python3 /opt/leaderboard/leaderboard/leaderboard_evaluator.py --debug=${DEBUG_CHALLENGE} \

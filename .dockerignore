@@ -1,1 +1,3 @@
 code/output
+code/perception/src/panoptic_segmentation/lightning_logs
+code/perception/src/panoptic_segmentation/logs

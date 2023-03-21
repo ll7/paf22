@@ -1,13 +1,17 @@
 #!/usr/bin/env python
+import math
+
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from carla_msgs.msg import CarlaEgoVehicleControl, CarlaSpeedometer
 from rospy import Publisher, Subscriber
 from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from std_msgs.msg import Bool, Float32
+from simple_pid import PID
 
 PURE_PURSUIT_CONTROLLER: int = 1
 STANLEY_CONTROLLER: int = 2
+MAX_STEER_ANGLE: float = 0.75
 
 
 class VehicleController(CompatibleNode):
@@ -35,7 +39,7 @@ class VehicleController(CompatibleNode):
         )
         self.status_pub: Publisher = self.new_publisher(
             Bool,
-            f"/carla/{self.role_name}/status",
+            f"/paf/{self.role_name}/status",
             qos_profile=QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL)
@@ -43,14 +47,14 @@ class VehicleController(CompatibleNode):
 
         self.emergency_pub: Publisher = self.new_publisher(
             Bool,
-            f"/carla/{self.role_name}/emergency",
+            f"/paf/{self.role_name}/emergency",
             qos_profile=QoSProfile(depth=10,
                                    durability=DurabilityPolicy.TRANSIENT_LOCAL)
         )
 
         self.emergency_sub: Subscriber = self.new_subscription(
             Bool,
-            f"/carla/{self.role_name}/emergency",
+            f"/paf/{self.role_name}/emergency",
             self.__emergency_break,
             qos_profile=QoSProfile(depth=10,
                                    durability=DurabilityPolicy.TRANSIENT_LOCAL)
@@ -64,19 +68,19 @@ class VehicleController(CompatibleNode):
 
         self.throttle_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/throttle",
+            f"/paf/{self.role_name}/throttle",
             self.__set_throttle,
             qos_profile=1)
 
         self.pure_pursuit_steer_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/pure_pursuit_steer",
+            f"/paf/{self.role_name}/pure_pursuit_steer",
             self.__set_pure_pursuit_steer,
             qos_profile=1)
 
         self.stanley_steer_sub: Subscriber = self.new_subscription(
             Float32,
-            f"/carla/{self.role_name}/stanley_steer",
+            f"/paf/{self.role_name}/stanley_steer",
             self.__set_stanley_steer,
             qos_profile=1)
 
@@ -84,6 +88,7 @@ class VehicleController(CompatibleNode):
         self.__throttle: float = 0
         self.__pure_pursuit_steer: float = 0
         self.__stanley_steer: float = 0
+        self.__current_steer: float = 0  # todo: check emergency behaviour
 
     def run(self):
         """
@@ -92,6 +97,8 @@ class VehicleController(CompatibleNode):
         """
         self.status_pub.publish(True)
         self.loginfo('VehicleController node running')
+        pid = PID(0.85, 0.1, 0.1, setpoint=0)  # random values -> todo: tune
+        pid.output_limits = (-MAX_STEER_ANGLE, MAX_STEER_ANGLE)
 
         def loop(timer_event=None) -> None:
             """
@@ -125,7 +132,9 @@ class VehicleController(CompatibleNode):
 
             message.hand_brake = False
             message.manual_gear_shift = False
-            message.steer = steer
+            pid.setpoint = self.__map_steering(steer)
+            message.steer = pid(self.__current_steer)
+            # message.steer = 0  # zum testen mit bei gerader Fahrt
             message.gear = 1
             message.header.stamp = roscomp.ros_timestamp(self.get_time(),
                                                          from_sec=True)
@@ -133,6 +142,18 @@ class VehicleController(CompatibleNode):
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
+
+    def __map_steering(self, steering_angle: float) -> float:
+        """
+        Takes the steering angle calculated by the controller and maps it to
+        the available steering angle
+        :param steering_angle: calculated by a controller in [-pi/2 , pi/2]
+        :return: float for steering in [-1, 1]
+        """
+        tune_k = -5  # factor for tuning todo: tune
+        r = 1 / (math.pi / 2)
+        steering_float = steering_angle * r * tune_k
+        return steering_float
 
     def __emergency_break(self, data) -> None:
         """
@@ -144,7 +165,7 @@ class VehicleController(CompatibleNode):
             return
         if self.__emergency:  # emergency was already triggered
             return
-        self.loginfo("Emergency breaking engaged")
+        self.logerr("Emergency breaking engaged")
         self.__emergency = True
         message = CarlaEgoVehicleControl()
         message.throttle = 1
@@ -188,13 +209,13 @@ class VehicleController(CompatibleNode):
     def __set_throttle(self, data):
         self.__throttle = data.data
 
-    def __set_pure_pursuit_steer(self, data):
+    def __set_pure_pursuit_steer(self, data: Float32):
         self.__pure_pursuit_steer = data.data
 
-    def __set_stanley_steer(self, data):
+    def __set_stanley_steer(self, data: Float32):
         self.__stanley_steer = data.data
 
-    def __choose_controller(self) -> int:  # todo: implement
+    def __choose_controller(self) -> int:
         """
         Chooses with steering controller to use
         :return:

@@ -9,9 +9,10 @@ import ros_compatibility as roscomp
 # import matplotlib.pyplot as plt
 from ros_compatibility.node import CompatibleNode
 from nav_msgs.msg import Path
-from sensor_msgs.msg import NavSatFix
+from sensor_msgs.msg import NavSatFix, Imu
 from geometry_msgs.msg import PoseStamped
-from coordinate_transformation import CoordinateTransformer, GeoRef
+from code.perception.src.coordinate_transformation import \
+    CoordinateTransformer, GeoRef
 import rospy
 
 
@@ -37,6 +38,7 @@ class DummyTrajectorySub(CompatibleNode):
         self.transformer.set_gnss_ref(lat0, lon0, h0)
 
         self.current_pos = PoseStamped()
+        self.imu: Imu = Imu()
 
         # basic info
         self.role_name = self.get_param("role_name", "ego_vehicle")
@@ -50,23 +52,29 @@ class DummyTrajectorySub(CompatibleNode):
         # Subscriber
         self.dummy_trajectory_subscriber = self.new_subscription(
             Path,
-            "/carla/" + self.role_name + "/trajectory",
+            "/paf/" + self.role_name + "/trajectory",
             self.update_trajectory,
             qos_profile=1)
 
         self.pos_counter = 0
         self.pos_average = [0, 0, 0]
-        self.gnss_subscriber = self.new_subscription(
-            NavSatFix,
-            "/carla/" + self.role_name + "/GPS",
-            self.output_average_gps_2_xyz,
+        # self.gnss_subscriber = self.new_subscription(
+        #     NavSatFix,
+        #     "/carla/" + self.role_name + "/GPS",
+        #     self.output_average_gps_2_xyz,
+        #     qos_profile=1)
+
+        self.imu_subscriber = self.new_subscription(
+            Imu,
+            "/carla/" + self.role_name + "/IMU",
+            self.update_imu,
             qos_profile=1)
 
         # Publisher
-        self.pos_publisher = self.new_publisher(
-            PoseStamped,
-            "/carla/" + self.role_name + "/current_pos",
-            qos_profile=1)
+#        self.pos_publisher = self.new_publisher(
+#            PoseStamped,
+#            "/carla/" + self.role_name + "/current_pos",
+#            qos_profile=1)
 
     def output_gps_2_xyz(self, data: NavSatFix):
         """
@@ -81,11 +89,14 @@ class DummyTrajectorySub(CompatibleNode):
             lat = data.latitude
             lon = data.longitude
             h = data.altitude
-            x, y, z = self.transformer.gnss_to_xyz(self, lat, lon, h)
+            x, y, z = self.transformer.gnss_to_xyz(lat, lon, h)
             self.update_pose(x, y, z)
             # self.loginfo(f"x: {x}\t y: {y}\t z:{z}")
 
         self.pos_counter += 1
+
+    def update_imu(self, data: Imu):
+        self.imu = data
 
     def output_average_gps_2_xyz(self, data: NavSatFix):
         """
@@ -106,12 +117,17 @@ class DummyTrajectorySub(CompatibleNode):
         self.pos_average[1] += y
         self.pos_average[2] += z
 
-        if self.pos_counter % 5 == 0:
-            x1 = self.pos_average[0] / 5
-            y1 = self.pos_average[1] / 5
-            z1 = self.pos_average[2] / 5
+        w: float = 1.0  # weight of the new position compared to the old
+        avg: int = 1
+        if self.pos_counter % avg == 0:
+            x1 = self.pos_average[0] / avg
+            y1 = self.pos_average[1] / avg
+            z1 = self.pos_average[2] / avg
             self.pos_average = [0, 0, 0]
-            self.update_pose(x1, y1, z1)
+            r_x = w * x1 + (1.0 - w) * self.current_pos.pose.position.x
+            r_y = w * y1 + (1.0 - w) * self.current_pos.pose.position.y
+            r_z = w * z1 + (1.0 - w) * self.current_pos.pose.position.z
+            self.update_pose(r_x, r_y, r_z)
             # self.loginfo(f"x: {x1}\t y: {y1}\t z:{z1}")
 
         self.pos_counter += 1
@@ -146,16 +162,16 @@ class DummyTrajectorySub(CompatibleNode):
         temp_pose = PoseStamped()
 
         temp_pose.header.stamp = rospy.Time.now()
-        temp_pose.header.frame_id = "Local Coordinate Frame"
+        temp_pose.header.frame_id = "global"
 
         temp_pose.pose.position.x = x
         temp_pose.pose.position.y = y
         temp_pose.pose.position.z = z
 
-        temp_pose.pose.orientation.x = 0.0
-        temp_pose.pose.orientation.y = 0.0
-        temp_pose.pose.orientation.z = 0.0
-        temp_pose.pose.orientation.w = 0.0
+        temp_pose.pose.orientation.x = self.imu.orientation.x
+        temp_pose.pose.orientation.y = self.imu.orientation.y
+        temp_pose.pose.orientation.z = self.imu.orientation.z
+        temp_pose.pose.orientation.w = self.imu.orientation.w
 
         self.current_pos = temp_pose
         self.pos_publisher.publish(self.current_pos)
@@ -163,7 +179,6 @@ class DummyTrajectorySub(CompatibleNode):
     def run(self):
         """
         Control loop
-
         :return:
         """
         self.spin()
@@ -172,7 +187,6 @@ class DummyTrajectorySub(CompatibleNode):
 def main(args=None):
     """
     main function
-
     :param args:
     :return:
     """

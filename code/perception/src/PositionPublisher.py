@@ -8,7 +8,6 @@ It therefore receives a nav_msgs/Path msg.
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
-from std_msgs.msg import Float32
 from coordinate_transformation import CoordinateTransformer, GeoRef, \
     quat_to_heading
 import rospy

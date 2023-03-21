@@ -112,7 +112,7 @@ class VelocityPublisherDummy(CompatibleNode):
             else:
                 # Normal state
                 self.velocity_pub.publish(self.__get_max_curve_velocity())
-                self.loginfo(self.__get_max_curve_velocity() * 3.6)
+                # self.loginfo(self.__get_max_curve_velocity() * 3.6)
 
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
@@ -125,6 +125,17 @@ class VelocityPublisherDummy(CompatibleNode):
             self.__start_time = rospy.get_time()
 
     def __get_max_curve_velocity(self) -> float:
+        """
+        Calculates which velocity should not be exceeded to ensure that the
+        vehicle will be able to safely drive through curves.
+        To do so the deviation from the necessary heading in a look ahead
+        distance is calculated. Depending on this heading deviation the
+        velocity is limited.
+        The look ahead distance is greater than the
+        look ahead distance used in the steering controller. This ensures
+        that the car breaks before it starts to turn the steering wheel.
+        :return:
+        """
         if self.__path is None:
             return MAX_VELOCITY
         look_ahead_d = max(self.__current_velocity * 2, 1)  # in m
@@ -143,7 +154,7 @@ class VelocityPublisherDummy(CompatibleNode):
         alpha = abs(math.degrees(alpha))
         self.__put_alpha(alpha)
         alpha_sum = sum(self.alphas)
-        self.loginfo(str(look_ahead_d) + "; " + str(alpha_sum))
+        # self.loginfo(str(look_ahead_d) + "; " + str(alpha_sum))
         if alpha_sum > 50:
             return 3  # = 10 km/h
         if alpha_sum > 30:

@@ -209,6 +209,8 @@ class Wait(py_trees.behaviour.Behaviour):
             Any initialisation you need before putting your behaviour to work.
         This just prints a state status message.
         """
+        self.old_ro = self.blackboard.\
+            get("/paf/hero/lane_change_distance")
         rospy.loginfo("Wait Change")
         return True
 
@@ -228,8 +230,14 @@ class Wait(py_trees.behaviour.Behaviour):
                  to green or no traffic light is detected
         """
 
-        road_option = self.blackboard.\
-            get("/paf/hero/lane_change_distance").roadOption
+        lcd = self.blackboard.\
+            get("/paf/hero/lane_change_distance")
+
+        if self.old_ro.distance < lcd.distance + 1 or \
+           lcd.roadOption != self.old_ro.roadOption:
+            return py_trees.common.Status.SUCCESS
+        self.old_ro = lcd
+        road_option = lcd.roadOption
         if road_option == 5:
             distance_lidar = self.blackboard. \
                 get("/carla/hero/LIDAR_range_rear_left")

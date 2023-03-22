@@ -105,10 +105,11 @@ class GlobalPlanDistance(CompatibleNode):
             if current_distance < 2.5 or next_distance < current_distance:
                 self.road_options.pop(0)
                 self.global_route.pop(0)
+
                 if self.road_options[0] in {5, 6} and \
                    self.road_options[0] == self.road_options[1]:
-                    self.road_options.pop(0)
-                    self.global_route.pop(0)
+                    self.road_options[1] = 4
+
                 print(f"next road option = {self.road_options[0]}")
 
     def update_global_route(self, route):

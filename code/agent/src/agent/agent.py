@@ -35,7 +35,7 @@ class PAF22Agent(ROS1Agent):
              'x': 0.7, 'y': -0.4, 'z': 1.60},
             {'type': 'sensor.other.imu', 'id': 'IMU',
              'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
-             'yaw': -45.0},
+             'yaw': 0.0},
             {'type': 'sensor.opendrive_map', 'id': 'OpenDRIVE',
              'reading_frequency': 1},
             {'type': 'sensor.speedometer', 'id': 'Speed'},

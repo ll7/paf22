@@ -7,9 +7,10 @@ import py_trees_ros
 from std_msgs.msg import Float64, String, Bool, Float32
 # from geometry_msgs.msg import Point
 from carla_msgs.msg import CarlaSpeedometer
+from sensor_msgs.msg import Range
 
-from perception.msg import Waypoint
 from mock.msg import Traffic_light, Stop_sign
+from perception.msg import Waypoint, LaneChange
 
 """
 Source: https://github.com/ll7/psaf2
@@ -47,7 +48,17 @@ def create_node(role_name):
         {'name': f"/paf/{role_name}/traffic_light", 'msg': Traffic_light,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/paf/{role_name}/max_velocity", 'msg': Float32,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER}
+         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/carla/{role_name}/LIDAR_range", 'msg': Range,
+         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/carla/{role_name}/LIDAR_range_rear_right", 'msg': Range,
+         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/carla/{role_name}/LIDAR_range_rear_left", 'msg': Range,
+         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/paf/{role_name}/speed_limit", 'msg': Float32,
+         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
+        {'name': f"/paf/{role_name}/lane_change_distance", 'msg': LaneChange,
+         'clearing-policy': py_trees.common.ClearingPolicy.ON_INITIALISE}
     ]
 
     topics2blackboard = py_trees.composites.Parallel("Topics to Blackboard")

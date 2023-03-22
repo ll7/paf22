@@ -6,12 +6,6 @@
 
 **Actions** should not return `FAILURE` (only special cases), but only `RUNNING` for ongoing and `SUCCESS` for finished.
 
-## Road Features Subtree
-
-******
-
-The node that percepts the road features should take care that not more than one (and only the closest) feature should be published.
-
 ## Road Features Subtree - Intersection
 
 ******

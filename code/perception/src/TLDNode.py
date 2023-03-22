@@ -26,11 +26,12 @@ class TLDNode(CompatibleNode):
 
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
+        self.snip_publisher = None
+        self.class_publisher = None
         self.loginfo("Initializing traffic light detection node...")
         self.effps_sub = None
         self.camera_sub = None
         self.image = None
-        self.publisher = None
 
         self.role_name = self.get_param("role_name", "hero")
         self.side = self.get_param("side", "Center")
@@ -57,9 +58,14 @@ class TLDNode(CompatibleNode):
         )
 
     def setup_publishers(self):
-        self.publisher = self.new_publisher(
+        self.class_publisher = self.new_publisher(
             msg_type=String,
             topic=f"/paf/{self.role_name}/{self.side}/traffic_light",
+            qos_profile=1
+        )
+        self.snip_publisher = self.new_publisher(
+            msg_type=numpy_msg(Image),
+            topic=f"/paf/{self.role_name}/{self.side}/snipped_traffic_light",
             qos_profile=1
         )
 
@@ -92,11 +98,25 @@ class TLDNode(CompatibleNode):
         mask = np.ma.masked_outside(image, self.traffic_light_id * 1000,
                                     (self.traffic_light_id + 1) * 1000 - 1)
         mask = mask.mask
-        if not mask.any():
-            return
 
         tl_image = np.zeros(image.shape)
         tl_image[mask] = image[mask]
+        msg = Image()
+        msg.header.stamp = roscomp.ros_timestamp(
+            self.get_time(), from_sec=True)
+        msg.header.frame_id = "map"
+        msg.height = 720
+        msg.width = 1280
+        msg.encoding = "rgb8"
+        msg.is_bigendian = 0
+        msg.step = 1280 * 3
+        msg.data = tl_image
+
+        self.snip_publisher.publish(msg)
+
+        if not mask.any():
+            return
+
         indices = np.nonzero(tl_image[0:tl_image.shape[0] // 2,
                              tl_image.shape[1] // 3:
                              2 * (tl_image.shape[1] // 3)])
@@ -108,7 +128,7 @@ class TLDNode(CompatibleNode):
         classification = self.predict(traffic_light)
 
         # construct the message
-        self.publisher.publish(str(classification))
+        self.class_publisher.publish(str(classification))
         self.loginfo(f"TLDNode classified traffic light "
                      f"{self.side}")
 

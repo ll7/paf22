@@ -27,7 +27,7 @@ class PAF22Agent(ROS1Agent):
              'yaw': 0.0, 'width': 300, 'height': 200, 'fov': 100},
             {'type': 'sensor.lidar.ray_cast', 'id': 'LIDAR',
              'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
-             'yaw': 0.0},
+             'yaw': 0.0, "channels": 1},
             {'type': 'sensor.other.radar', 'id': 'RADAR',
              'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
              'yaw': -45.0, 'horizontal_fov': 30, 'vertical_fov': 30},

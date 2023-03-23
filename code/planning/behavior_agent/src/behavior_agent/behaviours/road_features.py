@@ -68,12 +68,13 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
                  the intersection
         """
         # TODO change this part to the actual source of intersection detection
-        bb = self.blackboard.get("/paf/hero/stop_sign")
+        bb = self.blackboard.get("/paf/hero/waypoint_distance")
         if bb is None:
             return py_trees.common.Status.FAILURE
         else:
-            self.dist = bb.distance
-        if self.dist < 30:
+            dist = bb.distance
+            isIntersection = bb.isStopLine
+        if dist < 30 and isIntersection:
             return py_trees.common.Status.SUCCESS
         else:
             return py_trees.common.Status.FAILURE

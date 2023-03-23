@@ -12,6 +12,7 @@ from traffic_light_detection.src.traffic_light_detection.\
     traffic_light_inference import TrafficLightInference
 from panoptic_segmentation.preparation.labels import name2label
 from panoptic_segmentation.datasets.panoptic_dataset import rgb2id
+from panopticapi.utils import id2rgb
 
 MODEL_PATH = pathlib.Path(
     __file__).parent.parent / \
@@ -95,8 +96,8 @@ class TLDNode(CompatibleNode):
         image_array = np.frombuffer(image.data, dtype=np.uint8)
         image_array = image_array.reshape((image.height, image.width, -1))
         image = rgb2id(image_array)
-        mask = np.ma.masked_outside(image, self.traffic_light_id * 1000,
-                                    (self.traffic_light_id + 1) * 1000 - 1)
+        mask = np.ma.masked_inside(image, self.traffic_light_id * 1000,
+                                   (self.traffic_light_id + 1) * 1000 - 1)
         mask = mask.mask
 
         tl_image = np.zeros(image.shape)
@@ -110,8 +111,7 @@ class TLDNode(CompatibleNode):
         msg.encoding = "rgb8"
         msg.is_bigendian = 0
         msg.step = 1280 * 3
-        msg.data = tl_image
-
+        msg.data = id2rgb(tl_image).tobytes()
         self.snip_publisher.publish(msg)
 
         if not mask.any():

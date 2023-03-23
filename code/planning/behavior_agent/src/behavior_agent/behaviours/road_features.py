@@ -67,7 +67,6 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
                  py_trees.common.Status.FAILURE, if we are too far away from
                  the intersection
         """
-        # TODO change this part to the actual source of intersection detection
         bb = self.blackboard.get("/paf/hero/waypoint_distance")
         if bb is None:
             return py_trees.common.Status.FAILURE
@@ -399,8 +398,6 @@ class LeftLaneAvailable(py_trees.behaviour.Behaviour):
                  py_trees.common.Status.FAILURE, if there is no lane to the
                  left of the agent
         """
-        # TODO this information could be retrieved from the openDrive map, not
-        # sure if that will happen though due to the limited time left
         bb = self.blackboard.get("/paf/hero/lane_status")
         if bb is None:
             return py_trees.common.Status.FAILURE

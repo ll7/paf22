@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import rospy
 import py_trees
-import numpy as np
 from std_msgs.msg import Float32
 
 """
@@ -135,21 +134,11 @@ class End(py_trees.behaviour.Behaviour):
                   point
                   py_trees.common.Status.FAILURE, if last point reached
         """
-        odo = self.blackboard.get("/carla/ego_vehicle/odometry")
-        # TODO finish this part
-        if odo is None:
+        speed = self.blackboard.get("/carla/hero/Speed")
+        if speed is None:
             return py_trees.common.Status.FAILURE
-        current_pos = np.array([odo.pose.pose.position.x, odo.pose.pose.
-                               position.y])
-        target_pos = np.array([rospy.get_param('/competition/goal/'
-                                               'position/x', 10),
-                               rospy.get_param('/competition/goal/'
-                                               'position/y', 50)])
-        dist = np.linalg.norm(current_pos - target_pos)
-        if dist < 15:
-            return py_trees.common.Status.RUNNING
         else:
-            return py_trees.common.Status.FAILURE
+            return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
         """

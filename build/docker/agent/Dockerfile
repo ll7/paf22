@@ -5,7 +5,7 @@
 # Then, uncomment this line and the COPY --from=carla line to build the image.
 # FROM ghcr.io/nylser/carla:leaderboard as carla
 # Use this image to enable instance segmentation cameras
-ROM carlasim/carla:0.9.14 as carla
+FROM carlasim/carla:0.9.14 as carla
 
 # supply the base image with an environment supporting ROS UI via x11
 FROM osrf/ros:noetic-desktop-full-focal

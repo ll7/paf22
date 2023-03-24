@@ -7,14 +7,14 @@
 <!--         <param name="role_name" value="$(arg role_name)" /> -->
 <!--   </node> -->
 
-  <node pkg="mock" type="mock_stop_sign.py" name="mock_stop_sign" output="screen">
-        <param name="control_loop_rate" value="$(arg control_loop_rate)" />
+<!--   <node pkg="mock" type="mock_stop_sign.py" name="mock_stop_sign" output="screen">
+       <param name="control_loop_rate" value="$(arg control_loop_rate)" />
         <param name="role_name" value="$(arg role_name)" />
-  </node>
+  </node> -->
 
-  <node pkg="mock" type="mock_intersection_clear.py" name="mock_intersection_clear" output="screen">
+<!--  <node pkg="mock" type="mock_intersection_clear.py" name="mock_intersection_clear" output="screen">
         <param name="control_loop_rate" value="$(arg control_loop_rate)" />
         <param name="role_name" value="$(arg role_name)" />
-  </node>
+  </node> -->
 
 </launch>

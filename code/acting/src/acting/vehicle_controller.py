@@ -107,7 +107,7 @@ class VehicleController(CompatibleNode):
         """
         self.status_pub.publish(True)
         self.loginfo('VehicleController node running')
-        pid = PID(0.85, 0.1, 0.1, setpoint=0)  # random values -> todo: tune
+        pid = PID(0.5, 0.1, 0.1, setpoint=0)
         pid.output_limits = (-MAX_STEER_ANGLE, MAX_STEER_ANGLE)
 
         def loop(timer_event=None) -> None:

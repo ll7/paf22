@@ -45,6 +45,22 @@ def grow_a_tree(role_name):
                                           ]),
                              ]),
                     Selector("Laneswitching", children=[
+                        Sequence("Laneswitch",
+                                children=[
+                                    behaviours.road_features.LaneChangeAhead
+                                    ("Lane Change Ahead"),
+                                    Sequence("Lane Change Actions",
+                                             children=[
+                                                 behaviours.lane_change.Approach
+                                                 ("Approach Change"),
+                                                 behaviours.lane_change.Wait
+                                                 ("Wait Change"),
+                                                 behaviours.lane_change.Enter
+                                                 ("Enter Change"),
+                                                 behaviours.lane_change.Leave
+                                                 ("Leave Change")
+                                             ])
+                                ]),
                         Inverter(Selector("Overtaking", children=[
                             behaviours.traffic_objects.NotSlowedByCarInFront
                             ("Not Slowed By Car in Front?"),

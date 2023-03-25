@@ -142,6 +142,10 @@ class StanleyController(CompatibleNode):
         self.__position = (new_x, new_y)
 
     def __set_path(self, data: Path):
+        path_len = len(data.poses)
+        if path_len < 1:
+            self.loginfo("Stanley: Empty path received and disregarded")
+            return
         self.__path = data
 
     def __set_heading(self, data: Float32):
@@ -171,6 +175,7 @@ class StanleyController(CompatibleNode):
 
         cross_err = self.__get_cross_err(closest_point.pose.position)
         heading_err = self.__heading - traj_heading
+        heading_err = ((heading_err + math.pi) % (2 * math.pi)) - math.pi
 
         steering_angle = heading_err + atan((k_ce * cross_err) /
                                             current_velocity * k_v)

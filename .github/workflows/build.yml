@@ -74,6 +74,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Print environment variables (DEBUG)
+        run: |
+          echo "AGENT_VERSION=${AGENT_VERSION}"
+          echo "COMPOSE_FILE=${COMPOSE_FILE}"
+      - name: Get commit hash
+        id: hash
+        run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Set AGENT_VERSION from hash (workaround)
+        run: echo "AGENT_VERSION=${{ steps.hash.outputs.hash }}" >> $GITHUB_ENV
       - name: Run docker-compose
         run: docker-compose up --exit-code-from agent
       - name: Copy results

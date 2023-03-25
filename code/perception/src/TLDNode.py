@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 
 import pathlib
+
+import cv2
 import numpy as np
 import ros_compatibility as roscomp
-from rospy.numpy_msg import numpy_msg
+from panopticapi.utils import id2rgb
 from ros_compatibility.node import CompatibleNode
+from rospy.numpy_msg import numpy_msg
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
-import cv2
-from traffic_light_detection.src.traffic_light_detection.\
-    traffic_light_inference import TrafficLightInference
-from panoptic_segmentation.preparation.labels import name2label, id2label
+
 from panoptic_segmentation.datasets.panoptic_dataset import rgb2id
-from panopticapi.utils import id2rgb
+from panoptic_segmentation.preparation.labels import name2label, id2label
+from traffic_light_detection.src.traffic_light_detection. \
+    traffic_light_inference import TrafficLightInference
 
 MODEL_PATH = pathlib.Path(
     __file__).parent.parent / \
@@ -27,6 +29,7 @@ class TLDNode(CompatibleNode):
 
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
+        self.instance_sub = None
         self.snip_publisher = None
         self.class_publisher = None
         self.loginfo("Initializing traffic light detection node...")
@@ -54,13 +57,13 @@ class TLDNode(CompatibleNode):
         self.camera_sub = self.new_subscription(
             msg_type=numpy_msg(Image),
             callback=self.handle_image,
-            topic=f"/carla/{self.role_name}/Instance_{self.side}/image",
+            topic=f"/carla/{self.role_name}/{self.side}/image",
             qos_profile=1
         )
         self.instance_sub = self.new_subscription(
             msg_type=numpy_msg(Image),
             callback=self.handle_instance_image,
-            topic=f"/carla/{self.role_name}/{self.side}/image",
+            topic=f"/carla/{self.role_name}/Instance_{self.side}/image",
             qos_profile=1
         )
 
@@ -101,7 +104,7 @@ class TLDNode(CompatibleNode):
                      f"{self.side}")
         image_array = np.frombuffer(image.data, dtype=np.uint8)
         image_array = image_array.reshape((image.height, image.width, -1))
-        image_array = image_array[:, :, 3]
+        image_array = image_array[:, :, :3]
 
         panoptic = np.zeros(image_array.shape, dtype=np.uint8)
         formatted = image_array.reshape(-1, image_array.shape[2])
@@ -126,12 +129,11 @@ class TLDNode(CompatibleNode):
             panoptic[mask] = color
         image = rgb2id(panoptic)
 
-        mask = np.ma.masked_inside(image, self.traffic_light_id * 1000,
-                                   (self.traffic_light_id + 1) * 1000 - 1)
-        mask = mask.mask
+        tld_id = self.traffic_light_id
+        tl_image = np.ma.masked_inside(image, tld_id * 1000,
+                                       (tld_id + 1) * 1000 - 1) \
+            .filled(0)
 
-        tl_image = np.zeros(image.shape)
-        tl_image[mask] = image[mask]
         msg = Image()
         msg.header.stamp = roscomp.ros_timestamp(
             self.get_time(), from_sec=True)
@@ -144,23 +146,30 @@ class TLDNode(CompatibleNode):
         msg.data = id2rgb(tl_image).tobytes()
         self.snip_publisher.publish(msg)
 
-        indices = np.nonzero(tl_image[0:tl_image.shape[0] // 2,
-                             tl_image.shape[1] // 3:
-                             2 * (tl_image.shape[1] // 3)])
+        areas = {}
+        for instance in np.unique(tl_image):
+            inst = np.ma.masked_not_equal(tl_image, instance).filled(0)
+            indices = np.nonzero(inst[0:inst.shape[0] // 2,
+                                 inst.shape[1] // 4:
+                                 3 * (inst.shape[1] // 4)])
+            upper_left = [min(indices[0]), min(indices[1])]
+            lower_right = [max(indices[0]), max(indices[1])]
+            areas[str(instance)] = [(lower_right[0] - upper_left[0]) *
+                                    (lower_right[1] - upper_left[1]),
+                                    upper_left,
+                                    lower_right]
+        if len(areas) > 0:
+            maximum = max(areas, key=areas.get)
+            upper_left = areas[maximum][1]
+            lower_right = areas[maximum][2]
+            traffic_light = self.image[upper_left[0]:lower_right[0],
+                                       upper_left[1]:lower_right[1]]
+            classification = self.predict(traffic_light)
 
-        if len(indices) == 0:
-            return
-        upper_left = [min(indices[0]), min(indices[1])]
-        lower_right = [max(indices[0]), max(indices[1])]
-
-        traffic_light = self.image[upper_left[0]:lower_right[0],
-                                   upper_left[1]:lower_right[1]]
-        classification = self.predict(traffic_light)
-
-        # construct the message
-        self.class_publisher.publish(str(classification))
-        self.loginfo(f"TLDNode classified traffic light "
-                     f"{self.side}")
+            # construct the message
+            self.class_publisher.publish(str(classification))
+            self.loginfo(f"TLDNode classified traffic light "
+                         f"{self.side}")
 
     def handle_segmented_image(self, image):
         return
@@ -169,12 +178,10 @@ class TLDNode(CompatibleNode):
         image_array = np.frombuffer(image.data, dtype=np.uint8)
         image_array = image_array.reshape((image.height, image.width, -1))
         image = rgb2id(image_array)
-        mask = np.ma.masked_inside(image, self.traffic_light_id * 1000,
-                                   (self.traffic_light_id + 1) * 1000 - 1)
-        mask = mask.mask
+        tl_image = np.ma.masked_inside(image, self.traffic_light_id * 1000,
+                                       (self.traffic_light_id + 1) * 1000 - 1)\
+            .filled(0)
 
-        tl_image = np.zeros(image.shape)
-        tl_image[mask] = image[mask]
         msg = Image()
         msg.header.stamp = roscomp.ros_timestamp(
             self.get_time(), from_sec=True)
@@ -187,23 +194,30 @@ class TLDNode(CompatibleNode):
         msg.data = id2rgb(tl_image).tobytes()
         self.snip_publisher.publish(msg)
 
-        indices = np.nonzero(tl_image[0:tl_image.shape[0] // 2,
-                             tl_image.shape[1] // 3:
-                             2 * (tl_image.shape[1] // 3)])
+        areas = {}
+        for instance in np.unique(tl_image):
+            inst = np.ma.masked_not_equal(tl_image, instance).filled(0)
+            indices = np.nonzero(inst[0:inst.shape[0] // 2,
+                                 inst.shape[1] // 4:
+                                 3 * (inst.shape[1] // 4)])
+            upper_left = [min(indices[0]), min(indices[1])]
+            lower_right = [max(indices[0]), max(indices[1])]
+            areas[str(instance)] = [(lower_right[0] - upper_left[0]) *
+                                    (lower_right[1] - upper_left[1]),
+                                    upper_left,
+                                    lower_right]
+        if len(areas) > 0:
+            maximum = max(areas, key=areas.get)
+            upper_left = areas[maximum][1]
+            lower_right = areas[maximum][2]
+            traffic_light = self.image[upper_left[0]:lower_right[0],
+                                       upper_left[1]:lower_right[1]]
+            classification = self.predict(traffic_light)
 
-        if len(indices) == 0:
-            return
-        upper_left = [min(indices[0]), min(indices[1])]
-        lower_right = [max(indices[0]), max(indices[1])]
-
-        traffic_light = self.image[upper_left[0]:lower_right[0],
-                                   upper_left[1]:lower_right[1]]
-        classification = self.predict(traffic_light)
-
-        # construct the message
-        self.class_publisher.publish(str(classification))
-        self.loginfo(f"TLDNode classified traffic light "
-                     f"{self.side}")
+            # construct the message
+            self.class_publisher.publish(str(classification))
+            self.loginfo(f"TLDNode classified traffic light "
+                         f"{self.side}")
 
     def run(self):
         self.spin()

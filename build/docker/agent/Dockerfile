@@ -17,6 +17,8 @@ ARG USER_UID=999
 ARG USER_GID=$USER_UID
 ARG DEBIAN_FRONTEND=noninteractive
 
+RUN fail
+
 # install rendering dependencies for rviz / rqt
 RUN apt-get update \
   && apt-get install -y -qq --no-install-recommends \

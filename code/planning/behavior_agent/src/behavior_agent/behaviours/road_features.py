@@ -176,6 +176,7 @@ class LaneChangeAhead(py_trees.behaviour.Behaviour):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
                           (self.name, self.status, new_status))
 
+
 class MultiLane(py_trees.behaviour.Behaviour):
     """
     This behavior decides if the road the agent is currently on, has more than
@@ -219,7 +220,6 @@ class MultiLane(py_trees.behaviour.Behaviour):
         :return: True
         """
         return True
-
 
     def update(self):
         """
@@ -298,7 +298,7 @@ class SingleLineDotted(py_trees.behaviour.Behaviour):
         RUNNING thereafter.
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-            
+
         :return: True
 
         """
@@ -457,7 +457,6 @@ class LeftLaneAvailable(py_trees.behaviour.Behaviour):
         :return: True
         """
         return True
-
 
     def update(self):
         """

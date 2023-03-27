@@ -83,7 +83,6 @@ class GlobalPlanDistance(CompatibleNode):
             next_distance = distance(self.global_route[1].position,
                                      self.current_pos.position)
 
-
             # if the road option indicates an intersection, the distance to the
             # next waypoint is also the distance to the stop line
             if self.road_options[0] < 4:

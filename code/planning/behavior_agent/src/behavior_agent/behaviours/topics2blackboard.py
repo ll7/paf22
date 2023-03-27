@@ -8,7 +8,6 @@ from std_msgs.msg import Float32, Bool
 from carla_msgs.msg import CarlaSpeedometer
 from sensor_msgs.msg import Range
 
-from perception.msg import Waypoint
 from mock.msg import Traffic_light, Stop_sign
 from perception.msg import Waypoint, LaneChange
 

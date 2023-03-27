@@ -69,8 +69,7 @@ services:
       # in ``build/docker/build/Dockerfile
       - ../:/workspace
       # mount git config for dvc
-      - ../.gitconfig:/home/carla/.gitconfig
-      - ../:/workspace/
+      - "~/.gitconfig:/home/carla/.gitconfig"
     networks:
       - carla
       - ros

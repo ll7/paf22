@@ -4,6 +4,13 @@ The training code is inspired by [this tutorial](https://debuggercafe.com/traffi
 
 ## Run trainig
 
+Update training dataset (Read [DVC docs](../../../../doc/02_development/11_dvc.md) first):
+
+```shell
+cd code/perception/src/traffic_sign_detection/
+dvc pull
+```
+
 ```shell
 b5 shell
 cd perception/src/traffic_sign_detection/

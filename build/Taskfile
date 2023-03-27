@@ -32,6 +32,7 @@ task:shell() {
 ##########################################
 task:install() {
     task:install:git_hooks
+    #task:gitconfig:copy
     install:gpu-support
     docker:install
 }
@@ -92,3 +93,9 @@ task:install:git_hooks() {
     test -L ../.git/hooks/commit-msg || ln -s ../../build/hooks/commit-msg ../.git/hooks/
     chmod +x ./hooks/*
 }
+
+task:gitconfig:copy() {
+  cp -u ~/.gitconfig ../.gitconfig
+}
+
+source ./tasks/ros.sh

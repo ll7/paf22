@@ -7,7 +7,12 @@
     </include>
 
     <!-- planning -->
-    <include file="$(find planning)/launch/planning.launch">
+    <include file="$(find planning_runner)/launch/planning_runner.launch">
+    </include>
+
+    <include file="$(find mock)/launch/mock.launch">
+        <arg name="control_loop_rate" value="$(arg control_loop_rate)"/>
+        <arg name="role_name" value="$(arg role_name)"/>
     </include>
 
     <!-- acting -->
@@ -15,4 +20,7 @@
         <arg name="control_loop_rate" value="$(arg control_loop_rate)"/>
         <arg name="role_name" value="$(arg role_name)"/>
     </include>
+
+
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find agent)/config/rviz_config.rviz" />
 </launch>

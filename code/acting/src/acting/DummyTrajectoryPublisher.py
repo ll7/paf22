@@ -32,18 +32,35 @@ class DummyTrajectoryPub(CompatibleNode):
         self.current_trajectory = []
         self.path_msg = Path()
         self.path_msg.header.stamp = rospy.Time.now()
-        self.path_msg.header.frame_id = "Frame ID Path"
+        self.path_msg.header.frame_id = "global"
 
         # Static trajectory for testing purposes
-        initial_trajectory = [
-            (985.0, -5373.2),
-            (985.0, -5473.2),
-            (990.0, -5474.2),
-            (990.0, -5524.2),
-            (990.0, -5574.2)
-        ]
-        self.updated_trajectory(initial_trajectory)
+        self.initial_trajectory = [
+            (986.0, -5442.0),
+            (986.0, -5463.2),
+            (984.5, -5493.2),
 
+            (984.5, -5563.5),
+            (985.0, -5573.2),
+            (986.3, -5576.5),
+            (987.3, -5578.5),
+            (988.7, -5579.0),
+            (990.5, -5579.8),
+            (1000.0, -5580.2),
+
+            (1040.0, -5580.0),
+            (1070.0, -5580.0),
+            (1080.0, -5582.0),
+            (1090.0, -5582.0),
+            (1100.0, -5580.0),
+            (1110.0, -5578.0),
+            (1120.0, -5578.0),
+            (1130.0, -5580.0),
+            (1464.6, -5580.0),
+            (1664.6, -5580.0)
+        ]
+
+        self.updated_trajectory(self.initial_trajectory)
         # request for a new interpolated dummy trajectory
         # self.dummy_trajectory_request_subscriber = self.new_subscription(
         #     DummyTrajectoryRequest,
@@ -54,7 +71,7 @@ class DummyTrajectoryPub(CompatibleNode):
         # publisher for the current trajectory
         self.trajectory_publisher = self.new_publisher(
             Path,
-            "/carla/" + self.role_name + "/trajectory",
+            "/paf/" + self.role_name + "/trajectory",
             qos_profile=1)
 
     def updated_trajectory(self, target_trajectory):
@@ -63,9 +80,9 @@ class DummyTrajectoryPub(CompatibleNode):
         :param: target_trajectory: the new target trajectory to be published
         :return:
         """
-        self.current_trajectory = interpolate_route(target_trajectory, 0.5)
+        self.current_trajectory = interpolate_route(target_trajectory, 0.25)
         self.path_msg.header.stamp = rospy.Time.now()
-        self.path_msg.header.frame_id = "Frame ID Path Update"
+        self.path_msg.header.frame_id = "global"
 
         # clear old waypoints
         self.path_msg.poses.clear()
@@ -73,13 +90,13 @@ class DummyTrajectoryPub(CompatibleNode):
         for wp in self.current_trajectory:
             pos = PoseStamped()
             pos.header.stamp = rospy.Time.now()
-            pos.header.frame_id = "Frame ID Pos"
+            pos.header.frame_id = "global"
 
             pos.pose.position.x = wp[0]
             pos.pose.position.y = wp[1]
+            pos.pose.position.z = 0
 
             # currently not used therefore zeros
-            pos.pose.position.z = 0
             pos.pose.orientation.x = 0
             pos.pose.orientation.y = 0
             pos.pose.orientation.z = 0
@@ -90,12 +107,12 @@ class DummyTrajectoryPub(CompatibleNode):
     def run(self):
         """
         Control loop
-
         :return:
         """
 
         def loop(timer_event=None):
             # Continuously update path
+            self.updated_trajectory(self.initial_trajectory)
             self.trajectory_publisher.publish(self.path_msg)
 
         self.new_timer(self.control_loop_rate, loop)
@@ -105,7 +122,6 @@ class DummyTrajectoryPub(CompatibleNode):
 def main(args=None):
     """
     main function
-
     :param args:
     :return:
     """

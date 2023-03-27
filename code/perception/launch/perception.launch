@@ -1,4 +1,69 @@
 <!-- TODO: Insert components of component-->
 <launch>
-    
+  <arg name="role_name" default="hero" />
+  <arg name="control_loop_rate" default="0.1" />
+
+  <node pkg="perception" type="PositionPublisher.py" name="PositionPublisher" output="screen">
+    <param name="control_loop_rate" value="0.1" />
+    <param name="role_name" value="$(arg role_name)" />
+  </node>
+
+    <node pkg="perception" type="EKFTranslationNode.py" name="EKFTranslationNode" output="screen">
+    <param name="control_loop_rate" value="0.1" />
+    <param name="role_name" value="$(arg role_name)" />
+  </node>
+
+  <node pkg="perception" type="segmentation_node.py" name="SegmentationNode" output="screen">
+    <param name="role_name" value="$(arg role_name)" />
+    <param name="side" value="Center" />
+  </node>
+
+  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+    <!--remap from="imu_data" to="carla/hero/IMU"/-->
+    <!--remap from="vo" to="carla/hero/ekf_vo"/-->
+    <param name="output_frame" value="Local Frame"/>
+    <param name="base_footprint_frame" value="hero"/>
+    <param name="freq" value="20.0"/>
+    <param name="sensor_timeout" value="10.0"/>
+    <param name="odom_used" value="false"/>
+    <param name="imu_used" value="false"/>
+    <param name="vo_used" value="true"/>
+    <param name="debug" value="true"/>
+    <param name="self_diagnose" value="true"/>
+  </node>
+
+  <node pkg="perception" type="global_plan_distance_publisher.py" name="GlobalPlanDistance" output="screen">
+    <param name="control_loop_rate" value="0.1" />
+    <param name="role_name" value="$(arg role_name)" />
+  </node>
+
+  <node pkg="perception" type="lidar_distance.py" name="lidar_distance" output="screen">
+    <param name="max_y" value="1.5"/>
+    <param name="min_y" value="-1.5"/>
+    <param name="min_x" value="3"/>
+    <param name="min_z" value="-1.5"/>
+    <param name="max_z" value="0"/>
+    <param name="point_cloud_topic" value="/carla/hero/LIDAR_filtered"/>
+    <param name="range_topic" value="/carla/hero/LIDAR_range"/>
+  </node>
+
+  <node pkg="perception" type="lidar_distance.py" name="lidar_distance_rear_right" output="screen">
+    <param name="min_y" value="-5"/>
+    <param name="max_y" value="-2.5"/>
+    <param name="max_x" value="0"/>
+    <param name="min_z" value="-1.5"/>
+    <param name="max_z" value="0"/>
+    <param name="point_cloud_topic" value="/carla/hero/LIDAR_filtered_rear_right"/>
+    <param name="range_topic" value="/carla/hero/LIDAR_range_rear_right"/>
+  </node>
+
+  <node pkg="perception" type="lidar_distance.py" name="lidar_distance_rear_left" output="screen">
+    <param name="min_y" value="2.5"/>
+    <param name="max_y" value="5"/>
+    <param name="max_x" value="0"/>
+    <param name="min_z" value="-1.5"/>
+    <param name="max_z" value="0"/>
+    <param name="point_cloud_topic" value="/carla/hero/LIDAR_filtered_rear_left"/>
+    <param name="range_topic" value="/carla/hero/LIDAR_range_rear_left"/>
+  </node>
 </launch>

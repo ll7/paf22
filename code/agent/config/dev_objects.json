@@ -10,9 +10,9 @@
       "id": "hero",
       "role_name": "hero",
       "spawn_point": {
-        "x": 983.5,
-        "y": -5373.2,
-        "z": 371.5,
+        "x": 984.5,
+        "y": -5442.0,
+        "z": 371.0,
         "yaw": -90.0,
         "pitch": 0.0,
         "roll": 0.0
@@ -22,9 +22,9 @@
           "type": "sensor.camera.rgb",
           "id": "Center",
           "spawn_point": {
-            "x": 0.7,
-            "y": 0.4,
-            "z": 1.60,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.70,
             "roll": 0.0,
             "pitch": 0.0,
             "yaw": 0.0,
@@ -33,8 +33,8 @@
             "chromatic_aberration_intensity": 0.5,
             "chromatic_aberration_offset": 0.0
           },
-          "image_size_x": 300,
-          "image_size_y": 200,
+          "image_size_x": 1280,
+          "image_size_y": 720,
           "fov": 100,
           "attached_objects": [
             {
@@ -42,6 +42,63 @@
               "id": "control"
             }
           ]
+        },
+        {
+          "type": "sensor.camera.rgb",
+          "id": "Left",
+          "spawn_point": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.70,
+            "roll": 0.0,
+            "pitch": 0.0,
+            "yaw": -90.0,
+            "lens_circle_multiplier": 3.0,
+            "lens_circle_falloff": 3.0,
+            "chromatic_aberration_intensity": 0.5,
+            "chromatic_aberration_offset": 0.0
+          },
+          "image_size_x": 1280,
+          "image_size_y": 720,
+          "fov": 100
+        },
+        {
+          "type": "sensor.camera.rgb",
+          "id": "Right",
+          "spawn_point": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.70,
+            "roll": 0.0,
+            "pitch": 0.0,
+            "yaw": 90.0,
+            "lens_circle_multiplier": 3.0,
+            "lens_circle_falloff": 3.0,
+            "chromatic_aberration_intensity": 0.5,
+            "chromatic_aberration_offset": 0.0
+          },
+          "image_size_x": 1280,
+          "image_size_y": 720,
+          "fov": 100
+        },
+        {
+          "type": "sensor.camera.rgb",
+          "id": "Back",
+          "spawn_point": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.70,
+            "roll": 0.0,
+            "pitch": 0.0,
+            "yaw": 180.0,
+            "lens_circle_multiplier": 3.0,
+            "lens_circle_falloff": 3.0,
+            "chromatic_aberration_intensity": 0.5,
+            "chromatic_aberration_offset": 0.0
+          },
+          "image_size_x": 1280,
+          "image_size_y": 720,
+          "fov": 100
         },
         {
           "type": "sensor.lidar.ray_cast",
@@ -52,7 +109,7 @@
             "z": 1.60,
             "roll": 0.0,
             "pitch": 0.0,
-            "yaw": -45.0
+            "yaw": 0.0
           },
           "range": 85,
           "rotation_frequency": 10,
@@ -85,13 +142,13 @@
           "type": "sensor.other.gnss",
           "id": "GPS",
           "spawn_point": {
-            "x": 0.7,
+            "x": 0.0,
             "y": 0.0,
             "z": 1.60
           },
-          "noise_alt_stddev": 0.000005,
-          "noise_lat_stddev": 0.000005,
-          "noise_lon_stddev": 0.000005,
+          "noise_alt_stddev": 0.00000,
+          "noise_lat_stddev": 0.00000,
+          "noise_lon_stddev": 0.00000,
           "noise_alt_bias": 0.0,
           "noise_lat_bias": 0.0,
           "noise_lon_bias": 0.0
@@ -105,7 +162,7 @@
             "z": 1.60,
             "roll": 0.0,
             "pitch": 0.0,
-            "yaw": -45.0
+            "yaw": 0.0
           },
           "noise_accel_stddev_x": 0.001,
           "noise_accel_stddev_y": 0.001,

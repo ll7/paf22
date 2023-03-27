@@ -74,7 +74,9 @@ RUN apt-get update && apt-get install -y \
         ros-noetic-carla-msgs ros-noetic-pcl-conversions \
         ros-noetic-rviz ros-noetic-rqt ros-noetic-pcl-ros ros-noetic-rosbridge-suite ros-noetic-rosbridge-server \
         ros-noetic-robot-pose-ekf ros-noetic-ros-numpy \
-        ros-noetic-py-trees-ros ros-noetic-rqt-py-trees ros-noetic-rqt-reconfigure
+        ros-noetic-py-trees-ros ros-noetic-rqt-py-trees ros-noetic-rqt-reconfigure \
+        python3-tk
+
 
 SHELL ["/bin/bash", "-c"]
 
@@ -180,10 +182,6 @@ ADD ./build/docker/agent/entrypoint.sh /entrypoint.sh
 WORKDIR /workspace/code
 
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-
-RUN apt install -y python3-tk
-
-RUN pip install -r requirements.txt
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash", "-c", "sleep 10 && python3 /opt/leaderboard/leaderboard/leaderboard_evaluator.py --debug=${DEBUG_CHALLENGE} \

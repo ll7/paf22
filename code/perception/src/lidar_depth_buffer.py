@@ -5,18 +5,26 @@ from sensor_msgs.msg import Image
 
 
 class LidarDepthBuffer():
+    """ Node to override all Pixels which are greater than a lower limit.
+        It takes a PointCloud2 message as input and outputs a PointCloud2
+        message on which the described method was applied
+    """
 
+    # Store combined depth map
     last_img = None
 
     def callback(self, data):
+        # make numpy array from depthmap
         img = ros_numpy.numpify(data)
 
-        rospy.loginfo(self.last_img)
-
+        # create bitmask (True, if distance greater than 5000)
+        # and override all pixels where the bitmask is True
         if self.last_img is not None:
             mask = (img > 5000)
             self.last_img[mask] = img[mask]
 
+        # if we have no hostorical data yet just use the
+        # values we got
         else:
             self.last_img = img
 

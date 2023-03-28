@@ -10,6 +10,7 @@ from ros_compatibility.node import CompatibleNode
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from coordinate_transformation import CoordinateTransformer, GeoRef, \
     quat_to_heading
+import numpy as np
 import rospy
 
 
@@ -51,6 +52,9 @@ class PositionPublisher(CompatibleNode):
             "/paf/" + self.role_name + "/current_pos",
             qos_profile=1)
 
+        self.avg_xyz = np.zeros((5, 3))
+        self.__publish_counter = 0
+
     def update_pos_filtered_data(self, data: PoseWithCovarianceStamped):
         self.current_pos_gps = data
 
@@ -90,6 +94,17 @@ class PositionPublisher(CompatibleNode):
         """
         # self.loginfo("publishing data")
         temp_pos = self.update_current_pos()
+        pos = np.matrix([temp_pos.pose.position.x,
+                        temp_pos.pose.position.y,
+                        temp_pos.pose.position.z])
+        self.avg_xyz = np.roll(self.avg_xyz, -1, axis=0)
+        self.avg_xyz[-1] = pos
+
+        # compute average of each column
+        avg_x, avg_y, avg_z = np.mean(self.avg_xyz, axis=0)
+        temp_pos.pose.position.x = avg_x
+        temp_pos.pose.position.y = avg_y
+        temp_pos.pose.position.z = avg_z
         self.pos_publisher.publish(temp_pos)
 
     def run(self):

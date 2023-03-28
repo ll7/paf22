@@ -128,7 +128,7 @@ class VehicleController(CompatibleNode):
                 self.controller_pub.publish(float(STANLEY_CONTROLLER))
 
             f_stanley = p_stanley * self.__stanley_steer
-            f_pure_p = (1-p_stanley) * self.__pure_pursuit_steer
+            f_pure_p = (1 - p_stanley) * self.__pure_pursuit_steer
             steer = f_stanley + f_pure_p
 
             message = CarlaEgoVehicleControl()

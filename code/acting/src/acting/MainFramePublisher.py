@@ -35,7 +35,7 @@ class MainFramePublisher(CompatibleNode):
 
         self.current_heading_subscriber = self.new_subscription(
             Float32,
-            "/carla/" + self.role_name + "/current_heading",
+            f"/paf/{self.role_name}/current_heading",
             self.get_current_heading,
             qos_profile=1)
 

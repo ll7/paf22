@@ -24,7 +24,7 @@ class Acc(CompatibleNode):
 
         self.dist_sub: Subscriber = self.new_subscription(
             Range,
-            "/carla/hero/LIDAR_filtered",
+            "/carla/hero/LIDAR_range",
             self.__get_current_dist,
             qos_profile=1)
 
@@ -141,7 +141,6 @@ class Acc(CompatibleNode):
     def __get_current_dist(self, data: Range):
         self.__dist = data.range
         self.__dist_last_received_at = rospy.get_rostime()
-        self.logerr("Test")
 
     def __get_velocity(self, data: CarlaSpeedometer):
         self.__velocity = data.speed

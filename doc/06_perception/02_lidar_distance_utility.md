@@ -52,7 +52,7 @@ starting from 20cm above the ground you have to set min_z = -1.5.
 
 The meaning of the x and y values is described by the following image:
 
-![lidar filter](../00_assets/lidar_filter.png)
+![Parameters in relation to car](../00_assets/lidar_filter.png)
 
 ### Example
 

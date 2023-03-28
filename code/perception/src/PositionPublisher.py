@@ -8,7 +8,8 @@ It therefore receives a nav_msgs/Path msg.
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
-from coordinate_transformation import CoordinateTransformer, GeoRef
+from coordinate_transformation import CoordinateTransformer, GeoRef, \
+    quat_to_heading
 import numpy as np
 import rospy
 
@@ -27,12 +28,7 @@ class PositionPublisher(CompatibleNode):
         super(PositionPublisher, self).__init__('position_publisher')
         self.loginfo("PositionPublisher node started")
 
-        self.transformer = CoordinateTransformer()
-        gps_ref = GeoRef.TOWN12
-        lat0 = gps_ref.value[0]
-        lon0 = gps_ref.value[1]
-        h0 = gps_ref.value[2]
-        self.transformer.set_gnss_ref(lat0, lon0, h0)
+        self.transformer = CoordinateTransformer(GeoRef.TOWN12)
 
         # current_pos ist the final PoseStamped that will be published
         self.current_pos_gps: PoseWithCovarianceStamped = \
@@ -75,6 +71,8 @@ class PositionPublisher(CompatibleNode):
         # x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
 
         orientation_quat = self.current_pos_gps.pose.pose.orientation
+        self.current_heading = quat_to_heading(orientation_quat)
+        # self.loginfo(degrees(self.current_heading))
         # self.loginfo(self.current_heading)
 
         temp_pose: PoseStamped = PoseStamped()

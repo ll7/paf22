@@ -32,6 +32,11 @@
     <param name="self_diagnose" value="true"/>
   </node>
 
+  <node pkg="perception" type="global_plan_distance_publisher.py" name="GlobalPlanDistance" output="screen">
+    <param name="control_loop_rate" value="0.1" />
+    <param name="role_name" value="$(arg role_name)" />
+  </node>
+
   <node pkg="perception" type="lidar_distance.py" name="lidar_distance" output="screen">
     <param name="max_y" value="1.5"/>
     <param name="min_y" value="-1.5"/>
@@ -44,7 +49,7 @@
 
   <node pkg="perception" type="lidar_distance.py" name="lidar_distance_rear_right" output="screen">
     <param name="min_y" value="-5"/>
-    <param name="max_y" value="-1.5"/>
+    <param name="max_y" value="-2.5"/>
     <param name="max_x" value="0"/>
     <param name="min_z" value="-1.5"/>
     <param name="max_z" value="0"/>
@@ -53,7 +58,7 @@
   </node>
 
   <node pkg="perception" type="lidar_distance.py" name="lidar_distance_rear_left" output="screen">
-    <param name="min_y" value="1.5"/>
+    <param name="min_y" value="2.5"/>
     <param name="max_y" value="5"/>
     <param name="max_x" value="0"/>
     <param name="min_z" value="-1.5"/>

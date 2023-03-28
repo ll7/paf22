@@ -8,7 +8,7 @@ from std_msgs.msg import Float32
 
 
 PARKING_V: float = 2.0
-PARKING_DUR: float = 15.0
+PARKING_DUR: float = 5.0
 
 
 class VelocityPublisherDummy(CompatibleNode):
@@ -41,10 +41,10 @@ class VelocityPublisherDummy(CompatibleNode):
         self.__is_parking: bool = True
         self.__start_time = None
 
-        self.velocity = 3.0
-        self.delta_velocity = 0.05
-        self.max_velocity = 7.0
-        self.min_velocity = 3.0
+        self.velocity = 5.0
+        self.delta_velocity = 0.01
+        self.max_velocity = 5.0
+        self.min_velocity = 5.0
 
         self.__dv = self.delta_velocity
 
@@ -85,7 +85,7 @@ class VelocityPublisherDummy(CompatibleNode):
                 self.velocity_pub.publish(PARKING_V)
             else:
                 # Normal state
-                # self.loginfo('Published velocity: ' + str(self.velocity))
+                self.loginfo('Published velocity: ' + str(self.velocity))
                 self.velocity_pub.publish(self.velocity)
                 if self.velocity > self.max_velocity:
                     self.__dv = -self.delta_velocity

@@ -19,17 +19,18 @@ GPS_RUNNING_AVG_ARGS: int = 10
 
 class PositionPublisherNode(CompatibleNode):
     """
-    Translates to the topic required by robot_pose_ekf.
+    Node publishes a filtered gps signal.
+    This is achieved using a rolling average.
     """
 
     def __init__(self):
         """
-        Constructor
+        Constructor / Setup
         :return:
         """
 
         super(PositionPublisherNode, self).__init__('ekf_translation')
-        self.loginfo("EKF_Translation node started")
+        self.loginfo("Position publisher node started")
 
         # basic info
         self.role_name = self.get_param("role_name", "hero")
@@ -83,6 +84,12 @@ class PositionPublisherNode(CompatibleNode):
             qos_profile=1)
 
     def update_imu_data(self, data: Imu):
+        """
+        This method is called when new IMU data is received.
+        It handles all necessary updates and publishes the heading.
+        :param data: new IMU measurement
+        :return:
+        """
         imu_data = Imu()
 
         imu_data.header.stamp = data.header.stamp
@@ -127,15 +134,21 @@ class PositionPublisherNode(CompatibleNode):
         # ---------------------------------------------------------------
         heading = (raw_heading - (math.pi / 2)) % (2 * math.pi) - math.pi
         self.__heading = heading
-        # self.__heading = raw_heading - math.pi / 2
         self.__heading_publisher.publish(self.__heading)
 
     def update_gps_data(self, data: NavSatFix):
+        """
+        This method is called when new GNSS data is received.
+        The function calculates the average position and then publishes it.
+        Measurements are also transformed to global xyz-coordinates
+        :param data: GNSS measurement
+        :return:
+        """
         lat = data.latitude
         lon = data.longitude
         alt = data.altitude
         x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
-        # todo: find reason for discrepancy
+        # find reason for discrepancy
         x *= 0.998
         y *= 1.003
 
@@ -163,17 +176,14 @@ class PositionPublisherNode(CompatibleNode):
     def run(self):
         """
         Control loop
-
         :return:
         """
-
         self.spin()
 
 
 def main(args=None):
     """
     main function
-
     :param args:
     :return:
     """

@@ -94,7 +94,7 @@ class DummyTrajectoryPub(CompatibleNode):
 
             pos.pose.position.x = wp[0]
             pos.pose.position.y = wp[1]
-            pos.pose.position.z = 0
+            pos.pose.position.z = 37.6
 
             # currently not used therefore zeros
             pos.pose.orientation.x = 0

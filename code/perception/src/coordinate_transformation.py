@@ -9,20 +9,21 @@ http://dirsig.cis.rit.edu/docs/new/coordinates.html
 """
 import math
 from enum import Enum
+from tf.transformations import euler_from_quaternion
 
 
 # Class to choose a map with a predefined reference point
-class GeoRef(Enum):  # todo: add values for other towns
-    TOWN01 = 0, 0, 0  # lat = 1.7e-08, lon = -5.6e-08, alt = 0.02
-    TOWN02 = 0, 0, 0  # lat = 6.7e-10, lon= -3.4e-11, alt = -0.004
-    TOWN03 = 0, 0, 0  # lat = 5.1e-10, lon = 2.1e-10, alt = 0.03
-    TOWN04 = 0, 0, 0  # 0,0,0 not possible, but ref is correct
-    TOWN05 = 0, 0, 0  # lat =2.6e-09, lon =8.7e-11, alt =-0.004 #fav
+class GeoRef(Enum):
+    TOWN01 = 0, 0, 0
+    TOWN02 = 0, 0, 0
+    TOWN03 = 0, 0, 0
+    TOWN04 = 0, 0, 0
+    TOWN05 = 0, 0, 0
     TOWN06 = 0, 0, 0  # lat =, lon =, alt = #Town06/HD not found
     TOWN07 = 0, 0, 0  # lat =, lon =, alt = #Town07/HD not found
     TOWN08 = 0, 0, 0  # lat =, lon =, alt = #Town08/HD not found
     TOWN09 = 0, 0, 0  # lat =, lon =, alt = #Town09/HD not found
-    TOWN10 = 0, 0, 0  # lat =-8.9e-05, lon =-3.1e-11, alt = 0.0 #Town10HD
+    TOWN10 = 0, 0, 0  # Town10HD
     TOWN11 = 0, 0, 0  # lat =, lon =, alt = #Town11/HD not found
     TOWN12 = 35.25000, -101.87500, 331.00000
 
@@ -42,30 +43,14 @@ class CoordinateTransformer:
     h_ref: float
     ref_set = False
 
-    def __init__(self):
-        self.la_ref = 0
-        self.ln_ref = 0
-        self.h_ref = 0
-
-    def set_gnss_ref(self, lat0, lon0, h0):
-        """
-        Set the given parameters as a reference point for x,y,z = 0,0,0
-        :param lat0: Lateral zero point reference
-        :param lon0: Longitudinal zero point reference
-        :param h0: Height zero point reference
-        :return: Nothing
-        """
-        self.la_ref = lat0
-        self.ln_ref = lon0
-        self.h_ref = h0
-        self.ref_set = True
+    def __init__(self, gps_ref: GeoRef):
+        self.la_ref = gps_ref.value[0]
+        self.ln_ref = gps_ref.value[1]
+        self.h_ref = gps_ref.value[2]
 
     def gnss_to_xyz(self, lat, lon, h):
-        if self.ref_set:
-            return geodetic_to_enu(lat, lon, h,
-                                   self.la_ref, self.ln_ref, self.h_ref)
-        else:
-            return -1, -1, -1
+        return geodetic_to_enu(lat, lon, h,
+                               self.la_ref, self.ln_ref, self.h_ref)
 
 
 def geodetic_to_enu(lat, lon, h, lat_ref, lon_ref, h_ref):
@@ -118,7 +103,15 @@ def ecef_to_enu(x, y, z, lat0, lon0, h0):
 
     return xE, yN, zUp
 
-#
+
+def quat_to_heading(msg):
+    orientation_q = msg
+    orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z,
+                        orientation_q.w]
+    (roll, pitch, yaw) = euler_from_quaternion(orientation_list)
+    heading = float(math.atan2(pitch, roll))
+    return -heading + math.pi
+
 # if __name__ == '__main__':
 #    def are_close(a, b):
 #        return abs(a - b) < 1e-4

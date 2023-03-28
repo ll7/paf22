@@ -87,25 +87,25 @@ class PurePursuitController(CompatibleNode):
             :return:
             """
             if self.__path is None:
-                self.logwarn("PurePursuitController hasn't received a path yet"
-                             "and can therefore not publish steering")
+                self.logdebug("PurePursuitController hasn't received a path "
+                              "yet and can therefore not publish steering")
                 return
             if self.__position is None:
-                self.logwarn("PurePursuitController hasn't received the"
-                             "position of the vehicle yet "
-                             "and can therefore not publish steering")
+                self.logdebug("PurePursuitController hasn't received the "
+                              "position of the vehicle yet "
+                              "and can therefore not publish steering")
                 return
 
             if self.__heading is None:
-                self.logwarn("PurePursuitController hasn't received the"
-                             "heading of the vehicle yet and"
-                             "can therefore not publish steering")
+                self.logdebug("PurePursuitController hasn't received the "
+                              "heading of the vehicle yet and "
+                              "can therefore not publish steering")
                 return
 
             if self.__velocity is None:
-                self.logwarn("PurePursuitController hasn't received the "
-                             "velocity of the vehicle yet "
-                             "and can therefore not publish steering")
+                self.logdebug("PurePursuitController hasn't received the "
+                              "velocity of the vehicle yet "
+                              "and can therefore not publish steering")
                 return
             self.pure_pursuit_steer_pub.publish(self.__calculate_steer())
 

@@ -7,7 +7,7 @@ from sensor_msgs.msg import PointCloud2, Range
 
 
 class LidarDistance():
-    """ See doc/06_perception/02_lidar_distance_utility.md on
+    """ See doc/06_perception/03_lidar_distance_utility.md on
         how to configute this node
     """
 

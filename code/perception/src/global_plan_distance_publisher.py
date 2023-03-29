@@ -4,7 +4,9 @@ import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
 from geometry_msgs.msg import PoseStamped
 from carla_msgs.msg import CarlaRoute
+
 from perception.msg import Waypoint, LaneChange
+
 import math
 # import rospy
 
@@ -48,12 +50,6 @@ class GlobalPlanDistance(CompatibleNode):
             self.update_global_route,
             qos_profile=1)
 
-        # Publisher
-        # self.stopline_publisher = self.new_publisher(
-        #     Float32,
-        #     "/paf/" + self.role_name + "/stopline_distance",
-        #     qos_profile=1)
-
         self.waypoint_publisher = self.new_publisher(
             Waypoint,
             "/paf/" + self.role_name + "/waypoint_distance",
@@ -70,6 +66,7 @@ class GlobalPlanDistance(CompatibleNode):
         IMU, Speedometer and GNSS sensor data.
         :return:
         """
+
         def distance(a, b):
             d_x = (a.x - b.x) ** 2
             d_y = (a.y - b.y) ** 2
@@ -80,6 +77,7 @@ class GlobalPlanDistance(CompatibleNode):
         # check if the global route has been published and that there are still
         # points to navigate to
         if self.global_route is not None and self.global_route:
+
             current_distance = distance(self.global_route[0].position,
                                         self.current_pos.position)
             next_distance = distance(self.global_route[1].position,
@@ -89,6 +87,7 @@ class GlobalPlanDistance(CompatibleNode):
             # next waypoint is also the distance to the stop line
             if self.road_options[0] < 4:
                 # print("publish waypoint")
+
                 self.waypoint_publisher.publish(
                     Waypoint(current_distance, True))
                 self.lane_change_publisher.publish(

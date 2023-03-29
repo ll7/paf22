@@ -36,12 +36,8 @@ class PositionPublisherNode(CompatibleNode):
         self.role_name = self.get_param("role_name", "hero")
         self.control_loop_rate = self.get_param("control_loop_rate", "0.05")
 
-        self.transformer = CoordinateTransformer()
-        gps_ref = GeoRef.TOWN12
-        lat0 = gps_ref.value[0]
-        lon0 = gps_ref.value[1]
-        h0 = gps_ref.value[2]
-        self.transformer.set_gnss_ref(lat0, lon0, h0)
+        # todo: automatically detect town
+        self.transformer = CoordinateTransformer(GeoRef.TOWN12)
 
         # Subscriber
         self.imu_subscriber = self.new_subscription(
@@ -106,16 +102,16 @@ class PositionPublisherNode(CompatibleNode):
         imu_data.angular_velocity.x = data.angular_velocity.x
         imu_data.angular_velocity.y = data.angular_velocity.y
         imu_data.angular_velocity.z = data.angular_velocity.z
-        imu_data.angular_velocity_covariance = [0.001, 0,     0,
-                                                0,     0.001, 0,
-                                                0,     0,     0.001]
+        imu_data.angular_velocity_covariance = [0.001, 0, 0,
+                                                0, 0.001, 0,
+                                                0, 0, 0.001]
 
         imu_data.linear_acceleration.x = data.linear_acceleration.x
         imu_data.linear_acceleration.y = data.linear_acceleration.y
         imu_data.linear_acceleration.z = data.linear_acceleration.z
-        imu_data.linear_acceleration_covariance = [0.001, 0,     0,
-                                                   0,     0.001, 0,
-                                                   0,     0,     0.015]
+        imu_data.linear_acceleration_covariance = [0.001, 0, 0,
+                                                   0, 0.001, 0,
+                                                   0, 0, 0.015]
 
         self.ekf_imu_publisher.publish(imu_data)
 

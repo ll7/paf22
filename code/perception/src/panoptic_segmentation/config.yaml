@@ -25,7 +25,7 @@ MODEL:
     # BATCH_SIZE_PER_IMAGE: 256 # number of proposals to sample for training
     # POSITIVE_FRACTION: 0.25 # fraction of positive (foreground) proposals to sample for training.
     IN_FEATURES: [ "P_4", "P_8", "P_16", "P_32" ]
-    NUM_CLASSES: 15 # There is 8 instance in the city scape dataset
+    NUM_CLASSES: 14 # There is 14 instance in our dataset
     # PROPOSAL_APPEND_GT:
     IOU_THRESHOLDS: [ 0.5 ]
     # IOU_LABELS:
@@ -54,9 +54,6 @@ TEST:
 DATASET_PATH: "/workspace/code/output/leaderboard_dataset_converted/"
 TRAIN_JSON: "groundtruth/panoptic_train.json"
 VALID_JSON: "groundtruth/panoptic_val.json"
-#DATASET_PATH: "/workspace/dataset/dataset/"
-#TRAIN_JSON: "gtFine/cityscapes_panoptic_train.json"
-#VALID_JSON: "gtFine/cityscapes_panoptic_val.json"
 PRED_DIR: "preds" # Path of images generated in the dataset folder
 PRED_JSON: "cityscapes_panoptic_preds.json" # Path in the dataset folder of the prediction json created
 
@@ -83,13 +80,13 @@ SOLVER:
   ACCUMULATE_GRAD: 1 # Number of accumulated epochs for accumulated gradient
 
 CALLBACKS:
-  CHECKPOINT_DIR: "logs/32-test-10-patience"
+  CHECKPOINT_DIR: "logs/test-10-patience"
 
 # Path to load a model
 CHECKPOINT_PATH: ""
 BATCH_SIZE: 1
-PRECISION: 32 # Bit precision for mix precision training
-NUM_CLASS: 16
+PRECISION: 16 # Bit precision for mix precision training
+NUM_CLASS: 15
 MODEL_CUSTOM:
   BACKBONE:
     EFFICIENTNET_ID: 5 # Id of the EfficienNet model

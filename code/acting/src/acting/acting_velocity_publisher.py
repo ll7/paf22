@@ -27,9 +27,7 @@ MAX_VELOCITY: float = 25  # = 90 km/h
 
 class ActingVelocityPublisher(CompatibleNode):
     """
-    This node publishes velocities. It can be used for testing.
-    Published velocities move up and down in steps of delta_velocity between
-    min_velocity and max_velocity.
+    This node publishes the acting velocity based on max curve speed.
     """
 
     def __init__(self):
@@ -93,7 +91,8 @@ class ActingVelocityPublisher(CompatibleNode):
 
         def loop(timer_event=None):
             """
-            Publishes velocity limits calculated in acting
+            Publishes velocity limits calculated in acting based on
+            upcoming curves
             :param timer_event: Timer event from ROS
             :return:
             """

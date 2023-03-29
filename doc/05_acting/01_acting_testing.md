@@ -17,6 +17,7 @@ Julian Graf
   * [Author](#author)
   * [Date](#date)
   * [velocity_controller](#velocitycontroller)
+  * [Dummys](#dummys)
 <!-- TOC -->
 
 ## velocity_controller
@@ -24,3 +25,12 @@ Julian Graf
 To test the velocity controller, set the parameter ```enabled``` in the acting launch-file true. Now the velocity_publisher_dummy will publish dummy target speeds. Use ```rqt_plot /carla/hero/velocity_as_float /carla/hero/max_velocity``` to visualize target and current speeds.
 
 ![image not found](./../00_assets/testing_velocity_pid.png)
+
+## Dummys
+
+To test the steering controllers and the acc there are two dummys:
+
+* the ```DummyTrajectoryPub``` publishes a simple path to test the steering controllers on,
+* the ```AccDistancePublisherDummy``` publishes a dummy distances to an imaginary vehicle in front
+
+To activate these dummys, make sure that they are started in the launch file and ```<param name="enabled" value="True" />``` is set in the launch file.

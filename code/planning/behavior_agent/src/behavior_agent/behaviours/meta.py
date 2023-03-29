@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 import rospy
 import py_trees
-import numpy as np
 from std_msgs.msg import Float32
-# from custom_carla_msgs.srv import UpdateGlobalPath, UpdateLocalPath
 
 """
 Source: https://github.com/ll7/psaf2
@@ -12,58 +10,100 @@ Source: https://github.com/ll7/psaf2
 
 
 class Start(py_trees.behaviour.Behaviour):
+    """
+    This behavior is the first one being called when the decision tree starts,
+    it sets a first target_speed
+    """
     def __init__(self, name):
+        """
+        Minimal one-time initialisation. Other one-time initialisation
+        requirements should be met via the setup() method.
+        :param name: name of the behaviour
+        """
         super(Start, self).__init__(name)
 
     def setup(self, timeout):
+        """
+        Delayed one-time initialisation that would otherwise interfere with
+        offline rendering of this behaviour in a tree to dot graph or
+        validation of the behaviour's configuration.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics and the target speed publisher.
+        :param timeout: an initial timeout to see if the tree generation is
+        successful
+        :return: True, as the set up is successful.
+        """
         self.blackboard = py_trees.blackboard.Blackboard()
-        # rospy.wait_for_service('update_global_path')
-        # self.update_global_path = rospy.ServiceProxy("update_global_path",
-        # UpdateGlobalPath)
-        # rospy.wait_for_service('update_local_path')
-        # self.update_local_path = rospy.ServiceProxy("update_local_path",
-        # UpdateLocalPath)
         self.target_speed_pub = rospy.Publisher("paf/hero/"
                                                 "max_velocity",
                                                 Float32, queue_size=1)
         return True
 
     def initialise(self):
+        """
+        When is this called?
+        The first time your behaviour is ticked and anytime the status is not
+        RUNNING thereafter.
+        What to do here?
+            Any initialisation you need before putting your behaviour to work.
+        Publishes a first target speed
+        """
         rospy.loginfo("Starting startup sequence!")
         self.target_speed_pub.publish(0.0)
         return True
 
     def update(self):
-        # success_global_path = self.update_global_path().Success
-        # if success_global_path:
-        #     bb_dist = self.blackboard.get("/psaf/ego_vehicle/next_lanelet")
-        #     if bb_dist is not None:
-        #         is_next_intersection = bb_dist.isInIntersection
-        #         is_next_roundabout = bb_dist.isRoundabout
-        #         if is_next_intersection:
-        #             success_local_path = self.update_local_path().Success
-        #         elif is_next_roundabout:
-        #             success_local_path = self.
-        #             update_local_path(approach_roundabout=True).Success
-        #         else:
-        #             success_local_path = self.
-        #             update_local_path(leave_intersection=True).Success
-        #         if success_local_path:
-        #             rospy.loginfo("Everything is fine. We can start now!")
-        #             self.target_speed_pub.publish(50.0)
-        #             return py_trees.common.Status.SUCCESS
+        """
+        When is this called?
+        Every time your behaviour is ticked.
+        What to do here?
+            - Triggering, checking, monitoring. Anything...but do not block!
+            - Set a feedback message
+            - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
+        Returns SUCCESS
+        :return:  py_trees.common.Status.SUCCESS, as the start up is successful
+        """
         return py_trees.common.Status.SUCCESS
 
     def terminate(self, new_status):
+        """
+        When is this called?
+        Whenever your behaviour switches to a non-running state.
+            - SUCCESS || FAILURE : your behaviour's work cycle has finished
+            - INVALID : a higher priority branch has interrupted, or shutting
+            down
+        writes a status message to the console when the behaviour terminates
+        :param new_status: new state after this one is terminated
+        """
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
                           (self.name, self.status, new_status))
 
 
 class End(py_trees.behaviour.Behaviour):
+    """
+    This behavior is called as the last one when the agent finished the path.
+    """
     def __init__(self, name):
+        """
+        Minimal one-time initialisation. Other one-time initialisation
+        requirements should be met via the setup() method.
+        :param name: name of the behaviour
+        """
         super(End, self).__init__(name)
 
     def setup(self, timeout):
+        """
+        Delayed one-time initialisation that would otherwise interfere with
+        offline rendering of this behaviour in a tree to dot graph or
+        validation of the behaviour's configuration.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics and the target speed publisher.
+        :param timeout: an initial timeout to see if the tree generation is
+        successful
+        :return: True, as the set up is successful.
+        """
         self.blackboard = py_trees.blackboard.Blackboard()
         self.target_speed_pub = rospy.Publisher("/paf/hero/"
                                                 "max_velocity",
@@ -71,113 +111,44 @@ class End(py_trees.behaviour.Behaviour):
         return True
 
     def initialise(self):
+        """
+        When is this called?
+        The first time your behaviour is ticked and anytime the status is not
+        RUNNING thereafter.
+        What to do here?
+            Any initialisation you need before putting your behaviour to work.
+        Publishes a last target speed
+        """
         self.target_speed_pub.publish(0.0)
 
     def update(self):
-        odo = self.blackboard.get("/carla/ego_vehicle/odometry")
-        if odo is None:
+        """
+        When is this called?
+        Every time your behaviour is ticked.
+        What to do here?
+            - Triggering, checking, monitoring. Anything...but do not block!
+            - Set a feedback message
+            - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
+        Returns SUCCESS
+        :return:  py_trees.common.Status.RUNNING, if too far from last way
+                  point
+                  py_trees.common.Status.FAILURE, if last point reached
+        """
+        speed = self.blackboard.get("/carla/hero/Speed")
+        if speed is None:
             return py_trees.common.Status.FAILURE
-        current_pos = np.array([odo.pose.pose.position.x, odo.pose.pose.
-                               position.y])
-        target_pos = np.array([rospy.get_param('/competition/goal/'
-                                               'position/x', 10),
-                               rospy.get_param('/competition/goal/'
-                                               'position/y', 50)])
-        dist = np.linalg.norm(current_pos - target_pos)
-        if dist < 15:
+        else:
             return py_trees.common.Status.RUNNING
-        else:
-            return py_trees.common.Status.FAILURE
 
     def terminate(self, new_status):
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
-                          (self.name, self.status, new_status))
-
-
-# class Rules(py_trees.behaviour.Behaviour):
-#     def __init__(self, name):
-#         super(Rules, self).__init__(name)
-#
-#     def setup(self, timeout):
-#         return True
-#
-#     def initialise(self):
-#         return True
-#
-#     def update(self):
-#         rules = rospy.get_param('/competition/traffic_rules', True)
-#         if rules:
-#             return py_trees.common.Status.SUCCESS
-#         else:
-#             return py_trees.common.Status.FAILURE
-#
-#     def terminate(self, new_status):
-#         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
-#                           (self.name, self.status, new_status))
-#
-
-class RespawnOrFinish(py_trees.behaviour.Behaviour):
-    def __init__(self, name):
-        super(RespawnOrFinish, self).__init__(name)
-
-    def setup(self, timeout):
-        self.blackboard = py_trees.blackboard.Blackboard()
-        self.last_init_pose = None
-        self.last_init_pose_carla = None
-        return True
-
-    def initialise(self):
-        return True
-
-    def update(self):
         """
-        Checks if car was respawned or car reached target.
-        :return:
+        When is this called?
+        Whenever your behaviour switches to a non-running state.
+            - SUCCESS || FAILURE : your behaviour's work cycle has finished
+            - INVALID : a higher priority branch has interrupted, or shutting
+            down
+        writes a status message to the console when the behaviour terminates
+        :param new_status: new state after this one is terminated
         """
-        # check for change on topic initialpose (for respawn rviz)
-        init_pose = self.blackboard.get("/initialpose")
-        if init_pose is not None:
-            if init_pose != self.last_init_pose:
-                self.target_speed_pub = rospy.Publisher("/paf/hero/"
-                                                        "max_velocity",
-                                                        Float32, queue_size=1)
-                self.target_speed_pub.publish(0.0)
-                rospy.loginfo(f"New spawn at {init_pose.pose.pose}")
-                self.last_init_pose = init_pose
-                return py_trees.common.Status.SUCCESS
-            else:
-                self.last_init_pose = init_pose
-
-        # check for change on topic carla/ego_vehicle/initialpose  (for
-        # respawn in competition)
-        init_pose = self.blackboard.get("/carla/ego_vehicle/initialpose")
-        if init_pose is not None:
-            if init_pose != self.last_init_pose_carla:
-                self.target_speed_pub = rospy.Publisher("/paf/hero/"
-                                                        "max_velocity",
-                                                        Float32, queue_size=1)
-                self.target_speed_pub.publish(0.0)
-                rospy.loginfo(f"New spawn at {init_pose.pose.pose}")
-                self.last_init_pose_carla = init_pose
-                return py_trees.common.Status.SUCCESS
-            else:
-                self.last_init_pose_carla = init_pose
-
-        odo = self.blackboard.get("/carla/ego_vehicle/odometry")
-        if odo is None:
-            return py_trees.common.Status.FAILURE
-        current_pos = np.array([odo.pose.pose.position.x, odo.pose.pose.
-                               position.y])
-        target_pos = np.array([rospy.get_param('/competition/goal/position/x',
-                                               10),
-                               rospy.get_param('/competition/goal/position/y',
-                                               50)])
-        dist = np.linalg.norm(current_pos - target_pos)
-        if dist < 0.5:
-            return py_trees.common.Status.SUCCESS
-        else:
-            return py_trees.common.Status.FAILURE
-
-    def terminate(self, new_status):
         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
                           (self.name, self.status, new_status))

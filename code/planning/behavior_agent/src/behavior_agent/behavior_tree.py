@@ -25,19 +25,6 @@ def grow_a_tree(role_name):
             Selector
             ("Priorities",
                 children=[
-                    Inverter(
-                        Selector("Avoid Collisions",
-                                 children=[
-                                     behaviours.avoid_collisions.
-                                     NoObstacleAhead("No Obstacle Ahead?"),
-                                     Selector("Collision Avoidance Action",
-                                              children=[
-                                                  behaviours.avoid_collisions.ReplanAroundObstacles
-                                                  ("Replan around Obstacles"),
-                                                  behaviours.avoid_collisions.EmergencyBrake
-                                                  ("Emergency Brake")
-                                              ])
-                                 ])),
                     Selector("Road Features",
                              children=[
                                  Sequence("Intersection",
@@ -56,19 +43,6 @@ def grow_a_tree(role_name):
                                                            ("Leave Intersection")
                                                        ])
                                           ]),
-                                 Sequence("Stop",
-                                          children=[
-                                              behaviours.road_features.StopAhead("Stop Ahead"),
-                                              Sequence("Stop Actions",
-                                                       children=[
-                                                           behaviours.stop.Approach
-                                                           ("Approach Stop"),
-                                                           behaviours.roundabout.Approach
-                                                           ("Wait Stop"),
-                                                           behaviours.roundabout.Approach
-                                                           ("Leave Stop")
-                                                       ])
-                                          ])
                              ]),
                     Selector("Laneswitching", children=[
                         Sequence("Laneswitch",

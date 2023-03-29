@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# import rospy
+
 import py_trees
-# from std_msgs.msg import Float64
-# from nav_msgs.msg import Odometry
-# import numpy as np
-# import math
+
 
 """
 Source: https://github.com/ll7/psaf2
@@ -14,7 +11,7 @@ Source: https://github.com/ll7/psaf2
 
 class IntersectionAhead(py_trees.behaviour.Behaviour):
     """
-    This behaviour checkes wheather there is an intersection in front of the
+    This behaviour checks whether there is an intersection in front of the
     ego vehicle or not and triggers the rest of the decision tree handling the
      intersection.
     """
@@ -23,8 +20,7 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
         Minimal one-time initialisation. A good rule of thumb is to only
         include the initialisation relevant for being able to insert this
         behaviour in a tree for offline rendering to dot graphs.
-        Other one-time initialisation requirements should be met via the
-        setup() method.
+
          :param name: name of the behaviour
         """
         super(IntersectionAhead, self).__init__(name)
@@ -36,7 +32,7 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
         validation of the behaviour's configuration.
 
         This initializes the blackboard to be able to access data written to it
-        by the ROS topics and the target speed publisher.
+        by the ROS topics.
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as the set up is successful.
@@ -55,6 +51,7 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
         stop line.
         """
         self.dist = 0
+        return True
 
     def update(self):
         """
@@ -70,7 +67,7 @@ class IntersectionAhead(py_trees.behaviour.Behaviour):
                  py_trees.common.Status.FAILURE, if we are too far away from
                  the intersection
         """
-        # TODO change this part to the actual source of intersection detection
+
         bb = self.blackboard.get("/paf/hero/waypoint_distance")
         if bb is None:
             return py_trees.common.Status.FAILURE
@@ -180,65 +177,10 @@ class LaneChangeAhead(py_trees.behaviour.Behaviour):
                           (self.name, self.status, new_status))
 
 
-# class RoundaboutAhead(py_trees.behaviour.Behaviour):
-#     def __init__(self, name):
-#         super(RoundaboutAhead, self).__init__(name)
-#
-#     def setup(self, timeout):
-#         self.Roundabout = False
-#         return True
-#
-#     def initialise(self):
-#         self.blackboard = py_trees.blackboard.Blackboard()
-#         self.dist = 0
-#
-#     def update(self):
-#        bb = self.blackboard.get("/psaf/ego_vehicle/distance_next_roundabout")
-#         self.odo = self.blackboard.get("/carla/ego_vehicle/odometry")
-#         if bb is None:
-#             return py_trees.common.Status.FAILURE
-#         else:
-#             dist_x = bb.entry_point.x - self.odo.pose.pose.position.x
-#             dist_y = bb.entry_point.y - self.odo.pose.pose.position.y
-#             dist = math.sqrt(dist_x ** 2 + dist_y ** 2)
-#             self.dist = dist
-#         if self.dist < 30:
-#             rospy.loginfo("approaching roundabout")
-#             return py_trees.common.Status.SUCCESS
-#         else:
-#             return py_trees.common.Status.FAILURE
-#
-#     def terminate(self, new_status):
-#         self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
-#                           (self.name, self.status, new_status))
-#
-
-class StopAhead(py_trees.behaviour.Behaviour):
-    def __init__(self, name):
-        super(StopAhead, self).__init__(name)
-
-    def setup(self, timeout):
-        self.Stop = False
-        return True
-
-    def initialise(self):
-        self.blackboard = py_trees.blackboard.Blackboard()
-
-    def update(self):
-        if self.Stop:
-            return py_trees.common.Status.SUCCESS
-        else:
-            return py_trees.common.Status.FAILURE
-
-    def terminate(self, new_status):
-        self.logger.debug("  %s [Foo::terminate().terminate()][%s->%s]" %
-                          (self.name, self.status, new_status))
-
-
 class MultiLane(py_trees.behaviour.Behaviour):
     """
     This behavior decides if the road the agent is currently on, has more than
-    one lane for the driving direction. This could be used to change lanes to
+    one lane in the driving direction. This could be used to change lanes to
     the right to perhaps evade an emergency vehicle.
     """
     def __init__(self, name):
@@ -246,8 +188,7 @@ class MultiLane(py_trees.behaviour.Behaviour):
         Minimal one-time initialisation. A good rule of thumb is to only
         include the initialisation relevant for being able to insert this
         behaviour in a tree for offline rendering to dot graphs.
-        Other one-time initialisation requirements should be met via the
-        setup() method.
+
          :param name: name of the behaviour
         """
         super(MultiLane, self).__init__(name)
@@ -257,6 +198,10 @@ class MultiLane(py_trees.behaviour.Behaviour):
         Delayed one-time initialisation that would otherwise interfere with
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
+
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
@@ -271,10 +216,10 @@ class MultiLane(py_trees.behaviour.Behaviour):
         RUNNING thereafter.
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
+
+        :return: True
         """
-        pass
+        return True
 
     def update(self):
         """
@@ -286,7 +231,7 @@ class MultiLane(py_trees.behaviour.Behaviour):
             - return a py_trees.common.Status.[RUNNING, SUCCESS, FAILURE]
         This part checks if the agent is on a multi-lane and corresponding
         overtaking behavior should be triggered. If we are not on a multi-lane
-        it is check if overtaking on a single lane is possible. Otherwise, the
+        it checks if overtaking on a single lane is possible. Otherwise, the
         overtaking process will be canceled.
         :return: py_trees.common.Status.SUCCESS, if the agent is on a multi-
                  lane
@@ -324,8 +269,7 @@ class SingleLineDotted(py_trees.behaviour.Behaviour):
         Minimal one-time initialisation. A good rule of thumb is to only
         include the initialisation relevant for being able to insert this
         behaviour in a tree for offline rendering to dot graphs.
-        Other one-time initialisation requirements should be met via the
-        setup() method.
+
          :param name: name of the behaviour
         """
         super(SingleLineDotted, self).__init__(name)
@@ -335,11 +279,16 @@ class SingleLineDotted(py_trees.behaviour.Behaviour):
         Delayed one-time initialisation that would otherwise interfere with
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
+
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
         """
         self.Success = False
+        self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
     def initialise(self):
@@ -349,10 +298,11 @@ class SingleLineDotted(py_trees.behaviour.Behaviour):
         RUNNING thereafter.
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
+
+        :return: True
+
         """
-        self.blackboard = py_trees.blackboard.Blackboard()
+        return True
 
     def update(self):
         """
@@ -397,8 +347,7 @@ class RightLaneAvailable(py_trees.behaviour.Behaviour):
         Minimal one-time initialisation. A good rule of thumb is to only
         include the initialisation relevant for being able to insert this
         behaviour in a tree for offline rendering to dot graphs.
-        Other one-time initialisation requirements should be met via the
-        setup() method.
+
          :param name: name of the behaviour
         """
         super(RightLaneAvailable, self).__init__(name)
@@ -408,6 +357,10 @@ class RightLaneAvailable(py_trees.behaviour.Behaviour):
         Delayed one-time initialisation that would otherwise interfere with
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
+
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
@@ -422,10 +375,9 @@ class RightLaneAvailable(py_trees.behaviour.Behaviour):
         RUNNING thereafter.
         What to do here?
            Any initialisation you need before putting your behaviour to work.
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
+
         """
-        pass
+        return True
 
     def update(self):
         """
@@ -472,8 +424,7 @@ class LeftLaneAvailable(py_trees.behaviour.Behaviour):
         Minimal one-time initialisation. A good rule of thumb is to only
         include the initialisation relevant for being able to insert this
         behaviour in a tree for offline rendering to dot graphs.
-        Other one-time initialisation requirements should be met via the
-        setup() method.
+
          :param name: name of the behaviour
         """
         super(LeftLaneAvailable, self).__init__(name)
@@ -483,6 +434,10 @@ class LeftLaneAvailable(py_trees.behaviour.Behaviour):
         Delayed one-time initialisation that would otherwise interfere with
         offline rendering of this behaviour in a tree to dot graph or
         validation of the behaviour's configuration.
+
+        This initializes the blackboard to be able to access data written to it
+        by the ROS topics.
+
         :param timeout: an initial timeout to see if the tree generation is
         successful
         :return: True, as there is nothing to set up.
@@ -498,10 +453,10 @@ class LeftLaneAvailable(py_trees.behaviour.Behaviour):
         RUNNING thereafter.
         What to do here?
             Any initialisation you need before putting your behaviour to work.
-        This initializes the blackboard to be able to access data written to it
-        by the ROS topics.
+
+        :return: True
         """
-        pass
+        return True
 
     def update(self):
         """

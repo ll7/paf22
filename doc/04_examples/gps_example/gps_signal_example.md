@@ -20,6 +20,7 @@ Gabriel Schwald
   * [Raw sensor data](#raw-sensor-data)
   * [Filters for the sensor data](#filters-for-the-sensor-data)
     * [Intuitive filter](#intuitive-filter)
+    * [Rolling average](#rolling-average)
 <!-- TOC -->
 
 ## Raw sensor data
@@ -61,6 +62,23 @@ Combining these two parameters can lead to further improve the result.
 The output signals frequency has now been reduced to 1Hz compared to the original 20Hz frequency,
 with the weight now being set to $w = 0.75$
 
+### Rolling average
+
 Further improvements can be made by using a rolling average, where the last $m$ points are taken into account
-for the average, however the frequency is not changed, as this average is calculated for every new point received.
+for the average. The frequency does not change, as this average is calculated for every new point received.
 This method is slightly more computationally intensive.
+
+Instead of a single vector being kept from previous timesteps, a matrix with size $n x 3$ is computed
+whenever a new signal is received.
+Once new data is received the matrix is rotated by one position and the oldest measurement is overwritten.
+The output is equal to the average of all $n$ vectors.
+
+![Rolling average filter (n=20)](../../00_assets/filter_img/rolling_avg_20.png)
+
+More arguments smooth out the gps signal, however the also add sluggishness to the output.
+The number of arguments taken into account can be adjusted using the
+[RUNNING_GPS_AVG_ARGS](../../../code/perception/src/Position_Publisher_Node.py) constant.
+
+This was the method ultimately chosen with $n=10$, leading to the following gps signal.
+
+![Final gps signal (n=10)](../../00_assets/filter_img/rolling_avg_10.png)

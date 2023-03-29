@@ -1,8 +1,6 @@
 import py_trees
 import numpy as np
 from std_msgs.msg import Float32
-# from nav_msgs.msg import Odometry
-# from custom_carla_msgs.srv import UpdateLocalPath
 
 import rospy
 
@@ -46,9 +44,6 @@ class Approach(py_trees.behaviour.Behaviour):
         self.target_speed_pub = rospy.Publisher("/paf/hero/"
                                                 "max_tree_velocity",
                                                 Float32, queue_size=1)
-        # rospy.wait_for_service('update_local_path') # TODO is this necessary?
-        # self.update_local_path =
-        # rospy.ServiceProxy("update_local_path", UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
@@ -63,7 +58,6 @@ class Approach(py_trees.behaviour.Behaviour):
         stop line, stop signs and the traffic light.
         """
         rospy.loginfo("Approaching Intersection")
-        # self.update_local_path(approach_intersection=True)
         self.start_time = rospy.get_time()
         self.stop_sign_detected = False
         self.stop_distance = np.inf
@@ -244,6 +238,7 @@ class Wait(py_trees.behaviour.Behaviour):
         What to do here?
             Any initialisation you need before putting your behaviour to work.
         This just prints a state status message.
+        :return: True
         """
         rospy.loginfo("Wait Intersection")
         return True
@@ -341,9 +336,6 @@ class Enter(py_trees.behaviour.Behaviour):
         self.target_speed_pub = rospy.Publisher("/paf/hero/"
                                                 "max_tree_velocity", Float32,
                                                 queue_size=1)
-        # rospy.wait_for_service('update_local_path')
-        # self.update_local_path = rospy.ServiceProxy("update_local_path",
-        # UpdateLocalPath)
         self.blackboard = py_trees.blackboard.Blackboard()
         return True
 
@@ -456,6 +448,7 @@ class Leave(py_trees.behaviour.Behaviour):
             Any initialisation you need before putting your behaviour to work.
         This prints a state status message and changes the driving speed to
         the street speed limit.
+        :return: True
         """
         rospy.loginfo("Leave Intersection")
         street_speed_msg = self.blackboard.get("/paf/hero/speed_limit")

@@ -21,10 +21,10 @@ Simon Erlbacher, Niklas Vogel
   * [Date](#date)
   * [Prerequisite](#prerequisite)
   * [Getting started](#getting-started)
-  * [road option concept](#road-option-concept)
+  * [Road option concept](#road-option-concept)
   * [Road information](#road-information)
-  * [junction](#junction)
-  * [road interpolation](#road-interpolation)
+  * [Junction](#junction)
+  * [Road interpolation](#road-interpolation)
   * [How to use the implementation](#how-to-use-the-implementation)
     * [Sources](#sources)
 <!-- TOC -->

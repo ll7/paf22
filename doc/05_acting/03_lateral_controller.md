@@ -25,13 +25,11 @@ Gabriel Schwald
 
 ## Lateral controller
 
-At the moment the control algorithm is chosen manually by editing Line 223 in vehicle_controller.py.
-Accordingly, only one controller can be used per run, this will later be changed,
-in order to use each controller in its most effective range.
+The following test were performed with only one controller active at all times
 
 The testing scenario consists of a manually created L-shaped trajectory, with a short slalom section at the end.
 Testing with real trajectories will definitely help in improving the controllers,
-but is not yet available at this time.
+but wasn't available in time.
 
 ## Baseline
 
@@ -70,6 +68,32 @@ Pure-Pursuit:
 
 The PID-Controller for the steering angle may also be tuned independently of the tuning of both controllers.
 
-## Tuning
+## Vehicle controller
 
-This document will be updated, whenever sizeable progress is made.
+In order to improve the score of the agent it was decided to use both controllers.
+
+Instead of a binary switch where only one controller is active at all times, we use a sigmoid function for switching.
+This sigmoid function outputs the percentage that should be used of stanley controller $ p_{stan} $.
+The threshold velocity at which the switch between controllers happens can be set using
+[STANLEY_CONTROLLER_MIN_V](../../code/acting/src/acting/vehicle_controller.py).
+The actual steering angle $ \theta $ is therefore calculated using the following formula:
+$$ \theta (t) = p_{stan}(t)*\theta_{stan}(t) + (1-p_{stan}(t)) \theta_{purep}(t) $$
+
+The following graph shows the amount of stanley that is used with a threshold velocity of 2.78 m/s.
+![$ p_stan $ with STANLEY_CONROLLER_MIN_V $ = 2.78 $](../00_assets/acting/stanley_anteil.png).
+
+## Notes
+
+Some final remarks on the state of the lateral controller
+
+### Tuning
+
+As mentioned in the introduction there wasn't sufficient time left to tune all the parameters outlined here.
+The deviation from the trajectory may be decreased by tuning these parameters.
+
+### Parking
+
+In order to leave the parking spot at the beginning of each scenario the pure pursuit controller
+is currently tuned for very low velocities. The velocity of the vehicle is also limited to a certain speed for
+x seconds after the first movement. X can be adjusted using
+[PARKING_DUR](../../code/acting/src/acting/acting_velocity_publisher.py).

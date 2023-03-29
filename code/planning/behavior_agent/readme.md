@@ -175,7 +175,7 @@ Gets called whenever the tree gets set up for the first time. Use this to setup 
 
 ##### `initialise()`
 
-Gets called everytime the behaviour is entered for a new execution. Add code that only needs to called once at the beginning of a behaviour (i.e. publishing a new target speed).
+Gets called every time the behaviour is entered for a new execution. Add code that only needs to be called once at the beginning of a behaviour (i.e. publishing a new target speed).
 
 ##### `update()`
 

@@ -4,8 +4,7 @@
 import py_trees
 import py_trees_ros
 
-from std_msgs.msg import Float64, String, Bool, Float32
-# from geometry_msgs.msg import Point
+from std_msgs.msg import Float32, Bool
 from carla_msgs.msg import CarlaSpeedometer
 from sensor_msgs.msg import Range
 
@@ -27,20 +26,10 @@ def create_node(role_name):
     topics = [
         {'name': f"/carla/{role_name}/Speed", 'msg': CarlaSpeedometer,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/psaf/{role_name}/target_speed", 'msg': Float64,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/psaf/{role_name}/obstacle", 'msg': String,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/paf/{role_name}/slowed_by_car_in_front", 'msg': Bool,
          'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/paf/{role_name}/stopline_distance", 'msg': Float32,
-         'clearing-policy': py_trees.common.ClearingPolicy.ON_INITIALISE},
         {'name': f"/paf/{role_name}/waypoint_distance", 'msg': Waypoint,
          'clearing-policy': py_trees.common.ClearingPolicy.ON_INITIALISE},
-        {'name': f"/psaf/{role_name}/obstacle_on_left_lane", 'msg': Float64,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
-        {'name': f"/psaf/{role_name}/obstacle_on_right_lane", 'msg': Float64,
-         'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/paf/{role_name}/intersection_clear",
          'msg': Bool, 'clearing-policy': py_trees.common.ClearingPolicy.NEVER},
         {'name': f"/paf/{role_name}/stop_sign", 'msg': Stop_sign,

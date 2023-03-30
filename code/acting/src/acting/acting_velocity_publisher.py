@@ -21,7 +21,7 @@ def dist_between_points(a: PoseStamped, b: PoseStamped) -> float:
 
 
 PARKING_V: float = 2.0
-PARKING_DUR: float = 15.0
+PARKING_DUR: float = 5.0
 MAX_VELOCITY: float = 25  # = 90 km/h
 
 

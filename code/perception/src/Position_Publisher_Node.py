@@ -4,29 +4,33 @@
 This node publishes all relevant topics for the ekf node.
 """
 import math
-
+import numpy as np
 import ros_compatibility as roscomp
 from ros_compatibility.node import CompatibleNode
+from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import NavSatFix, Imu
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Float32
 from coordinate_transformation import CoordinateTransformer, GeoRef
 from tf.transformations import euler_from_quaternion
 
+GPS_RUNNING_AVG_ARGS: int = 10
 
-class EKFTranslation(CompatibleNode):
+
+class PositionPublisherNode(CompatibleNode):
     """
-    Translates to the topic required by robot_pose_ekf.
+    Node publishes a filtered gps signal.
+    This is achieved using a rolling average.
     """
 
     def __init__(self):
         """
-        Constructor
+        Constructor / Setup
         :return:
         """
 
-        super(EKFTranslation, self).__init__('ekf_translation')
-        self.loginfo("EKF_Translation node started")
+        super(PositionPublisherNode, self).__init__('ekf_translation')
+        self.loginfo("Position publisher node started")
 
         # basic info
         self.role_name = self.get_param("role_name", "hero")
@@ -61,13 +65,12 @@ class EKFTranslation(CompatibleNode):
             "/imu_data",
             qos_profile=1)
 
-        self.avg_gps = [0, 0, 0]
-        self.avg_gps_counter: int = 1
-        self.avg_gps_n: int = 3  # points taken into account for the avg
+        self.avg_xyz = np.zeros((GPS_RUNNING_AVG_ARGS, 3))
+        self.avg_gps_counter: int = 0
         # 3D Odometry (GPS)
-        self.ekf_vo_publisher = self.new_publisher(
-            Odometry,
-            "/vo",
+        self.cur_pos_publisher = self.new_publisher(
+            PoseStamped,
+            f"/paf/{self.role_name}/current_pos",
             qos_profile=1)
 
         self.__heading: float = 0
@@ -77,6 +80,12 @@ class EKFTranslation(CompatibleNode):
             qos_profile=1)
 
     def update_imu_data(self, data: Imu):
+        """
+        This method is called when new IMU data is received.
+        It handles all necessary updates and publishes the heading.
+        :param data: new IMU measurement
+        :return:
+        """
         imu_data = Imu()
 
         imu_data.header.stamp = data.header.stamp
@@ -121,78 +130,63 @@ class EKFTranslation(CompatibleNode):
         # ---------------------------------------------------------------
         heading = (raw_heading - (math.pi / 2)) % (2 * math.pi) - math.pi
         self.__heading = heading
-        # self.__heading = raw_heading - math.pi / 2
         self.__heading_publisher.publish(self.__heading)
 
     def update_gps_data(self, data: NavSatFix):
-        if self.avg_gps_counter % (self.avg_gps_n + 1) != 0:
-            self.avg_gps[0] += data.latitude
-            self.avg_gps[1] += data.longitude
-            self.avg_gps[2] += data.altitude
-            self.avg_gps_counter += 1
-            return
+        """
+        This method is called when new GNSS data is received.
+        The function calculates the average position and then publishes it.
+        Measurements are also transformed to global xyz-coordinates
+        :param data: GNSS measurement
+        :return:
+        """
+        lat = data.latitude
+        lon = data.longitude
+        alt = data.altitude
+        x, y, z = self.transformer.gnss_to_xyz(lat, lon, alt)
+        # find reason for discrepancy
+        x *= 0.998
+        y *= 1.003
 
-        avg_lat = self.avg_gps[0] / self.avg_gps_n
-        avg_lon = self.avg_gps[1] / self.avg_gps_n
-        avg_alt = self.avg_gps[2] / self.avg_gps_n
+        self.avg_xyz = np.roll(self.avg_xyz, -1, axis=0)
+        self.avg_xyz[-1] = np.matrix([x, y, z])
 
-        self.avg_gps = [0, 0, 0]
-        self.avg_gps_counter = 1
+        avg_x, avg_y, avg_z = np.mean(self.avg_xyz, axis=0)
 
-        x, y, z = self.transformer.gnss_to_xyz(avg_lat, avg_lon, avg_alt)
-        # -> temporary fix todo: find reason for inaccuracy
-        x = x * 0.998
-        y = y * 1.003
-        # <-
-        odom_msg = Odometry()
+        cur_pos = PoseStamped()
 
-        odom_msg.header.stamp = data.header.stamp
-        odom_msg.header.frame_id = "global"
+        cur_pos.header.stamp = data.header.stamp
+        cur_pos.header.frame_id = "global"
 
-        # Covariance todo: needs tweaking
-        cov_x = 1.0
-        cov_y = 1.0
-        cov_z = 1.0
+        cur_pos.pose.position.x = avg_x
+        cur_pos.pose.position.y = avg_y
+        cur_pos.pose.position.z = avg_z
 
-        odom_msg.pose.pose.position.x = x
-        odom_msg.pose.pose.position.y = y
-        odom_msg.pose.pose.position.z = z
+        cur_pos.pose.orientation.x = 0
+        cur_pos.pose.orientation.y = 0
+        cur_pos.pose.orientation.z = 1
+        cur_pos.pose.orientation.w = 0
 
-        odom_msg.pose.pose.orientation.x = 0
-        odom_msg.pose.pose.orientation.y = 0
-        odom_msg.pose.pose.orientation.z = 1
-        odom_msg.pose.pose.orientation.w = 0
-
-        odom_msg.pose.covariance = [cov_x, 0, 0, 0, 0, 0,
-                                    0, cov_y, 0, 0, 0, 0,
-                                    0, 0, cov_z, 0, 0, 0,
-                                    0, 0, 0, 999999, 0, 0,
-                                    0, 0, 0, 0, 999999, 0,
-                                    0, 0, 0, 0, 0, 999999]
-
-        self.ekf_vo_publisher.publish(odom_msg)
+        self.cur_pos_publisher.publish(cur_pos)
 
     def run(self):
         """
         Control loop
-
         :return:
         """
-
         self.spin()
 
 
 def main(args=None):
     """
     main function
-
     :param args:
     :return:
     """
 
-    roscomp.init("ekf_translation", args=args)
+    roscomp.init("position_publisher_node", args=args)
     try:
-        node = EKFTranslation()
+        node = PositionPublisherNode()
         node.run()
     except KeyboardInterrupt:
         pass

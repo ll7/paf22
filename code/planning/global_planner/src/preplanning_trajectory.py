@@ -33,6 +33,10 @@ STRAIGHT = 3
 
 
 class OpenDriveConverter:
+    """
+    The OpenDriveConverter needs am OpenDrive Map and the road options from
+    the Carla leaderboard to calculate the global trajectory.
+    """
     def __init__(self, path=None, roads=None, road_ids=None,
                  junctions=None, junction_ids=None):
 
@@ -74,7 +78,8 @@ class OpenDriveConverter:
         self.geometry_data = None
         """ A list of geometry data for each road
             format: [[road0], [road1],...]
-                road0:  [[x_points], [y_points], [heading], [curvature]]
+                road0:  [[x_points], [y_points], [heading], [curvature],
+                         [length]]
                     x_points:   x positions of all road segments (m)
                     y_points:   y positions of all road segments (m)
                     heading:    orientation value in rad
@@ -98,11 +103,10 @@ class OpenDriveConverter:
         return elements, element_ids
 
     def convert_roads(self):
-        # filter all road elements in a list
-        # find max id to extract the list -> every road id is
-        # the correct index
+        """ Filter all road elements in a list. Every road index belongs
+        to the same list index.
+        """
         max_id = int(max(self.road_ids))
-        # print(max_id)
         roads_extracted = list()
         j = 0
         for i in range(max_id + 1):
@@ -114,11 +118,10 @@ class OpenDriveConverter:
         self.roads = roads_extracted
 
     def convert_junctions(self):
-        # filter all junction elements in a list
-        # find max id to extract the list -> every junction id is the
-        # correct index
+        """ Filter all junction elements in a list. Every junction index
+        belongs to the same list index.
+        """
         max_id = int(max(self.junction_ids))
-        # print(max_id)
         junctions_extracted = list()
         j = 0
         for i in range(max_id + 1):
@@ -166,16 +169,13 @@ class OpenDriveConverter:
     def find_current_road(self, x_curr: float, y_curr: float):
         """ Extract the current road that fits to the x and y coordinate
         Needed to find the starting road of the agent and for every new
-        waypoint we receive from Carla. Assumption that we do not start
-        on a junction
+        waypoint we receive from Carla.
             :param x_curr: the current global x position of the agent
             :param y_curr: the current global y position of the agent
             :return: curr_road_id: The id of the current road
         """
-        min_diff = 0
         diff_list = list()
         diff_index_list = list()
-        # the current road index
         j = 0
         for road in self.geometry_data:
             if road is None:
@@ -191,7 +191,6 @@ class OpenDriveConverter:
         min_diff_index = diff_list.index(min_diff)
         selected_road_id = diff_index_list[min_diff_index]
         junction = int(self.roads[selected_road_id].get("junction"))
-        current_id = None
         agent_position = (x_curr, y_curr)
 
         predecessor, successor = self.get_pred_succ(selected_road_id)
@@ -199,14 +198,7 @@ class OpenDriveConverter:
         if self.geometry_data[predecessor] is None and \
            self.geometry_data[successor] is None:
             current_id = selected_road_id
-        # current chosen road is a junction
-        elif junction != ROAD:
-            current_id = self.calculate_intervalls_id(agent_position,
-                                                      selected_road_id,
-                                                      predecessor,
-                                                      successor,
-                                                      junction)
-        # no junction recognized
+        # no junction recognized or current road is junction
         else:
             current_id = self.calculate_intervalls_id(agent_position,
                                                       selected_road_id,
@@ -218,12 +210,22 @@ class OpenDriveConverter:
     def calculate_intervalls_id(self, agent: Tuple[float, float],
                                 current: int, pred: int, succ: int,
                                 junction: int):
+        """
+        The function assumes, that the current chosen road is not the only
+        one that is possible. The current raad is calculated based on all
+        possible scenarios not assuming that the succ and pred road are
+        both junctions.
+        :param agent: current position of the agent with x and y coordinate
+        :param current: the current assumed road id
+        :param pred: id value of the predecessor road
+        :param succ: id value of the successor road
+        :param junction: id value of the junction
+        :return: id_value: the id value of the calculated road
+        """
         id_value = None
         dist = None
-
         # current road is a junction -> check pred and succ
         if junction != ROAD:
-            # print("sssssssss", pred)
             dist = self.get_dist_list(succ, pred, None, agent)
             min_dist = self.get_min_dist(dist)
             ind = dist.index(min_dist)
@@ -252,11 +254,9 @@ class OpenDriveConverter:
         # two possible other roads and current not a junction
         else:
             dist = self.get_dist_list(pred, current, succ, agent)
-            # print(dist)
             min_dist = self.get_min_dist(dist)
             if len(min_dist) == 1:
                 ind = dist.index(min_dist)
-                # print(ind)
                 if ind == 0 or ind == 1:
                     id_value = pred
                 elif ind == 2 or ind == 3:
@@ -276,11 +276,18 @@ class OpenDriveConverter:
                     first = current
                     second = succ
                 id_value = self.get_special_case_id(first, second, agent)
-        # print("id value", id_value)
         return id_value
 
     def get_special_case_id(self, road: int, current: int,
                             agent: Tuple[float, float]):
+        """ When the function get_min_dist() returns two solutions with the
+        same distance, this function calculated the distance based on the
+        interpolation of the two possible roads.
+        :param road: id value of the successor or predecessor road
+        :param current: id value of the current road
+        :param agent: current position ot the agent with x and y coordinate
+        :return: final_id: the calculated id of the current road
+        """
         final_id = None
         list_r = self.interpolation(road)
         list_c = self.interpolation(current)
@@ -300,6 +307,10 @@ class OpenDriveConverter:
         return final_id
 
     def get_min_dist(self, dist: list):
+        """ Calculate the minimum distance value from a distance list.
+        :param dist: list containing all distance values
+        :return: min_dist: the minimum distance/distances from the list
+        """
         min_v = float("inf")
         min_dist = list()
         for d in dist:
@@ -312,20 +323,25 @@ class OpenDriveConverter:
         return min_dist
 
     def get_dist_list(self, pred, current, succ, agent):
+        """ Calculate the distances between the endpoints of a possible road
+        and the current agent position.
+        :param pred: id value of the predecessor road
+        :param current: id value of the assumed road
+        :param succ: id value of the successor road
+        :param agent: current agent position with x and y coordinate
+        :return: dist: list with all distance values
+        """
         options = [pred, current, succ]
-        # print(options)
         dist = list()
         for opt in options:
             if opt is None:
                 continue
             # check shortest distance to start or endpoints
             start, end = self.get_endpoints(opt)
-            # print(start, end)
             start_d = help_functions.euclid_dist(agent, start)
             dist.append(start_d)
             end_d = help_functions.euclid_dist(agent, end)
             dist.append(end_d)
-            # print(dist)
         return dist
 
     def initial_road_trajectory(self, x_curr: float, y_curr: float,
@@ -339,8 +355,7 @@ class OpenDriveConverter:
         and the trajectory to the next road segment. The start case
         is treated in an extra method because this kind of planning
         is only needed at the beginning, if we are placed in
-        a new town. It is assumed that the agent does not start on
-        a junction
+        a new town.
             :param x_curr: the current global x position of the agent
             :param y_curr: the current global y position of the agent
             :param x_target: x position of the target waypoint (turn command)
@@ -349,7 +364,9 @@ class OpenDriveConverter:
             :param y_next_t: y position of point after the target point
             :param x_first_t: x position of a lane change before turn
             :param y_first_t: y position of a lane change before turn
-            :param yaw: current yaw  from
+            :param yaw: current yaw value of the agent position. Needed for
+                        special case calculation, when the agent starts on a
+                        junction.
             :param command: next action from the leaderboard
         """
         self.road_id = self.find_current_road(x_curr=x_curr,
@@ -370,10 +387,8 @@ class OpenDriveConverter:
         self.reference = copy.deepcopy(points)
         widths = self.lane_widths(self.road_id)
         self.width = widths[-1]
-        # size = len(widths)
         self.direction = self.right_or_left(points, x_curr, y_curr,
                                             self.width)
-        # print("FIRST ", self.direction)
         points = self.calculate_midpoints(points, x_curr, y_curr)
         # Check if lane change on first road is needed
         if x_first_t is None and y_first_t is None:
@@ -415,18 +430,12 @@ class OpenDriveConverter:
         del points[1][0:index]
         del points[2][0:index]
         del points[3][0:index]
-        # agent is on initial road or road before and for the next road
-        # is this initial road the old road
         self.point_size = len(points[0])
-        # print("inital road: ", self.road_id)
-        # print("intial follow ", self.follow_id)
         self.pt = points
-        # self.direction = direction
         self.follow_section = follow_section_id
         self.waypoints = points
 
-    def calculate_midpoints(self, points: list,
-                            x_agent: float, y_agent: float):
+    def calculate_midpoints(self, points: list):
         """ Calculate the trajectory points in the middle
         of a lane and return the points
             :param points: list of all trajectory points to reach
@@ -436,18 +445,10 @@ class OpenDriveConverter:
                         y_points:   list of y_values (m)
                         heading:    list of yaw values (rad)
                         speed:      list of speed limitations (m/s)
-            :param x_agent: last x coordinate of the agent
-            :param y_agent: last y coordinate of the agent
             :return: points: same format as in the parameter,
                      direction: True or False depending on the side
                                 of the reference line
         """
-        # all lane widths in this road
-        # first width is for the road next to the reference line
-        # and so on
-        """ direction = self.right_or_left(points, x_agent, y_agent,
-                                       self.width) """
-        # print("length: ", len(points[0]))
         # Calculate points in the middle of the road
         points = self.update_points(points, self.direction, self.width)
         return points
@@ -460,34 +461,26 @@ class OpenDriveConverter:
         action for the agent
             :param x_target: x position of the target waypoint
             :param y_target: y position of the target waypoint
-            :param action: next yaw value
+            :param x_next_t: x position of the next target waypoint
+            :param y_next_t: y position of the next target waypoint
             :param command: next progress the agent has to take after he
                             reaches the target point
         """
-        # print("current", self.follow_id)
         while True:
             target = (x_target, y_target)
             still_calculated = False
-            start = 0
-            # if points have been added
-            # if len(self.waypoints[0]) != self.point_size:
-            # start = len(self.waypoints[0]) - 1
-            # check the last added waypoints of the trajectory
-
             if self.pt is not None:
                 for i in range(len(self.pt[0])):
                     point = (self.pt[0][i], self.pt[1][i])
                     dist = help_functions.euclid_dist(point, target)
                     if dist < TARGET_DIFF:
                         # Trajectory still calculated
-                        # print("still calculated")
                         still_calculated = True
                         break
             if still_calculated is True:
                 # command is turn action
                 if command <= 3:
                     if x_next_t is not None and y_next_t is not None:
-                        # print(self.follow_section)
                         predecessor, successor = self.get_pred_succ(
                             road_id=self.road_id)
                         follow, follow_section_id = self. \
@@ -531,7 +524,6 @@ class OpenDriveConverter:
                     break
             else:
                 self.road_id = self.follow_id
-                # print("road id", self.road_id)
                 predecessor, successor = self.get_pred_succ(
                     road_id=self.road_id)
                 self.follow_id, follow_section_id = self. \
@@ -540,7 +532,6 @@ class OpenDriveConverter:
                                              x_target=x_target,
                                              y_target=y_target,
                                              yaw=self.pt[2][-1])
-                # print("FFFFFF", self.follow_id)
                 # Interpolate the road_id
                 points = self.interpolation(self.road_id)
                 points = self.check_point_order(points=points,
@@ -551,17 +542,13 @@ class OpenDriveConverter:
                 self.reference[2] += copy.deepcopy(points[2])
                 self.reference[3] += copy.deepcopy(points[3])
                 reference_line = copy.deepcopy(points)
-                # print("reference", len(reference_line[0]))
                 # all lane widths in this road
                 # first width is for the road next to the reference line
                 # and so on
                 widths = self.lane_widths(self.road_id)
-                # print(widths)
                 old_w = self.lane_widths(self.old_id)
-                # print(old_w)
                 # if previous lane width was the rightmost one
                 if old_w.index(self.width) + 1 == len(old_w):
-                    # print("RIGHTMOST")
                     last_p = (self.pt[0][-1], self.pt[1][-1])
                     min_diff = float("inf")
                     w_min = None
@@ -585,7 +572,6 @@ class OpenDriveConverter:
                             min_diff = diff
                             min_width = width
                     self.width = min_width
-                # size = len(widths)
                 points = self.calculate_midpoints(points, self.pt[0][-1],
                                                   self.pt[1][-1])
                 if command == LEFT or command == RIGHT or command == STRAIGHT:
@@ -597,7 +583,6 @@ class OpenDriveConverter:
                 self.pt = points
                 self.reference_l = reference_line
                 self.follow_section = follow_section_id
-                # self.direction = direction
 
                 if command >= 4:
                     min_dist = float("inf")
@@ -630,28 +615,36 @@ class OpenDriveConverter:
                        reference_line, follow_section_id: int,
                        points_calc, widths: list,
                        direction: bool, initial: bool):
+        """ If a lane change is detected, the trajectory needs to be
+        interpolated again and update the waypoints where the lane change
+        should occur.
+        :param target_x: x coordinate of the target point
+        :param target_y: y coordinate of the target point
+        :param x_next_t: x coordinate of the next target point
+        :param y_next_t: y coordinate of the next target point
+        :param command: action command from the leaderboard
+        :param index: index of the starting point of the lane change
+        :param reference_line: the current interpolated reference line
+        :param follow_section_id: if value of the following road
+        :param points_calc: current calculated trajectory points
+        :param widths: possible lane width values
+        :param direction: drive on the right or left side of the road
+        :param initial: indicates if it is the first interpolated road or not
+        :return: points_calc: new calculated points
+        """
         if command == CHANGE_LEFT or \
            command == CHANGE_RIGHT or command == CHANGE_FOLLOW:
-            # first_widths = []
-            # min_width = []
-
-            # print("AAAAA", self.follow_id)
             if command == CHANGE_LEFT:
                 points = reference_line
                 last_width = self.width
                 step_size = STEP_SIZE
                 ind = widths.index(last_width)
                 if ind == 0:
-                    # print("Change not possible")
                     return points_calc
-                """self.follow_id = self.next_action_id(x_next_t, y_next_t,
-                                                     follow_section_id,
-                                                     points_calc)"""
                 new_width = widths[ind-1]
                 self.width = new_width
                 diff = abs(last_width - new_width)
                 steps = int(diff / step_size)
-                # print(steps)
                 first_widths = [last_width - step_size * i
                                 for i in range(steps)]
                 for i in range(len(first_widths)):
@@ -687,32 +680,21 @@ class OpenDriveConverter:
                                                      new_width)
                     points_calc[0][i] = point[0]
                     points_calc[1][i] = point[1]
-                # print("SIZE", len(points[0]))
-                # print(len(self.reference_l[0]))
                 point, v = self.update_one_point(p2_x, p2_y,
                                                  target_x, target_y,
                                                  target_x, target_y,
                                                  direction,
                                                  new_width)
-                # print(i+1)
-                # print("LLLLL", len(points_calc[0]))
                 points_calc[0][i + 1] = point[0]
                 points_calc[1][i + 1] = point[1]
             # change lane right
             elif command == CHANGE_RIGHT:
-                # print(widths)
                 points = reference_line
                 last_width = self.width
-                # print(last_width)
-                # print(widths)
                 step_size = STEP_SIZE
                 ind = widths.index(last_width)
                 if ind == len(widths) - 1:
-                    # print("Change not possible")
                     return points_calc
-                """self.follow_id = self.next_action_id(x_next_t, y_next_t,
-                                                     follow_section_id,
-                                                     points_calc)"""
                 new_width = widths[ind + 1]
                 self.width = new_width
                 diff = abs(last_width - new_width)
@@ -792,7 +774,8 @@ class OpenDriveConverter:
                        sec_id: int, points: list):
         """ Calculate the next road id for the given action from
         the leaderboard
-        :param action: yaw value for the new global heading of the agent
+        :param x_next_t: x coordinate of the next target point
+        :param y_next_t: y coordinate of the next target point
         :param sec_id: section id of the road or the junction
         :param points: points: list of all trajectory points to reach
                     the following road
@@ -803,7 +786,6 @@ class OpenDriveConverter:
                         speed:      list of speed limitations (m/s)
         :return: action_id: the id of the next road to take
         """
-        action_id = None
         current_road = self.roads[sec_id]
         # if current road is not a junction, the follow_road is needed
         # to calculate the new action road
@@ -812,11 +794,9 @@ class OpenDriveConverter:
             incoming_road = self.road_id
             possible_road_ids = self.filter_road_ids(junction,
                                                      incoming_road)
-            # print(possible_road_ids)
             last_point_x = points[0][-1]
             last_point_y = points[1][-1]
             last_point = (last_point_x, last_point_y)
-            # print(last_point)
             action_id = self.calculate_action_id(possible_road_ids,
                                                  last_point,
                                                  x_next_t, y_next_t)
@@ -831,11 +811,11 @@ class OpenDriveConverter:
         on the next action from the leaderboard
             :param possible_road_ids: list of the next possible road ids
             :param last_point: last calculated point of the trajectory
-            :param action: the next action to take (global heading)
+            :param x_next_t: x coordinate of the next target point
+            :param y_next_t: y coordinate of the next target point
             :return: possible_road_ids: the id of the next road
         """
         endpoint_values = list()
-        # print(possible_road_ids)
         # filter the endpoints for each possible road
         for road_id in possible_road_ids:
             start, end = self.get_endpoints(road_id)
@@ -921,7 +901,6 @@ class OpenDriveConverter:
         widths.append(middle)
         for i in range(1, len(driving)):
             widths.append(middle + width * i)
-        # widths = [width*i for i in range(1, len(driving)+1)]
         return widths
 
     def right_or_left(self, points: list, x_agent: float, y_agent: float,
@@ -962,9 +941,7 @@ class OpenDriveConverter:
         dist_1 = help_functions.euclid_dist(point1, agent)
         dist_2 = help_functions.euclid_dist(point2, agent)
         if dist_1 > dist_2:
-            # print("DIRECTION")
             direction = False
-        # print(direction)
         return direction
 
     def update_one_point(self, point1_x: float, point1_y: float,
@@ -978,7 +955,7 @@ class OpenDriveConverter:
             :param point2_x: x coordinate of the following point
             :param point2_y: y coordinate of the following point
             :param point3_x: x coordinate of the next following point
-            :param point3_y: y coordiante of the next following point
+            :param point3_y: y coordinate of the next following point
             :param right: True or False for the correct side of the lane
             :param width: value for the width of the lane
             :return: point: coordinates of the updated point
@@ -987,9 +964,8 @@ class OpenDriveConverter:
         first = (point1_x, point1_y)
         second = (point2_x, point2_y)
         vector = help_functions.sub_vector(second, first)
-        # if dist to the next point is to small -> outliners
+        # if dist to the next point is to small -> outliers
         if vector[0] < SMALL_DIST and vector[1] < SMALL_DIST:
-            # print("SMALL DISTANZ")
             vector = help_functions.sub_vector((point3_x, point3_y), first)
         if right is True:
             vec = help_functions.perpendicular_vector_right(vector)
@@ -1162,19 +1138,26 @@ class OpenDriveConverter:
         return points
 
     def remove_outliner(self, points):
+        """ Function checks if distance between two following trajectory
+        points is to small or to big. Delete and update waypoints if necessary.
+        :param points: points: list of all trajectory points
+                    format: [x_points, y_points, heading, speed]
+                        x_points:   list of x_values (m)
+                        y_points:   list of y_values (m)
+                        heading:    list of yaw values (rad)
+                        speed:      list of speed limitations (m/s)
+        :return: points: updated waypoint list
+        """
         delete_index = []
         for i in range(0, len(points[0]) - 1):
             p = (points[0][i], points[1][i])
             p_next = (points[0][i + 1], points[1][i + 1])
             dist = help_functions.euclid_dist(p, p_next)
-            # print("dist", dist)
             # point is to close to the following point (0.5m)
             if dist < 0.5:
-                # print("SMALL")
                 delete_index.append(i+1)
             # outliner point
             elif dist > 3:
-                # print("BIG")
                 delete_index.append(i+1)
         # delete the points with the calculated indices
         number = 0
@@ -1256,11 +1239,7 @@ class OpenDriveConverter:
         elif successor is None:
             final_id = predecessor
         else:
-            # Funcktion soll nur id zurück geben und dann bereechne
-            # auf basis von
-            # start und endpunkt kürzeste distanz
             min_distances = list()
-
             x_road_p, y_road_p, pred = self.\
                 get_next_road_point(predecessor, yaw)
             point1, point2 = self.get_endpoints(pred)
@@ -1300,7 +1279,6 @@ class OpenDriveConverter:
         # start road reference
         curr_road = self.roads[road_id]
         link = curr_road.find("link")
-        # curr_type = curr_road.get("junction")
         # Road needs a successor or predecessor
         assert (len(link) > 0)
         # if only one following road
@@ -1325,12 +1303,12 @@ class OpenDriveConverter:
     def get_next_road_point(self, road_id: int, yaw: int):
         """ The function returns the x and y coordinate for a given road
             :param road_id: the id value of the preferred road
+            :param yaw: yaw value of the agent
             :return: x, y, road_id
                 x: value of the x coordinate
                 y: value of the y coordinate
                 road_id: id of the chosen road
         """
-        # print("ROAD: ", road_id)
         line_list = list()
         # check if it is a junction
         if self.geometry_data[road_id] is None:
@@ -1344,7 +1322,6 @@ class OpenDriveConverter:
                 id = int(c.get("connectingRoad"))
                 road_data = self.geometry_data[id]
                 for i in range(len(road_data[0])):
-                    # print(abs(road_data[3][i]))
                     # check if there is a straight road
                     # can also have a small radius -> (1/0.001)
                     if abs(road_data[3][i]) >= (1 / 0.001):
@@ -1364,95 +1341,3 @@ class OpenDriveConverter:
         # first value on this road
         y = self.geometry_data[road_id][1][0]
         return x, y, road_id
-
-
-"""
-first_widths = []
-                min_width = []
-                self.follow_id = self.next_action_id(action,
-                                                     follow_section_id,
-                                                     points)
-                point1_x = reference_line[0][-2]
-                point1_y = reference_line[1][-2]
-                point2_x = reference_line[0][-1]
-                point2_y = reference_line[1][-1]
-                point3_x = reference_line[0][-3]
-                point3_y = reference_line[1][-3]
-                start, end = self.get_endpoints(self.follow_id)
-                # Choose the startpoint of the follow road
-                dist1 = help_functions.euclid_dist(start,
-                                                   (point2_x, point2_y))
-                dist2 = help_functions.euclid_dist(end,
-                                                   (point2_x, point2_y))
-                # choose the point of the follow road which is nearer
-                # to the last trajectory point
-                if dist1 < dist2:
-                    ref_point = start
-                else:
-                    ref_point = end
-                # Iterate over all width values and calculate for each value
-                # the midpoint on the lane -> choose the nearest midpoint
-                # to the follow road start point
-                min_dist = float("inf")
-                for width in widths:
-                    point, v = self.update_one_point(point1_x, point1_y,
-                                                     point2_x, point2_y,
-                                                     point3_x, point3_y,
-                                                     direction, width)
-                    dist = help_functions.euclid_dist(ref_point, point)
-                    # Choose the width value for the correct lane
-                    if dist < min_dist:
-                        min_dist = dist
-                        min_width = width
-                # if we need to change the lane for the next action
-                # we want a smooth change in the trajectory points
-                points = reference_line
-                last_width = widths[size-1]
-                diff = abs(min_width - last_width)
-                step_size = STEP_SIZE
-                i = 0
-                # if diff != 0 we need to change the lane and calculate
-                # a smooth change
-                if diff != 0:
-                    steps = int(diff / step_size)
-                    first_widths = [last_width - step_size * i
-                                    for i in range(steps)]
-                    for i in range(len(first_widths)):
-                        p1_x = points[0][i]
-                        p1_y = points[1][i]
-                        p2_x = points[0][i+1]
-                        p2_y = points[1][i+1]
-                        if i != len((points[0])) - 2:
-                            p3_x = points[0][i + 2]
-                            p3_y = points[1][i + 2]
-                        point, v = self.update_one_point(p1_x, p1_y,
-                                                         p2_x, p2_y,
-                                                         p3_x, p3_y,
-                                                         direction,
-                                                         first_widths[i])
-                        points[0][i] = point[0]
-                        points[1][i] = point[1]
-                    p = [points[0][i+1:], points[1][i+1:], points[2][i+1:],
-                         points[3][i+1:]]
-                    points = self.update_points(p, direction, min_width)
-                del points[0][index+1:]
-                del points[1][index+1:]
-                del points[2][index+1:]
-                del points[3][index+1:]"""
-
-
-""" find the hdg values for the endpoints of the possible roads
-        for road_id in possible_road_ids:
-            start, end = self.get_endpoints(road_id)
-            dist_start = help_functions.euclid_dist(start, last_point)
-            dist_end = help_functions.euclid_dist(end, last_point)
-            if dist_start < dist_end:
-                hdg = self.geometry_data[road_id][2][-1]
-                hdg = self.rad_to_degree(hdg)
-                yaw_values.append(hdg)
-            else:
-                hdg = self.geometry_data[road_id][2][0]
-                hdg = self.rad_to_degree(hdg)
-                yaw_values.append(hdg)
-        print(yaw_values)
-"""

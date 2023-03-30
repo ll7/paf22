@@ -36,8 +36,6 @@ Simon Erlbacher, Niklas Vogel
 Preplanning scripts are all integrated in this project and the used libraries are part of the docker file.
 No extra installation needed.
 
----
-
 ## Road option concept
 
 The leaderboard provides target points and instructions. Every target point contains an appropriate instruction.
@@ -67,8 +65,6 @@ a lane "change left".
 
 ![img.png](../00_assets/road_options_concept.png)
 
----
-
 ## Road information
 
 Important information we get from the xodr file.
@@ -97,8 +93,6 @@ be interpolated with a line of the indicated length.
 The junction information holds the value -1. This indicates, that the current road 0 is not part of a junction.
 If the road would be part of a junction, there would be a id value greater than -1. This id references a junction.
 
----
-
 ## Junction
 
 A junction manages colliding roads. Junctions only exist when roads intersect.
@@ -121,8 +115,6 @@ all possible orange roads. Endpoints are marked with blue dots. In the second st
 the blue endpoints and the yellow target point. The blue endpoint with the smallest distance indicated the road to
 follow to cross the intersection.
 
----
-
 ## Road interpolation
 
 Every road has a geometry information. This information is important to interpolate the road correctly.
@@ -144,8 +136,6 @@ Because we only could interpolate the reference line with this information, we a
 move the trajectorie in the middle of the road we want to drive. We need to filter the with values of the current road
 and calculate the new trajectorie with the width distance from the reference line.
 This is done in the `preplanning_trajectory.py` with the function `update_points()`.
-
----
 
 ## How to use the implementation
 

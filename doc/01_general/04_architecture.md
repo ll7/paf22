@@ -1,6 +1,6 @@
-# Architecture of vehicle agent
+# Planned architecture of vehicle agent
 
-**Summary:** This page gives an overview over the general architecture of the vehicle agent.
+**Summary:** This page gives an overview over the planned general architecture of the vehicle agent.
 The document contains an overview over all [nodes](#overview) and [topics](#topics).
 
 ---
@@ -15,7 +15,7 @@ Marco Riedenauer, Simon Erlbacher, Julian Graf
 
 ---
 <!-- TOC -->
-* [Architecture of vehicle agent](#architecture-of-vehicle-agent)
+* [Planned architecture of vehicle agent](#planned-architecture-of-vehicle-agent)
   * [Authors](#authors)
   * [Date](#date)
   * [Overview](#overview)

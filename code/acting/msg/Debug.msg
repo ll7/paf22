@@ -1,4 +1,4 @@
 float32 heading
 float32 target_heading
 float32 l_distance
-float32 alpha
+float32 steering_angle

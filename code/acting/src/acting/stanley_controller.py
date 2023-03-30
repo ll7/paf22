@@ -5,13 +5,11 @@ from math import atan, sqrt, sin, cos
 import numpy as np
 import ros_compatibility as roscomp
 from carla_msgs.msg import CarlaSpeedometer
-from geometry_msgs.msg import PoseStamped, Point  # , Pose, Quaternion
+from geometry_msgs.msg import PoseStamped, Point
 from nav_msgs.msg import Path
 from ros_compatibility.node import CompatibleNode
-# from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from rospy import Publisher, Subscriber
-# from sensor_msgs.msg import NavSatFix, Imu
-from std_msgs.msg import Float32  # Bool
+from std_msgs.msg import Float32
 from acting.msg import StanleyDebug
 
 from helper_functions import vector_angle
@@ -68,7 +66,6 @@ class StanleyController(CompatibleNode):
         self.__heading: float = None
         self.__velocity: float = None
         self.__tp_idx: int = 0  # target waypoint index
-        # error when there are no targets
 
     def run(self):
         """
@@ -128,7 +125,6 @@ class StanleyController(CompatibleNode):
         # check if the new position is valid
         dist = self.__dist_to(data.pose.position)
         if dist < min_diff:
-            # for debugging purposes:
             self.logdebug("New position disregarded, "
                           f"as dist ({round(dist, 3)}) to current pos "
                           f"< min_diff ({round(min_diff, 3)})")
@@ -261,11 +257,6 @@ class StanleyController(CompatibleNode):
 
         x = self.__position[0]
         y = self.__position[1]
-
-        # self.loginfo(f"Cur_X: {round(x, 2)} \t "
-        #             f"Cur_Y: {round(y, 2)} \t "
-        #             f"Trj_X: {round(pos.x, 2)} \t "
-        #             f"Trj_Y: {round(pos.y, 2)} \t ")
 
         alpha = 0
         if self.__heading is not None:

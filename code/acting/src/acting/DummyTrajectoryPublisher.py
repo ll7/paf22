@@ -61,12 +61,6 @@ class DummyTrajectoryPub(CompatibleNode):
         ]
 
         self.updated_trajectory(self.initial_trajectory)
-        # request for a new interpolated dummy trajectory
-        # self.dummy_trajectory_request_subscriber = self.new_subscription(
-        #     DummyTrajectoryRequest,
-        #     "/carla/"+self.role_name+"/dummy_trajectory_request",
-        #     self.dummy_trajectory_requested,
-        #     qos_profile=1)
 
         # publisher for the current trajectory
         self.trajectory_publisher = self.new_publisher(

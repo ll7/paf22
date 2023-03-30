@@ -42,7 +42,7 @@ This package contain all acting nodes. For general information on what the actin
 ### Longitudinal controllers
 
 The longitudinal controller is implemented as a PID velocity controller ([VelocityController](./src/acting/velocity_controller.py)). The acting also publishes a max velocity based onn upcoming curves ([ActingVelocityPublisher](./src/acting/acting_velocity_publisher.py)).
-Also there is a [ACC](../../doc/05_acting/02_acc.md) implemented in acting ([Acc](./src/acting/acc.py)).
+There also is an [ACC](../../doc/05_acting/02_acc.md) implemented in acting ([Acc](./src/acting/acc.py)).
 
 ### Lateral controllers
 
@@ -52,6 +52,7 @@ There are two steering controllers implemented in the acting:
 * Stanley Controller
 
 For further information see [lateral controllers](./../../doc/05_acting/03_lateral_controller.md).
+Both controllers provide live telemetry (on paf/hero/purep_debug and paf/hero/stanley_debug).
 
 ### Vehicle controller
 

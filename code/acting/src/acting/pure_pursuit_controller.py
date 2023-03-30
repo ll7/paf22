@@ -62,7 +62,7 @@ class PurePursuitController(CompatibleNode):
 
         self.debug_publisher: Publisher = self.new_publisher(
             Debug,
-            f"/paf/{self.role_name}/debug",
+            f"/paf/{self.role_name}/pure_p_debug",
             qos_profile=1)
 
         self.__position: (float, float) = None  # x, y
@@ -198,7 +198,7 @@ class PurePursuitController(CompatibleNode):
         debug_msg.heading = self.__heading
         debug_msg.target_heading = target_vector_heading
         debug_msg.l_distance = look_ahead_dist
-        debug_msg.alpha = steering_angle
+        debug_msg.steering_angle = steering_angle
         self.debug_publisher.publish(debug_msg)
         # <-
 

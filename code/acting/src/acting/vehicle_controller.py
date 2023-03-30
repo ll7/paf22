@@ -12,7 +12,7 @@ from simple_pid import PID
 PURE_PURSUIT_CONTROLLER: int = 1
 STANLEY_CONTROLLER: int = 2
 STANLEY_CONTROLLER_MIN_V: float = 4.0  # ~14kph
-# STANLEY_CONTROLLER_MAX_V: float = 13.89  # ~50kph
+
 MAX_STEER_ANGLE: float = 0.75
 
 

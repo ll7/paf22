@@ -28,7 +28,7 @@ process. If we receive a new town and new road options, the data is prepared and
 
 ![img.png](../00_assets/Global_Plan.png)
 
-### [Decision making](../../code/planning/behavior_agent/readme.md)
+### [Decision making](./Behavior_tree.md)
 
 The decision making collects most of the available information of the other components and makes decisions based on
 the information. All possible traffic scenarios are covered in this component. The decision making uses a so called

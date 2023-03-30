@@ -389,7 +389,7 @@ class OpenDriveConverter:
         self.width = widths[-1]
         self.direction = self.right_or_left(points, x_curr, y_curr,
                                             self.width)
-        points = self.calculate_midpoints(points, x_curr, y_curr)
+        points = self.calculate_midpoints(points)
         # Check if lane change on first road is needed
         if x_first_t is None and y_first_t is None:
             target = (x_target, y_target)
@@ -572,8 +572,7 @@ class OpenDriveConverter:
                             min_diff = diff
                             min_width = width
                     self.width = min_width
-                points = self.calculate_midpoints(points, self.pt[0][-1],
-                                                  self.pt[1][-1])
+                points = self.calculate_midpoints(points)
                 if command == LEFT or command == RIGHT or command == STRAIGHT:
                     if x_next_t is not None and y_next_t is not None:
                         self.follow_id = self.next_action_id(x_next_t,

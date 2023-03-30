@@ -20,11 +20,13 @@ Preplanning is very close to the global plan. The challenge of the preplanning f
 an OpenDrive map (ASAM OpenDrive). As input it receives an xodr file (OpenDrive format) and the target points
 from the leaderboard with the belonging actions. For example action number 3 means, drive through the intersection.
 
-### [Global plan](./Global_plan.md)
+### [Global plan](./Global_Planner.md)
 
-The name global plan focuses to prepare the data for the preplanning component and to publish the output from the
-preplanner to the other components of this project (acting, decision making,...). Also it coordinates the leaderboard
-process. If we receive a new town and new road options, the data is prepared and the preplanner is started.
+The global planner is responsible for collecting and preparing all data from the leaderboard and other intern
+components that is needed for the preplanning component.
+After finishing that this node initiates the calculation of a trajectory based on the OpenDriveConverter
+from preplanning_trajectory.py. In the end the computed trajectory and prevailing speed limits are published
+to the other components of this project (acting, decision making,...).
 
 ![img.png](../00_assets/Global_Plan.png)
 

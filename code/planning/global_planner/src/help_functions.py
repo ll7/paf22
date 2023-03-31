@@ -2,8 +2,19 @@ from typing import Tuple
 from math import floor, asin, sqrt, cos, sin, pi
 import numpy as np
 
+"""
+A module for interpolating routes and other help functions.
+Some parts are covered from source: https://github.com/ll7/paf21-1
+"""
+
 
 def euclid_dist(vector1: Tuple[float, float], vector2: Tuple[float, float]):
+    """
+    Calculate the euclidian distance between two points.
+    :param vector1: first x and y coordinate
+    :param vector2: second x and y coordinate
+    :return: distance value
+    """
     point1 = np.array(vector1)
     point2 = np.array(vector2)
 
@@ -14,12 +25,23 @@ def euclid_dist(vector1: Tuple[float, float], vector2: Tuple[float, float]):
 
 def unit_vector(vector: Tuple[float, float], size: float)\
         -> Tuple[float, float]:
+    """
+    Calculate the unit vector.
+    :param vector: input vector for calculation
+    :param size: multiplying size value
+    :return: resulting vector
+    """
     length = sqrt(vector[0] ** 2 + vector[1] ** 2)
     return size * (vector[0] / length), size * (vector[1] / length)
 
 
 def perpendicular_vector_right(vector: Tuple[float, float])\
         -> Tuple[float, float]:
+    """
+    Perpendicular vector on the right side
+    :param vector: input vector
+    :return: the resulting vector
+    """
     x, y = vector
     perp = (-y, x)
     return perp
@@ -27,6 +49,11 @@ def perpendicular_vector_right(vector: Tuple[float, float])\
 
 def perpendicular_vector_left(vector: Tuple[float, float])\
         -> Tuple[float, float]:
+    """
+    Perpendicular vector on the left side
+    :param vector: input vector
+    :return: the resulting vector
+    """
     x, y = vector
     perp = (y, -x)
     return perp
@@ -34,31 +61,55 @@ def perpendicular_vector_left(vector: Tuple[float, float])\
 
 def add_vector(v_1: Tuple[float, float], v_2: Tuple[float, float]) \
         -> Tuple[float, float]:
-    """Add the given vectors"""
+    """
+    Addition of two vectors
+    :param v_1: first vector with x and y coordinate
+    :param v_2: second vector with x and y coordinate
+    :return: resulting vector
+    """
     return v_1[0] + v_2[0], v_1[1] + v_2[1]
 
 
 def sub_vector(v_1: Tuple[float, float], v_2: Tuple[float, float]) \
         -> Tuple[float, float]:
-    """Subtract the given vectors"""
+    """
+    Subtraction of two vectors
+    :param v_1: first vector with x and y coordinate
+    :param v_2: second vector with x and y coordinate
+    :return: resulting vector
+    """
     return v_1[0] - v_2[0], v_1[1] - v_2[1]
 
 
 def rotate_vector(vector: Tuple[float, float], angle_rad: float) \
         -> Tuple[float, float]:
-    """Rotate the given vector by an angle with the Rotationmatrix"""
+    """
+    Rotate the given vector by an angle with the rotationmatrix
+    :param vector: input vector with x and y coordinate
+    :param angle_rad: rotation angle in rad
+    :return: resulting vector
+    """
     return (cos(angle_rad) * vector[0] - sin(angle_rad) * vector[1],
             sin(angle_rad) * vector[0] + cos(angle_rad) * vector[1])
 
 
 def direction_vector(angle_rad: float) -> Tuple[float, float]:
-    """Retrieve the unit vector representing the given direction."""
+    """
+    Retrieve the unit vector representing the given direction
+    :param angle_rad: rotation angle in rad
+    :return: resulting vector
+    """
     return (cos(angle_rad), sin(angle_rad))
 
 
 def scale_vector(vector: Tuple[float, float], new_len: float) \
         -> Tuple[float, float]:
-    """Amplify the length of the given vector"""
+    """
+    Amplify the length of the given vector
+    :param vector: input vector with x and y coordinate
+    :param new_len: length for vector scaling
+    :return: resulting vector
+    """
     old_len = vector_len(vector)
     if old_len == 0:
         return (0, 0)
@@ -68,19 +119,35 @@ def scale_vector(vector: Tuple[float, float], new_len: float) \
 
 
 def vector_len(vec: Tuple[float, float]) -> float:
-    """Compute the given vector's length"""
+    """
+    Compute the given vector's length
+    :param vec: input vector with x and y coordinate
+    :return: length of the vector
+    """
     return sqrt(vec[0]**2 + vec[1]**2)
 
 
 def points_to_vector(p_1: Tuple[float, float], p_2: Tuple[float, float]) \
         -> Tuple[float, float]:
-    """Create the vector starting at p1 and ending at p2"""
+    """
+    Create the vector starting at p1 and ending at p2
+    :param p_1: first input vector
+    :param p_2: second input vector
+    :return: resulting vector
+    """
     return p_2[0] - p_1[0], p_2[1] - p_1[1]
 
 
 def end_of_circular_arc(start_point: Tuple[float, float], angle: float,
                         length: float, radius: float) -> Tuple[float, float]:
-    """Compute the end of a circular arc"""
+    """
+    Compute the end of a circular arc
+    :param start_point: starting point with x and y coordinate
+    :param angle: angle value in rad
+    :param length: length of the arc
+    :param radius: radius of the arc
+    :return: endpoint of the arc
+    """
     # determine the length of |start, end|
     alpha = length / radius
     diff_vec = scale_vector(direction_vector(alpha), radius)
@@ -97,8 +164,14 @@ def end_of_circular_arc(start_point: Tuple[float, float], angle: float,
 def circular_interpolation(start: Tuple[float, float],
                            end: Tuple[float, float],
                            arc_radius: float):
-    """Interpolate points between start / end point
-    on top of the circular arc given by the arc radius."""
+    """
+    Interpolate points between start / end point
+    on top of the circular arc given by the arc radius
+    :param start: starting point with x and y coordinate
+    :param end: ending point with x and y coordinate
+    :param arc_radius: arc radius
+    :return: interpolated points
+    """
 
     step_size = 2.0
     sign = -1 if arc_radius < 0 else 1
@@ -133,8 +206,14 @@ def circular_interpolation(start: Tuple[float, float],
 
 def linear_interpolation(start: Tuple[float, float], end: Tuple[float, float],
                          interval_m: float):
-    """Interpolate linearly between the given start / end point
-    by putting points according to the interval specified."""
+    """
+    Interpolate linearly between the given start / end point
+    by putting points according to the interval specified
+    :param start: starting point with x and y coordinate
+    :param end: ending point with x and y coordinate
+    :param interval_m: interval for number of points
+    :return: interpolated points
+    """
 
     distance = euclid_dist(start, end)
     vector = (end[0] - start[0], end[1] - start[1])

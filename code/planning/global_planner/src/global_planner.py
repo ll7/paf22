@@ -27,7 +27,7 @@ class PrePlanner(CompatibleNode):
     - OpenDrive Map:          /carla/{role_name}/OpenDRIVE
                  or:          /carla/world_info
     - global Plan:            /carla/{role_name}/global_plan
-    - current agent position: /carla/{role_name}/current_pos
+    - current agent position: /paf/{role_name}/current_pos
     Published topics:
     - preplanned trajectory:  /paf/{role_name}/trajectory
     - prevailing speed limits:/paf/{role_name}/speed_limits_OpenDrive

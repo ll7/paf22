@@ -117,14 +117,14 @@ RUN python -m pip install pip --upgrade \
 ENV CARLA_ROOT=/opt/carla
 ENV SCENARIO_RUNNER_ROOT=/opt/scenario_runner
 RUN sudo mkdir $SCENARIO_RUNNER_ROOT && sudo chown $USERNAME:$USERNAME $SCENARIO_RUNNER_ROOT
-RUN git clone -b leaderboard-2.0 --single-branch https://github.com/carla-simulator/scenario_runner.git $SCENARIO_RUNNER_ROOT
+RUN git clone https://github.com/carla-simulator/scenario_runner.git $SCENARIO_RUNNER_ROOT && cd $SCENARIO_RUNNER_ROOT && git checkout 7b5894c8a1d6886405ff5c2126bbf5832b274275 && cd -
 RUN echo 'pexpect' >> $SCENARIO_RUNNER_ROOT/requirements.txt && \
     python -m pip install -r $SCENARIO_RUNNER_ROOT/requirements.txt
 
 # install the leaderboard from GitHub leaderboard-2.0 branch
 ENV LEADERBOARD_ROOT=/opt/leaderboard
 RUN sudo mkdir $LEADERBOARD_ROOT && sudo chown $USERNAME:$USERNAME $LEADERBOARD_ROOT
-RUN git clone -b leaderboard-2.0 --single-branch  https://github.com/carla-simulator/leaderboard.git $LEADERBOARD_ROOT
+RUN git clone https://github.com/carla-simulator/leaderboard.git $LEADERBOARD_ROOT && cd $LEADERBOARD_ROOT && git checkout 3f27e94446cbd53225715258c710bec9c051c5b7 && cd -
 RUN python -m pip install -r $LEADERBOARD_ROOT/requirements.txt
 RUN sudo mkdir /opt/leaderboard-py3 && sudo chown $USERNAME:$USERNAME /opt/leaderboard-py3 && \
     ln -s $LEADERBOARD_ROOT/leaderboard /opt/leaderboard-py3/leaderboard && \

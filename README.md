@@ -1,4 +1,6 @@
-# Praktikum Autonomes Fahren 2022 - PAF22
+# Praktikum Autonomes Fahren 2022 - PAF22 - ARCHIVED
+
+The current version can be found here: <https://github.com/una-auxme/paf23>.
 
 ## Prerequisites
 

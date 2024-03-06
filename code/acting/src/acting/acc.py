@@ -5,6 +5,7 @@ from carla_msgs.msg import CarlaSpeedometer
 from ros_compatibility.node import CompatibleNode
 from ros_compatibility.qos import QoSProfile, DurabilityPolicy
 from rospy import Publisher, Subscriber, Duration
+from sensor_msgs.msg import Range
 from simple_pid import PID
 from std_msgs.msg import Float32, Bool
 
@@ -22,8 +23,8 @@ class Acc(CompatibleNode):
         self.role_name = self.get_param('role_name', 'ego_vehicle')
 
         self.dist_sub: Subscriber = self.new_subscription(
-            Float32,
-            f"/paf/{self.role_name}/acc_distance",
+            Range,
+            "/carla/hero/LIDAR_range",
             self.__get_current_dist,
             qos_profile=1)
 
@@ -137,8 +138,8 @@ class Acc(CompatibleNode):
         self.new_timer(self.control_loop_rate, loop)
         self.spin()
 
-    def __get_current_dist(self, data: Float32):
-        self.__dist = data.data
+    def __get_current_dist(self, data: Range):
+        self.__dist = data.range
         self.__dist_last_received_at = rospy.get_rostime()
 
     def __get_velocity(self, data: CarlaSpeedometer):
